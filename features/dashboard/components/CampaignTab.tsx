@@ -1,18 +1,47 @@
 "use client"
 
-import { EnhancedEmailComposer } from "@/components/enhanced-email-composer"
-import type { TabComponentProps } from "../types"
+import { EmailComposer } from "@/features/campaigns"
+import type { TabComponentProps, CampaignData } from "../types"
+import type { Campaign, Lead as CampaignLead } from "@/features/campaigns"
 
 interface CampaignTabProps extends TabComponentProps {
   selectedLeadsData: any[]
 }
 
 export function CampaignTab({ state, actions, selectedLeadsData }: CampaignTabProps) {
+  const handleSendCampaign = (campaignData: Campaign) => {
+    // Convert campaign leads to dashboard lead format
+    const dashboardCampaignData: CampaignData = {
+      subject: campaignData.subject,
+      content: campaignData.content,
+      senderName: campaignData.senderName,
+      senderEmail: campaignData.senderEmail,
+      recipients: selectedLeadsData, // Use original dashboard leads
+      sentAt: campaignData.sentAt,
+      estimatedDelivery: campaignData.estimatedDelivery
+    }
+    actions.handleSendCampaign(dashboardCampaignData)
+  }
+
+  // Convert dashboard leads to campaign leads format
+  const campaignLeads: CampaignLead[] = selectedLeadsData.map(lead => ({
+    id: lead.id,
+    name: lead.name,
+    company: lead.company,
+    email: lead.email,
+    position: lead.position,
+    industry: lead.industry,
+    location: lead.location,
+    phone: lead.phone,
+    website: lead.website,
+    confidence: lead.confidence
+  }))
+
   return (
     <div className="space-y-6">
-      <EnhancedEmailComposer
-        selectedLeads={selectedLeadsData}
-        onSendCampaign={actions.handleSendCampaign}
+      <EmailComposer
+        selectedLeads={campaignLeads}
+        onSendCampaign={handleSendCampaign}
         emailSent={state.emailSent}
       />
     </div>

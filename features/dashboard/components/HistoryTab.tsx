@@ -1,9 +1,10 @@
 "use client"
 
 import { SearchHistory } from "@/components/search-history"
-import { EmailHistory } from "@/components/email-history"
+import { EmailHistory } from "@/features/campaigns"
 import { mockSearchHistory, mockEmailCampaigns } from "@/lib/mock-data"
 import type { TabComponentProps } from "../types"
+import type { Campaign } from "@/features/campaigns"
 
 export function HistoryTab({ state, actions }: TabComponentProps) {
   const handleViewCampaign = () => {
@@ -13,6 +14,21 @@ export function HistoryTab({ state, actions }: TabComponentProps) {
   const handleDuplicateCampaign = () => {
     actions.setActiveTab("campaign")
   }
+
+  // Convert mockEmailCampaigns to Campaign format
+  const convertedCampaigns: Campaign[] = mockEmailCampaigns.map(mockCampaign => ({
+    id: mockCampaign.id,
+    subject: mockCampaign.subject,
+    content: "", // Not available in mock data
+    senderName: "Demo User",
+    senderEmail: "demo@ritterfinder.com",
+    recipients: [], // Not available in mock data
+    sentAt: mockCampaign.date,
+    estimatedDelivery: "2-5 minutes",
+    openRate: mockCampaign.openRate,
+    clickRate: mockCampaign.clickRate,
+    status: mockCampaign.status as 'sent'
+  }))
 
   return (
     <div className="space-y-8">
@@ -28,7 +44,7 @@ export function HistoryTab({ state, actions }: TabComponentProps) {
       />
 
       <EmailHistory
-        campaigns={mockEmailCampaigns}
+        campaigns={convertedCampaigns}
         onViewCampaign={handleViewCampaign}
         onDuplicateCampaign={handleDuplicateCampaign}
       />
