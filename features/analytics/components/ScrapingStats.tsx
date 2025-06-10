@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { useScrapingStats } from "../hooks/useScrapingStats"
 import type { ReactNode } from "react"
+import styles from "../styles/ScrapingStats.module.css"
 
 interface StatsCardProps {
   title: string
@@ -32,26 +33,39 @@ interface StatsCardProps {
 }
 
 function StatsCard({ title, value, description, icon, trend, color, isLoading }: StatsCardProps) {
+  const getColorClasses = (color?: string) => {
+    switch (color) {
+      case 'blue-600': return { wrapper: styles.blue, icon: styles.blue }
+      case 'green-600': return { wrapper: styles.green, icon: styles.green }
+      case 'purple-600': return { wrapper: styles.purple, icon: styles.purple }
+      default: return { wrapper: styles.default, icon: styles.default }
+    }
+  }
+
+  const colorClasses = getColorClasses(color)
+
   return (
-    <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <div className={`p-2 rounded-full ${color ? `bg-${color}/10` : 'bg-ritter-gold/10'}`}>
-          {icon}
+    <Card className={`${styles.statCard} border-0 shadow-sm hover:shadow-md transition-shadow`}>
+      <CardHeader className={`${styles.cardHeader} flex flex-row items-center justify-between pb-2`}>
+        <CardTitle className={`${styles.cardTitle} text-sm font-medium`}>{title}</CardTitle>
+        <div className={`${styles.cardIconWrapper} ${colorClasses.wrapper} p-2 rounded-full ${color ? `bg-${color}/10` : 'bg-ritter-gold/10'}`}>
+          <div className={`${styles.cardIcon} ${colorClasses.icon}`}>
+            {icon}
+          </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">
+      <CardContent className={styles.cardContent}>
+        <div className={`${styles.cardValue} ${isLoading ? styles.loading : ''} text-2xl font-bold`}>
           {isLoading ? (
             <div className="h-8 bg-gray-200 rounded animate-pulse" />
           ) : (
             value
           )}
         </div>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p className={`${styles.cardDescription} text-xs text-muted-foreground`}>{description}</p>
         {trend && !isLoading && (
-          <div className="mt-2 flex items-center text-xs">
-            <span className="text-green-600 bg-green-100 px-1 rounded">
+          <div className={`${styles.cardTrend} mt-2 flex items-center text-xs`}>
+            <span className={`${styles.trendBadge} text-green-600 bg-green-100 px-1 rounded`}>
               +{trend.value}
             </span>
           </div>
@@ -87,22 +101,22 @@ export function ScrapingStats({
   } = useScrapingStats()
 
   return (
-    <div className="space-y-6">
+    <div className={`${styles.scrapingStats} space-y-6`}>
       {/* Header */}
       {showHeader && (
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Zap className="h-6 w-6 text-ritter-gold" />
+        <div className={`${styles.statsHeader} flex items-center justify-between`}>
+          <div className={styles.headerContent}>
+            <h2 className={`${styles.headerTitle} text-2xl font-bold text-gray-900 flex items-center gap-2`}>
+              <Zap className={`${styles.headerIcon} h-6 w-6 text-ritter-gold`} />
               Estadísticas del Scraping
             </h2>
-            <p className="text-gray-600">
+            <p className={`${styles.headerDescription} text-gray-600`}>
               Datos en tiempo real de la recolección automatizada de leads
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              <Clock className="h-3 w-3 mr-1" />
+          <div className={`${styles.headerActions} flex items-center gap-3`}>
+            <Badge variant="outline" className={`${styles.statusBadge} bg-green-50 text-green-700 border-green-200`}>
+              <Clock className={`${styles.statusIcon} h-3 w-3 mr-1`} />
               Actualizado hace 2 min
             </Badge>
             {showRefreshButton && (
@@ -111,9 +125,9 @@ export function ScrapingStats({
                 size="sm"
                 onClick={refreshStats}
                 disabled={isLoading}
-                className="flex items-center gap-2"
+                className={`${styles.refreshButton} flex items-center gap-2`}
               >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`${styles.refreshIcon} ${isLoading ? styles.spinning : ''} h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 Actualizar
               </Button>
             )}
@@ -122,7 +136,7 @@ export function ScrapingStats({
       )}
 
       {/* Main Stats Grid */}
-      <div className={`grid gap-4 ${compact ? 'md:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-4'}`}>
+      <div className={`${styles.mainStatsGrid} ${compact ? styles.compact : ''} grid gap-4 ${compact ? 'md:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-4'}`}>
         <StatsCard
           title="Sitios Revisados"
           value={sitesReviewed.toLocaleString()}
@@ -162,34 +176,38 @@ export function ScrapingStats({
 
       {/* Detailed Analytics */}
       {!compact && (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className={`${styles.detailedGrid} grid gap-6 md:grid-cols-2`}>
           {/* Daily Performance */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-ritter-gold" />
+          <Card className={`${styles.performanceCard} border-0 shadow-sm`}>
+            <CardHeader className={styles.performanceHeader}>
+              <CardTitle className={`${styles.performanceTitle} flex items-center gap-2`}>
+                <BarChart3 className={`${styles.performanceIcon} h-5 w-5 text-ritter-gold`} />
                 Rendimiento Diario
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+            <CardContent className={styles.performanceContent}>
+              <div className={`${styles.performanceList} space-y-4`}>
                 {dailyStats.slice(-5).map((day, index) => (
-                  <div key={day.date} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">
+                  <div key={day.date} className={`${styles.performanceItem} flex items-center justify-between p-3 bg-gray-50 rounded-lg`}>
+                    <div className={styles.performanceLeft}>
+                      <p className={`${styles.performanceDate} font-medium`}>
                         {new Date(day.date).toLocaleDateString("es-ES", {
                           weekday: "short",
                           month: "short",
                           day: "numeric",
                         })}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className={`${styles.performanceStats} text-sm text-muted-foreground`}>
                         {day.sites} sitios • {day.leads} leads
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-green-600">{formatCurrency(day.savings)}</p>
-                      <p className="text-xs text-muted-foreground">ahorrado</p>
+                    <div className={`${styles.performanceRight} text-right`}>
+                      <p className={`${styles.performanceSavings} font-bold text-green-600`}>
+                        {formatCurrency(day.savings)}
+                      </p>
+                      <p className={`${styles.performanceLabel} text-xs text-muted-foreground`}>
+                        ahorrado
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -198,42 +216,56 @@ export function ScrapingStats({
           </Card>
 
           {/* Top Sources */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-ritter-gold" />
+          <Card className={`${styles.sourcesCard} border-0 shadow-sm`}>
+            <CardHeader className={styles.sourcesHeader}>
+              <CardTitle className={`${styles.sourcesTitle} flex items-center gap-2`}>
+                <TrendingUp className={`${styles.sourcesIcon} h-5 w-5 text-ritter-gold`} />
                 Mejores Fuentes
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {topSources.map((source, index) => (
-                  <div key={source.website} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-2 h-2 rounded-full ${
-                            index === 0
-                              ? "bg-ritter-gold"
-                              : index === 1
-                                ? "bg-blue-500"
-                                : index === 2
-                                  ? "bg-green-500"
-                                  : index === 3
-                                    ? "bg-purple-500"
-                                    : "bg-gray-400"
-                          }`}
-                        />
-                        <span className="font-medium text-sm">{source.website}</span>
+            <CardContent className={styles.sourcesContent}>
+              <div className={`${styles.sourcesList} space-y-4`}>
+                {topSources.map((source, index) => {
+                  const dotColor = index === 0 ? 'gold' : index === 1 ? 'blue' : index === 2 ? 'green' : index === 3 ? 'purple' : 'gray'
+                  const progressColor = dotColor
+                  
+                  return (
+                    <div key={source.website} className={`${styles.sourceItem} space-y-2`}>
+                      <div className={`${styles.sourceTop} flex items-center justify-between`}>
+                        <div className={`${styles.sourceLeft} flex items-center gap-2`}>
+                          <div
+                            className={`${styles.sourceDot} ${styles[dotColor]} w-2 h-2 rounded-full ${
+                              index === 0
+                                ? "bg-ritter-gold"
+                                : index === 1
+                                  ? "bg-blue-500"
+                                  : index === 2
+                                    ? "bg-green-500"
+                                    : index === 3
+                                      ? "bg-purple-500"
+                                      : "bg-gray-400"
+                            }`}
+                          />
+                          <span className={`${styles.sourceName} font-medium text-sm`}>
+                            {source.website}
+                          </span>
+                        </div>
+                        <div className={`${styles.sourceStats} text-right`}>
+                          <p className={`${styles.sourceLeads} font-bold`}>{source.leads}</p>
+                          <p className={`${styles.sourcePercentage} text-xs text-muted-foreground`}>
+                            {source.percentage}%
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold">{source.leads}</p>
-                        <p className="text-xs text-muted-foreground">{source.percentage}%</p>
+                      <div className={styles.sourceProgress}>
+                        <div 
+                          className={`${styles.sourceProgressBar} ${styles[progressColor]} h-2`}
+                          style={{ width: `${source.percentage}%` }}
+                        />
                       </div>
                     </div>
-                    <Progress value={source.percentage} className="h-2" />
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
@@ -242,29 +274,35 @@ export function ScrapingStats({
 
       {/* Key Metrics Summary */}
       {metrics && !compact && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Resumen de Métricas Clave</CardTitle>
+        <Card className={`${styles.metricsCard} border-0 shadow-sm`}>
+          <CardHeader className={styles.metricsHeader}>
+            <CardTitle className={styles.metricsTitle}>Resumen de Métricas Clave</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
-                <p className="text-2xl font-bold text-blue-600">
+          <CardContent className={styles.metricsContent}>
+            <div className={`${styles.metricsGrid} grid gap-4 md:grid-cols-3`}>
+              <div className={`${styles.metricItem} ${styles.blue} text-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg`}>
+                <p className={`${styles.metricValue} ${styles.blue} text-2xl font-bold text-blue-600`}>
                   {metrics.averageLeadsPerDay}
                 </p>
-                <p className="text-sm text-blue-700">Leads promedio por día</p>
+                <p className={`${styles.metricLabel} text-sm text-blue-700`}>
+                  Leads promedio por día
+                </p>
               </div>
-              <div className="text-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
-                <p className="text-2xl font-bold text-green-600">
+              <div className={`${styles.metricItem} ${styles.green} text-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg`}>
+                <p className={`${styles.metricValue} ${styles.green} text-2xl font-bold text-green-600`}>
                   {formatCurrency(metrics.costPerLead)}
                 </p>
-                <p className="text-sm text-green-700">Costo por lead</p>
+                <p className={`${styles.metricLabel} text-sm text-green-700`}>
+                  Costo por lead
+                </p>
               </div>
-              <div className="text-center p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg">
-                <p className="text-2xl font-bold text-purple-600">
+              <div className={`${styles.metricItem} ${styles.purple} text-center p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg`}>
+                <p className={`${styles.metricValue} ${styles.purple} text-2xl font-bold text-purple-600`}>
                   {metrics.roi.toFixed(1)}%
                 </p>
-                <p className="text-sm text-purple-700">ROI estimado</p>
+                <p className={`${styles.metricLabel} text-sm text-purple-700`}>
+                  ROI estimado
+                </p>
               </div>
             </div>
           </CardContent>

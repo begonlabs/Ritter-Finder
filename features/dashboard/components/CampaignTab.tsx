@@ -3,6 +3,7 @@
 import { EmailComposer } from "@/features/campaigns"
 import type { TabComponentProps, CampaignData } from "../types"
 import type { Campaign, Lead as CampaignLead } from "@/features/campaigns"
+import styles from "../styles/CampaignTab.module.css"
 
 interface CampaignTabProps extends TabComponentProps {
   selectedLeadsData: any[]
@@ -38,12 +39,16 @@ export function CampaignTab({ state, actions, selectedLeadsData }: CampaignTabPr
   }))
 
   return (
-    <div className="space-y-6">
-      <EmailComposer
-        selectedLeads={campaignLeads}
-        onSendCampaign={handleSendCampaign}
-        emailSent={state.emailSent}
-      />
+    <div className={`${styles.campaignTab} space-y-6`}>
+      <div className={styles.campaignContainer}>
+        <div className={styles.campaignWrapper}>
+          <EmailComposer
+            selectedLeads={campaignLeads}
+            onSendCampaign={handleSendCampaign}
+            emailSent={state.emailSent}
+          />
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,0 +1,304 @@
+/* DashboardOverview Component Styles - RitterFinder Dashboard Feature */
+
+.dashboardOverview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stats Section */
+.statsSection {
+  animation: slideInStats 0.6s ease-out 0.1s both;
+}
+
+@keyframes slideInStats {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Charts Grid */
+.chartsGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  animation: chartsEnter 0.6s ease-out 0.2s both;
+}
+
+@keyframes chartsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Quick Actions Card */
+.quickActionsCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: quickActionsEnter 0.6s ease-out 0.3s both;
+}
+
+@keyframes quickActionsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.quickActionsHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+}
+
+.quickActionsTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1E25; /* ritter-dark */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.titleIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #F2B705; /* ritter-gold */
+}
+
+.quickActionsContent {
+  padding: 2rem;
+}
+
+/* Actions Grid */
+.actionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .actionsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Action Buttons */
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3rem;
+  padding: 0 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.actionButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.actionButton:hover::before {
+  left: 100%;
+}
+
+.actionButtonPrimary {
+  background: #F2B705; /* ritter-gold */
+  color: #1A1E25; /* ritter-dark */
+}
+
+.actionButtonPrimary:hover {
+  background: #d97706; /* amber-600 */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(242, 183, 5, 0.3);
+}
+
+.actionButtonSecondary {
+  background: white;
+  color: #374151;
+  border: 1px solid rgba(242, 183, 5, 0.2);
+}
+
+.actionButtonSecondary:hover {
+  background: rgba(242, 183, 5, 0.05);
+  border-color: rgba(242, 183, 5, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(242, 183, 5, 0.15);
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.buttonArrow {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.actionButton:hover .buttonArrow {
+  transform: translateX(2px);
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.loadingSpinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #f1f5f9;
+  border-top: 3px solid #F2B705; /* ritter-gold */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .quickActionsHeader,
+  .quickActionsContent {
+    padding: 1rem 1.5rem;
+  }
+
+  .quickActionsTitle {
+    font-size: 1.125rem;
+  }
+
+  .actionButton {
+    height: 2.75rem;
+    padding: 0 1rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .quickActionsCard {
+    border: 2px solid #d1d5db;
+  }
+
+  .actionButtonSecondary {
+    border: 2px solid #F2B705;
+  }
+
+  .actionButtonPrimary,
+  .actionButtonSecondary {
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .dashboardOverview,
+  .statsSection,
+  .chartsGrid,
+  .quickActionsCard,
+  .loadingContainer {
+    animation: none;
+  }
+
+  .actionButton,
+  .buttonArrow {
+    transition: none;
+  }
+
+  .actionButton:hover {
+    transform: none;
+  }
+
+  .actionButton::before {
+    display: none;
+  }
+
+  .loadingSpinner {
+    animation: none;
+  }
+} 

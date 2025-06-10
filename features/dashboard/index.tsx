@@ -13,6 +13,16 @@ export { AnalyticsTab } from "./components/AnalyticsTab"
 // Hooks
 export { useDashboard } from "./hooks/useDashboard"
 
+// Styles
+export { default as dashboardPageStyles } from './styles/DashboardPage.module.css'
+export { default as dashboardOverviewStyles } from './styles/DashboardOverview.module.css'
+export { default as searchTabStyles } from './styles/SearchTab.module.css'
+export { default as resultsTabStyles } from './styles/ResultsTab.module.css'
+export { default as campaignTabStyles } from './styles/CampaignTab.module.css'
+export { default as historyTabStyles } from './styles/HistoryTab.module.css'
+export { default as scrapingTabStyles } from './styles/ScrapingTab.module.css'
+export { default as analyticsTabStyles } from './styles/AnalyticsTab.module.css'
+
 // Types
 export type {
   TabType,

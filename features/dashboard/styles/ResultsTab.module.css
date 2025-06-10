@@ -1,0 +1,240 @@
+/* ResultsTab Component Styles - RitterFinder Dashboard Feature */
+
+.resultsTab {
+  width: 100%;
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Results Container */
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: containerEnter 0.6s ease-out 0.1s both;
+}
+
+@keyframes containerEnter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Results Table Wrapper */
+.tableWrapper {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: tableEnter 0.6s ease-out 0.2s both;
+}
+
+@keyframes tableEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #64748b;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.emptyStateIcon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+.emptyStateTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.emptyStateDescription {
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.emptyStateAction {
+  background: #F2B705; /* ritter-gold */
+  color: #1A1E25; /* ritter-dark */
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emptyStateAction:hover {
+  background: #d97706; /* amber-600 */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(242, 183, 5, 0.3);
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+}
+
+.loadingSpinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #f1f5f9;
+  border-top: 3px solid #F2B705; /* ritter-gold */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Results Stats */
+.resultsStats {
+  background: #fafbfc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  animation: statsEnter 0.6s ease-out 0.15s both;
+}
+
+@keyframes statsEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.statsText {
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.statsHighlight {
+  color: #F2B705; /* ritter-gold */
+  font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .emptyState,
+  .loadingContainer {
+    padding: 2rem 1rem;
+  }
+
+  .resultsStats {
+    padding: 0.75rem 1rem;
+  }
+
+  .emptyStateTitle {
+    font-size: 1.125rem;
+  }
+
+  .emptyStateDescription {
+    font-size: 0.875rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .tableWrapper,
+  .resultsStats {
+    border: 2px solid #d1d5db;
+  }
+
+  .emptyStateAction {
+    border: 2px solid #F2B705;
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .resultsTab,
+  .resultsContainer,
+  .tableWrapper,
+  .emptyState,
+  .resultsStats {
+    animation: none;
+  }
+
+  .emptyStateAction {
+    transition: none;
+  }
+
+  .emptyStateAction:hover {
+    transform: none;
+  }
+
+  .loadingSpinner {
+    animation: none;
+  }
+} 

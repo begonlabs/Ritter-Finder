@@ -2,6 +2,7 @@
 
 import { SearchForm } from "@/features/search"
 import type { TabComponentProps } from "../types"
+import styles from "../styles/SearchTab.module.css"
 
 interface SearchTabProps extends TabComponentProps {
   canStartSearch: boolean
@@ -33,10 +34,14 @@ export function SearchTab({ state, actions, canStartSearch }: SearchTabProps) {
   }
 
   return (
-    <SearchForm 
-      state={searchState}
-      actions={searchActions}
-      canStartSearch={canStartSearch}
-    />
+    <div className={styles.searchTab}>
+      <div className={styles.searchFormContainer}>
+        <SearchForm 
+          state={searchState}
+          actions={searchActions}
+          canStartSearch={canStartSearch}
+        />
+      </div>
+    </div>
   )
 }

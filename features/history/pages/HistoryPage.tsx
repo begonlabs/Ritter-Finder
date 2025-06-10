@@ -10,6 +10,7 @@ import { SearchHistory } from "../components/SearchHistory"
 import { CampaignHistory } from "../components/CampaignHistory"
 import { ActivityTimeline } from "../components/ActivityTimeline"
 import type { HistoryPageProps } from "../types"
+import styles from "../styles/HistoryPage.module.css"
 
 interface HistoryPageComponentProps extends HistoryPageProps {
   onNavigateToSearch?: () => void
@@ -77,65 +78,70 @@ export function HistoryPage({
     const singleTab = availableTabs[0]
     
     return (
-      <div className="space-y-6">
+      <div className={`${styles.historyPage} ${compactMode ? styles.compact : ''}`}>
         {!compactMode && (
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Historial y Análisis
-            </h2>
-            <p className="text-gray-600">
-              Revisa tu historial y analiza el rendimiento de tus actividades
-            </p>
+          <div className={styles.historyHeader}>
+            <div className={styles.historyHeaderContent}>
+              <h2 className={styles.historyTitle}>
+                Historial y Análisis
+              </h2>
+              <p className={styles.historySubtitle}>
+                Revisa tu historial y analiza el rendimiento de tus actividades
+              </p>
+            </div>
           </div>
         )}
 
-        {singleTab.id === "search" && showSearchHistory && (
-          <SearchHistory
-            onRerunSearch={handleRerunSearchWrapper}
-            onViewLeads={handleViewLeadsWrapper}
-            compact={compactMode}
-          />
-        )}
-        
-        {singleTab.id === "campaigns" && showCampaignHistory && (
-          <CampaignHistory
-            onViewCampaign={handleViewCampaignWrapper}
-            onDuplicateCampaign={handleDuplicateCampaignWrapper}
-            compact={compactMode}
-          />
-        )}
-        
-        {singleTab.id === "activity" && showActivityTimeline && (
-          <ActivityTimeline
-            onViewDetails={onViewActivityDetails}
-            maxItems={maxItems}
-            compact={compactMode}
-          />
-        )}
+        <div className={styles.tabContent}>
+          {singleTab.id === "search" && showSearchHistory && (
+            <SearchHistory
+              onRerunSearch={handleRerunSearchWrapper}
+              onViewLeads={handleViewLeadsWrapper}
+              compact={compactMode}
+            />
+          )}
+          
+          {singleTab.id === "campaigns" && showCampaignHistory && (
+            <CampaignHistory
+              onViewCampaign={handleViewCampaignWrapper}
+              onDuplicateCampaign={handleDuplicateCampaignWrapper}
+              compact={compactMode}
+            />
+          )}
+          
+          {singleTab.id === "activity" && showActivityTimeline && (
+            <ActivityTimeline
+              onViewDetails={onViewActivityDetails}
+              maxItems={maxItems}
+              compact={compactMode}
+            />
+          )}
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`${styles.historyPage} ${compactMode ? styles.compact : ''}`}>
       {!compactMode && (
-        <div className="flex items-center justify-between mb-6">
-          <div className="text-center flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className={styles.historyHeader}>
+          <div className={styles.historyHeaderContent}>
+            <h2 className={styles.historyTitle}>
               Historial y Análisis
             </h2>
-            <p className="text-gray-600">
+            <p className={styles.historySubtitle}>
               Revisa tu historial y analiza el rendimiento de tus actividades
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className={styles.historyActions}>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleExportHistory(activeTab as 'search' | 'campaign' | 'activity')}
+              className={styles.exportButton}
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Download className={`${styles.exportButtonIcon} h-4 w-4 mr-2`} />
               Exportar
             </Button>
           </div>
@@ -144,50 +150,50 @@ export function HistoryPage({
 
       {showTabs ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <div className={styles.tabsList}>
             {availableTabs.map((tab) => {
               const Icon = tab.icon
               return (
-                <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2">
-                  <Icon className="h-4 w-4" />
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`${styles.tabsTrigger} ${activeTab === tab.id ? styles.active : ''}`}
+                >
+                  <Icon className={styles.tabIcon} />
                   {tab.label}
-                </TabsTrigger>
+                </button>
               )
             })}
-          </TabsList>
+          </div>
 
-          {showSearchHistory && (
-            <TabsContent value="search" className="mt-6">
+          <div className={styles.tabContent}>
+            {activeTab === "search" && showSearchHistory && (
               <SearchHistory
                 onRerunSearch={handleRerunSearchWrapper}
                 onViewLeads={handleViewLeadsWrapper}
                 compact={compactMode}
               />
-            </TabsContent>
-          )}
+            )}
 
-          {showCampaignHistory && (
-            <TabsContent value="campaigns" className="mt-6">
+            {activeTab === "campaigns" && showCampaignHistory && (
               <CampaignHistory
                 onViewCampaign={handleViewCampaignWrapper}
                 onDuplicateCampaign={handleDuplicateCampaignWrapper}
                 compact={compactMode}
               />
-            </TabsContent>
-          )}
+            )}
 
-          {showActivityTimeline && (
-            <TabsContent value="activity" className="mt-6">
+            {activeTab === "activity" && showActivityTimeline && (
               <ActivityTimeline
                 onViewDetails={onViewActivityDetails}
                 maxItems={maxItems}
                 compact={compactMode}
               />
-            </TabsContent>
-          )}
+            )}
+          </div>
         </Tabs>
       ) : (
-        <div className="space-y-8">
+        <div className={styles.tabContent}>
           {showSearchHistory && (
             <SearchHistory
               onRerunSearch={handleRerunSearchWrapper}

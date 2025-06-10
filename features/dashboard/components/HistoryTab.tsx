@@ -2,6 +2,7 @@
 
 import { HistoryPage } from "@/features/history"
 import type { TabComponentProps } from "../types"
+import styles from "../styles/HistoryTab.module.css"
 
 export function HistoryTab({ state, actions }: TabComponentProps) {
   const handleViewCampaign = () => {
@@ -25,19 +26,23 @@ export function HistoryTab({ state, actions }: TabComponentProps) {
   }
 
   return (
-    <HistoryPage
-      showSearchHistory={true}
-      showCampaignHistory={true}
-      showActivityTimeline={true}
-      compactMode={false}
-      onNavigateToSearch={handleNavigateToSearch}
-      onNavigateToCampaigns={handleNavigateToCampaigns}
-      onNavigateToResults={handleNavigateToResults}
-      onRerunSearch={actions.handleRerunSearch}
-      onViewLeads={actions.handleViewLeads}
-      onViewCampaign={handleViewCampaign}
-      onDuplicateCampaign={handleDuplicateCampaign}
-      onViewActivityDetails={(activityId) => console.log('Viewing activity:', activityId)}
-    />
+    <div className={styles.historyTab}>
+      <div className={styles.historyContainer}>
+        <HistoryPage
+          showSearchHistory={true}
+          showCampaignHistory={true}
+          showActivityTimeline={true}
+          compactMode={false}
+          onNavigateToSearch={handleNavigateToSearch}
+          onNavigateToCampaigns={handleNavigateToCampaigns}
+          onNavigateToResults={handleNavigateToResults}
+          onRerunSearch={actions.handleRerunSearch}
+          onViewLeads={actions.handleViewLeads}
+          onViewCampaign={handleViewCampaign}
+          onDuplicateCampaign={handleDuplicateCampaign}
+          onViewActivityDetails={(activityId) => console.log('Viewing activity:', activityId)}
+        />
+      </div>
+    </div>
   )
 }

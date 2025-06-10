@@ -1,0 +1,380 @@
+/* PreviewTab Component Styles - RitterFinder Campaigns Feature */
+
+.previewTab {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1E25; /* ritter-dark */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.titleIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #F2B705; /* ritter-gold */
+}
+
+.description {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Content */
+.content {
+  padding: 2rem;
+}
+
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Preview Controls */
+.previewControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.controlLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.leadSelector {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.leadSelector:focus {
+  outline: none;
+  border-color: #F2B705; /* ritter-gold */
+  box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.1);
+}
+
+/* Email Preview */
+.emailPreview {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: slideInPreview 0.6s ease-out 0.3s both;
+}
+
+@keyframes slideInPreview {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.emailHeader {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+}
+
+.emailMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.emailMetaLine {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emailLabel {
+  font-weight: 500;
+  color: #374151;
+  min-width: 2rem;
+}
+
+.emailValue {
+  flex: 1;
+}
+
+.emailSubject {
+  font-weight: 600;
+  color: #1A1E25; /* ritter-dark */
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 1rem;
+}
+
+.emailBody {
+  padding: 1.5rem;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #374151;
+  font-size: 0.875rem;
+  background: #ffffff;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Validation Warnings */
+.validationWarnings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  animation: fadeIn 0.6s ease-out 0.4s both;
+}
+
+.warningItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.warningIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+.emptyStateIcon {
+  margin: 0 auto 1rem auto;
+  width: 3rem;
+  height: 3rem;
+  color: #d1d5db;
+}
+
+.emptyStateText {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Preview Toolbar */
+.previewToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.statusReady {
+  background: #10b981; /* green-600 */
+}
+
+.statusWarning {
+  background: #f59e0b; /* amber-500 */
+}
+
+.statusError {
+  background: #ef4444; /* red-500 */
+}
+
+.toolbarRight {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header,
+  .content {
+    padding: 1rem 1.5rem;
+  }
+
+  .previewControls {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .leadSelector {
+    min-width: auto;
+  }
+
+  .emailHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .emailBody {
+    padding: 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .previewToolbar {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .toolbarLeft,
+  .toolbarRight {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+
+  .emailMeta {
+    gap: 0.5rem;
+  }
+
+  .emailMetaLine {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .previewTab,
+  .emailPreview {
+    border: 2px solid #d1d5db;
+  }
+
+  .leadSelector {
+    border: 2px solid #9ca3af;
+  }
+
+  .leadSelector:focus {
+    border-color: #F2B705;
+  }
+
+  .warningItem {
+    border: 2px solid #f59e0b;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .previewTab,
+  .previewControls,
+  .emailPreview,
+  .validationWarnings,
+  .emptyState {
+    animation: none;
+  }
+
+  .leadSelector,
+  .actionButton {
+    transition: none;
+  }
+} 

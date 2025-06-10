@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress"
 import { Search, MoreHorizontal, Copy, Eye, Mail, Calendar, Trash2, Clock, Send } from "lucide-react"
 import { useCampaignHistory } from "../hooks/useCampaignHistory"
 import type { CampaignHistoryProps } from "../types"
+import styles from "../styles/CampaignHistory.module.css"
 
 export function CampaignHistory({
   onViewCampaign,

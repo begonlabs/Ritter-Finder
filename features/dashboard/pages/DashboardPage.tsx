@@ -10,6 +10,7 @@ import { CampaignTab } from "../components/CampaignTab"
 import { HistoryTab } from "../components/HistoryTab"
 import { ScrapingTab } from "../components/ScrapingTab"
 import { AnalyticsTab } from "../components/AnalyticsTab"
+import styles from "../styles/DashboardPage.module.css"
 
 export function DashboardPage() {
   const { state, actions, canStartSearch, selectedLeadsData } = useDashboard()
@@ -42,8 +43,12 @@ export function DashboardPage() {
       searchComplete={state.searchComplete}
       selectedLeadsCount={state.selectedLeads.length}
     >
-      <Onboarding />
-      {renderActiveTab()}
+      <div className={styles.dashboardPage}>
+        <Onboarding />
+        <div className={styles.tabContent}>
+          {renderActiveTab()}
+        </div>
+      </div>
     </DashboardLayout>
   )
 }

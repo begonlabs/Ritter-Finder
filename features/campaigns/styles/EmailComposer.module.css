@@ -1,0 +1,169 @@
+/* EmailComposer Component Styles - RitterFinder Campaigns Feature */
+
+.emailComposer {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Empty State */
+.emptyState {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.emptyStateHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+}
+
+.emptyStateTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1E25; /* ritter-dark */
+  margin: 0;
+}
+
+.emptyStateDescription {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.emptyStateContent {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  margin: 0 auto 1rem auto;
+  width: 3rem;
+  height: 3rem;
+  color: #d1d5db;
+}
+
+.emptyStateText {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Tabs Container */
+.tabsContainer {
+  animation: slideInUp 0.6s ease-out 0.2s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabsList {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.25rem;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem;
+}
+
+.tabsTrigger {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  cursor: pointer;
+}
+
+.tabsTrigger:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.tabsTrigger[data-state="active"] {
+  background: #F2B705; /* ritter-gold */
+  color: #1A1E25; /* ritter-dark */
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(242, 183, 5, 0.2);
+}
+
+.tabsContent {
+  margin-top: 1.5rem;
+  animation: fadeInContent 0.4s ease-out;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .emptyStateContent {
+    padding: 2rem 1rem;
+  }
+
+  .tabsList {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .tabsTrigger {
+    text-align: center;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .emptyState {
+    border: 2px solid #d1d5db;
+  }
+
+  .tabsList {
+    border: 2px solid #d1d5db;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .emailComposer,
+  .tabsContainer,
+  .tabsContent {
+    animation: none;
+  }
+
+  .tabsTrigger {
+    transition: none;
+  }
+} 

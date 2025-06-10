@@ -1,0 +1,736 @@
+/* ActivityTimeline Styles - RitterFinder History Feature */
+
+.activityTimeline {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafbfc;
+}
+
+.header.compact {
+  padding: 1rem 1.5rem;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.title.compact {
+  font-size: 1.125rem;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.typeFilter {
+  width: 9rem;
+}
+
+.statusFilter {
+  width: 8rem;
+}
+
+/* Content */
+.content {
+  padding: 2rem;
+}
+
+.content.compact {
+  padding: 1.5rem;
+}
+
+/* Timeline Container */
+.timelineContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Date Group */
+.dateGroup {
+  animation: fadeInUp 0.4s ease-out backwards;
+}
+
+.dateGroup:nth-child(1) { animation-delay: 0.1s; }
+.dateGroup:nth-child(2) { animation-delay: 0.2s; }
+.dateGroup:nth-child(3) { animation-delay: 0.3s; }
+.dateGroup:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dateHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dateTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+.dateSeparator {
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.dateCount {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Activity List */
+.activityList {
+  position: relative;
+  padding-left: 1rem;
+  border-left: 2px solid #f3f4f6;
+}
+
+.activityItem {
+  position: relative;
+  padding-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  opacity: 0;
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+.activityItem:nth-child(1) { animation-delay: 0.05s; }
+.activityItem:nth-child(2) { animation-delay: 0.1s; }
+.activityItem:nth-child(3) { animation-delay: 0.15s; }
+.activityItem:nth-child(4) { animation-delay: 0.2s; }
+.activityItem:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.activityItem:last-child {
+  padding-bottom: 0;
+}
+
+/* Activity Marker */
+.activityMarker {
+  position: absolute;
+  left: -1.375rem;
+  top: 0.375rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px #e2e8f0;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.activityMarker.search {
+  background: #3b82f6;
+}
+
+.activityMarker.campaign {
+  background: #8b5cf6;
+}
+
+.activityMarker.export {
+  background: #10b981;
+}
+
+.activityMarker.import {
+  background: #f59e0b;
+}
+
+.activityMarker.leadUpdate {
+  background: #6366f1;
+}
+
+.activityMarker.system {
+  background: #6b7280;
+}
+
+.activityMarker.error {
+  background: #ef4444;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Activity Icon */
+.activityIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.activityIcon.search {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.activityIcon.campaign {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.activityIcon.export {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.activityIcon.import {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.activityIcon.leadUpdate {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.activityIcon.system {
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+.activityIcon.error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.activityIcon.success {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.activityIconSvg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Activity Content */
+.activityContent {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.activityItem:hover .activityContent {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #f59e0b;
+}
+
+.activityHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.activityTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.activityDescription {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+/* Activity Badges */
+.activityBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.activityTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.activityTypeBadge.search {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.activityTypeBadge.campaign {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #c4b5fd;
+}
+
+.activityTypeBadge.export {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.activityTypeBadge.import {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.activityTypeBadge.leadUpdate {
+  background: #eef2ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+}
+
+.activityStatusIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Activity Metadata */
+.activityMetadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.metadataTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.metadataTag.error {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* Activity Footer */
+.activityFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+@media (max-width: 640px) {
+  .activityFooter {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+}
+
+.activityTime {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.activityTimestamp {
+  font-weight: 500;
+}
+
+/* View Details Button */
+.viewDetailsButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.activityItem:hover .viewDetailsButton {
+  opacity: 1;
+}
+
+.viewDetailsButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+.viewDetailsIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Simple List Mode */
+.simpleList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.simpleListItem {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  animation: fadeIn 0.3s ease-out backwards;
+}
+
+.simpleListItem:nth-child(1) { animation-delay: 0.05s; }
+.simpleListItem:nth-child(2) { animation-delay: 0.1s; }
+.simpleListItem:nth-child(3) { animation-delay: 0.15s; }
+.simpleListItem:nth-child(4) { animation-delay: 0.2s; }
+.simpleListItem:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.simpleListItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.emptyStateIcon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+.emptyStateTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.emptyStateDescription {
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 25rem;
+  margin-bottom: 2rem;
+}
+
+/* Loading State */
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  color: #6b7280;
+}
+
+.loadingSpinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #f3f4f6;
+  border-top: 2px solid #f59e0b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Stats Section */
+.statsSection {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+  animation: scaleIn 0.4s ease-out backwards;
+}
+
+.statCard:nth-child(1) { animation-delay: 0.1s; }
+.statCard:nth-child(2) { animation-delay: 0.2s; }
+.statCard:nth-child(3) { animation-delay: 0.3s; }
+.statCard:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.statCard.blue {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.statCard.green {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.statCard.purple {
+  background: #faf5ff;
+  border-color: #d8b4fe;
+}
+
+.statCard.orange {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.statValue.blue { color: #1e40af; }
+.statValue.green { color: #166534; }
+.statValue.purple { color: #7c3aed; }
+.statValue.orange { color: #ea580c; }
+
+.statLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statLabel.blue { color: #1e40af; }
+.statLabel.green { color: #166534; }
+.statLabel.purple { color: #7c3aed; }
+.statLabel.orange { color: #ea580c; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .header {
+    padding: 1rem;
+  }
+  
+  .content {
+    padding: 1rem;
+  }
+  
+  .activityList {
+    padding-left: 0.75rem;
+  }
+  
+  .activityMarker {
+    left: -1.125rem;
+  }
+  
+  .activityContent {
+    padding: 0.75rem;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .activityTimeline {
+    border-color: #000;
+  }
+  
+  .activityContent {
+    border-color: #666;
+  }
+  
+  .activityMarker {
+    border-color: #000;
+    box-shadow: 0 0 0 2px #000;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .activityTimeline,
+  .dateGroup,
+  .activityItem,
+  .simpleListItem,
+  .statCard {
+    animation: none;
+  }
+  
+  .activityContent,
+  .viewDetailsButton,
+  .activityMarker {
+    transition: none;
+  }
+  
+  .activityMarker.error {
+    animation: none;
+  }
+} 

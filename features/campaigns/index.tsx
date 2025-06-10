@@ -15,6 +15,15 @@ export { PreviewTab } from './components/PreviewTab'
 export { useEmailComposer } from './hooks/useEmailComposer'
 export { useCampaignHistory } from './hooks/useCampaignHistory'
 
+// Styles
+export { default as campaignPageStyles } from './styles/CampaignPage.module.css'
+export { default as emailComposerStyles } from './styles/EmailComposer.module.css'
+export { default as composeTabStyles } from './styles/ComposeTab.module.css'
+export { default as recipientsTabStyles } from './styles/RecipientsTab.module.css'
+export { default as previewTabStyles } from './styles/PreviewTab.module.css'
+export { default as emailHistoryStyles } from './styles/EmailHistory.module.css'
+export { default as campaignSuccessStyles } from './styles/CampaignSuccess.module.css'
+
 // Types
 export type {
   Lead,

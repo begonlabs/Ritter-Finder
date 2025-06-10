@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, MoreHorizontal, RefreshCw, Eye, Calendar, Trash2, Clock, AlertCircle, CheckCircle } from "lucide-react"
 import { useSearchHistory } from "../hooks/useSearchHistory"
 import type { SearchHistoryProps } from "../types"
+import styles from "../styles/SearchHistory.module.css"
 
 export function SearchHistory({
   onRerunSearch,
@@ -50,78 +51,79 @@ export function SearchHistory({
 
   if (history.isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-sm text-muted-foreground">Cargando historial...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={styles.searchHistory}>
+        <div className={styles.loadingState}>
+          <div className={styles.loadingSpinner}></div>
+          <span className={styles.loadingText}>Cargando historial...</span>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card>
-      <CardHeader className={compact ? "pb-4" : "flex flex-row items-center justify-between"}>
-        <div>
-          <CardTitle className={compact ? "text-lg" : "text-xl"}>
-            Historial de Búsquedas
-          </CardTitle>
-          <CardDescription>
-            Ver y repetir búsquedas anteriores ({history.stats.totalSearches} búsquedas)
-          </CardDescription>
-        </div>
-        
-        {!compact && (
-          <div className="flex items-center gap-2">
-            <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Filtrar historial..."
-                className="pl-8"
-                value={history.searchTerm}
-                onChange={(e) => history.setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Select value={history.statusFilter} onValueChange={history.setStatusFilter}>
-              <SelectTrigger className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="completed">Completadas</SelectItem>
-                <SelectItem value="failed">Fallidas</SelectItem>
-                <SelectItem value="cancelled">Canceladas</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className={styles.searchHistory}>
+      <div className={`${styles.header} ${compact ? styles.compact : ''}`}>
+        <div className={styles.headerContent}>
+          <div>
+            <h3 className={`${styles.title} ${compact ? styles.compact : ''}`}>
+              Historial de Búsquedas
+            </h3>
+            <p className={styles.subtitle}>
+              Ver y repetir búsquedas anteriores ({history.stats.totalSearches} búsquedas)
+            </p>
           </div>
-        )}
-      </CardHeader>
+          
+          {!compact && (
+            <div className={styles.headerActions}>
+              <div className={styles.filters}>
+                <div className={styles.searchWrapper}>
+                  <Search className={styles.searchIcon} />
+                  <input
+                    placeholder="Filtrar historial..."
+                    className={styles.searchInput}
+                    value={history.searchTerm}
+                    onChange={(e) => history.setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select 
+                  value={history.statusFilter} 
+                  onChange={(e) => history.setStatusFilter(e.target.value)}
+                  className={`${styles.searchInput} ${styles.statusFilter}`}
+                >
+                  <option value="all">Todos</option>
+                  <option value="completed">Completadas</option>
+                  <option value="failed">Fallidas</option>
+                  <option value="cancelled">Canceladas</option>
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       
-      <CardContent>
+      <div className={`${styles.content} ${compact ? styles.compact : ''}`}>
         {!history.hasHistory ? (
-          <div className="text-center py-12">
-            <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className={styles.emptyState}>
+            <Search className={styles.emptyStateIcon} />
+            <h3 className={styles.emptyStateTitle}>
               No hay historial de búsquedas
             </h3>
-            <p className="text-gray-500">
+            <p className={styles.emptyStateDescription}>
               Comienza realizando tu primera búsqueda de leads
             </p>
           </div>
         ) : !history.hasFilteredResults ? (
-          <div className="text-center py-12">
-            <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className={styles.emptyState}>
+            <Search className={styles.emptyStateIcon} />
+            <h3 className={styles.emptyStateTitle}>
               No se encontraron búsquedas
             </h3>
-            <p className="text-gray-500">
+            <p className={styles.emptyStateDescription}>
               Intenta ajustar tus filtros de búsqueda
             </p>
           </div>
         ) : (
-          <div className="rounded-md border">
+          <div className={styles.tableWrapper}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -225,26 +227,26 @@ export function SearchHistory({
 
         {/* Quick Stats */}
         {history.hasHistory && !compact && (
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-lg font-semibold text-blue-700">{history.stats.totalSearches}</div>
-              <div className="text-xs text-blue-600">Búsquedas Totales</div>
+          <div className={styles.statsGrid}>
+            <div className={`${styles.statCard} ${styles.blue}`}>
+              <div className={`${styles.statValue} ${styles.blue}`}>{history.stats.totalSearches}</div>
+              <div className={`${styles.statLabel} ${styles.blue}`}>Búsquedas Totales</div>
             </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-lg font-semibold text-green-700">{history.stats.totalLeadsFound}</div>
-              <div className="text-xs text-green-600">Leads Encontrados</div>
+            <div className={`${styles.statCard} ${styles.green}`}>
+              <div className={`${styles.statValue} ${styles.green}`}>{history.stats.totalLeadsFound}</div>
+              <div className={`${styles.statLabel} ${styles.green}`}>Leads Encontrados</div>
             </div>
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <div className="text-lg font-semibold text-purple-700">{history.stats.averageSearchTime}s</div>
-              <div className="text-xs text-purple-600">Tiempo Promedio</div>
+            <div className={`${styles.statCard} ${styles.purple}`}>
+              <div className={`${styles.statValue} ${styles.purple}`}>{history.stats.averageSearchTime}s</div>
+              <div className={`${styles.statLabel} ${styles.purple}`}>Tiempo Promedio</div>
             </div>
-            <div className="text-center p-3 bg-orange-50 rounded-lg">
-              <div className="text-lg font-semibold text-orange-700">{history.stats.successRate}%</div>
-              <div className="text-xs text-orange-600">Tasa de Éxito</div>
+            <div className={`${styles.statCard} ${styles.orange}`}>
+              <div className={`${styles.statValue} ${styles.orange}`}>{history.stats.successRate}%</div>
+              <div className={`${styles.statLabel} ${styles.orange}`}>Tasa de Éxito</div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

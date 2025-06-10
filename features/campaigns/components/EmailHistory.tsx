@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress"
 import { format } from "date-fns"
 import { useCampaignHistory } from "../hooks/useCampaignHistory"
 import type { Campaign } from "../types"
+import styles from "../styles/EmailHistory.module.css"
 
 interface EmailHistoryProps {
   campaigns: Campaign[]
@@ -21,102 +22,122 @@ export function EmailHistory({ campaigns, onViewCampaign, onDuplicateCampaign }:
   const history = useCampaignHistory(campaigns, onViewCampaign, onDuplicateCampaign)
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-xl">Historial de Campañas</CardTitle>
-          <CardDescription>
+    <Card className={styles.emailHistory}>
+      <CardHeader className={`${styles.header} flex flex-row items-center justify-between`}>
+        <div className={styles.headerContent}>
+          <CardTitle className={`${styles.title} text-xl`}>Historial de Campañas</CardTitle>
+          <CardDescription className={styles.description}>
             Revisa el rendimiento de tus campañas de email anteriores
           </CardDescription>
         </div>
-        <div className="relative w-64">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className={`${styles.searchContainer} relative w-64`}>
+          <Search className={`${styles.searchIcon} absolute left-2 top-2.5 h-4 w-4 text-muted-foreground`} />
           <Input
             placeholder="Buscar campañas..."
-            className="pl-8"
+            className={`${styles.searchInput} pl-8`}
             value={history.searchTerm}
             onChange={(e) => history.setSearchTerm(e.target.value)}
           />
         </div>
       </CardHeader>
       
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Asunto</TableHead>
-                <TableHead className="text-center">Destinatarios</TableHead>
-                <TableHead>Tasa de Apertura</TableHead>
-                <TableHead>Tasa de Click</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+      <CardContent className={styles.content}>
+        <div className={`${styles.tableContainer} rounded-md border`}>
+          <Table className={styles.table}>
+            <TableHeader className={styles.tableHeader}>
+              <TableRow className={styles.tableHeaderRow}>
+                <TableHead className={styles.tableHead}>Fecha</TableHead>
+                <TableHead className={styles.tableHead}>Asunto</TableHead>
+                <TableHead className={`${styles.tableHead} ${styles.tableHeadCenter} text-center`}>Destinatarios</TableHead>
+                <TableHead className={styles.tableHead}>Tasa de Apertura</TableHead>
+                <TableHead className={styles.tableHead}>Tasa de Click</TableHead>
+                <TableHead className={`${styles.tableHead} ${styles.tableHeadRight} text-right`}>Acciones</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className={styles.tableBody}>
               {history.filteredCampaigns.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    {history.searchTerm ? 
-                      "No se encontraron campañas que coincidan con tu búsqueda" :
-                      "No hay campañas de email en el historial"
-                    }
+                <TableRow className={styles.tableRow}>
+                  <TableCell colSpan={6} className={`${styles.tableCell} ${styles.emptyState} h-24 text-center`}>
+                    <div className={styles.emptyStateText}>
+                      {history.searchTerm ? 
+                        "No se encontraron campañas que coincidan con tu búsqueda" :
+                        "No hay campañas de email en el historial"
+                      }
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 history.filteredCampaigns.map((campaign) => (
-                  <TableRow key={campaign.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <TableRow key={campaign.id} className={styles.tableRow}>
+                    <TableCell className={styles.tableCell}>
+                      <div className={`${styles.dateCell} flex items-center gap-2`}>
+                        <Calendar className={`${styles.dateIcon} h-4 w-4 text-muted-foreground`} />
                         {format(new Date(campaign.sentAt), "MMM d, yyyy")}
                       </div>
                     </TableCell>
                     
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{campaign.subject}</span>
+                    <TableCell className={styles.tableCell}>
+                      <div className={`${styles.subjectCell} flex items-center gap-2`}>
+                        <Mail className={`${styles.subjectIcon} h-4 w-4 text-muted-foreground`} />
+                        <span className={`${styles.subjectText} font-medium`}>{campaign.subject}</span>
                       </div>
                     </TableCell>
                     
-                    <TableCell className="text-center">
-                      {campaign.recipients.length}
+                    <TableCell className={`${styles.tableCell} ${styles.tableCellCenter} text-center`}>
+                      <span className={styles.recipientCount}>{campaign.recipients.length}</span>
                     </TableCell>
                     
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={campaign.openRate || 0} className="h-2" />
-                        <span className="text-sm">{campaign.openRate || 0}%</span>
+                    <TableCell className={styles.tableCell}>
+                      <div className={`${styles.progressContainer} flex items-center gap-2`}>
+                        <div className={styles.progressBar}>
+                          <div 
+                            className={`${styles.progressFill} ${styles.progressOpenRate}`}
+                            style={{ width: `${campaign.openRate || 0}%` }}
+                          />
+                        </div>
+                        <span className={`${styles.progressText} text-sm`}>{campaign.openRate || 0}%</span>
                       </div>
                     </TableCell>
                     
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={campaign.clickRate || 0} className="h-2" />
-                        <span className="text-sm">{campaign.clickRate || 0}%</span>
+                    <TableCell className={styles.tableCell}>
+                      <div className={`${styles.progressContainer} flex items-center gap-2`}>
+                        <div className={styles.progressBar}>
+                          <div 
+                            className={`${styles.progressFill} ${styles.progressClickRate}`}
+                            style={{ width: `${campaign.clickRate || 0}%` }}
+                          />
+                        </div>
+                        <span className={`${styles.progressText} text-sm`}>{campaign.clickRate || 0}%</span>
                       </div>
                     </TableCell>
                     
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Acciones</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => history.onViewCampaign(campaign.id)}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Ver Detalles
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => history.onDuplicateCampaign(campaign.id)}>
-                            <Copy className="mr-2 h-4 w-4" />
-                            Duplicar Campaña
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    <TableCell className={`${styles.tableCell} ${styles.tableCellRight} text-right`}>
+                      <div className={styles.actionsDropdown}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className={styles.actionsButton}>
+                              <MoreHorizontal className={`${styles.actionsIcon} h-4 w-4`} />
+                              <span className="sr-only">Acciones</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className={styles.dropdownMenu}>
+                            <DropdownMenuItem 
+                              onClick={() => history.onViewCampaign(campaign.id)}
+                              className={styles.dropdownItem}
+                            >
+                              <Eye className={`${styles.dropdownItemIcon} mr-2 h-4 w-4`} />
+                              Ver Detalles
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => history.onDuplicateCampaign(campaign.id)}
+                              className={styles.dropdownItem}
+                            >
+                              <Copy className={`${styles.dropdownItemIcon} mr-2 h-4 w-4`} />
+                              Duplicar Campaña
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

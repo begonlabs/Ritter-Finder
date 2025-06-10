@@ -1,0 +1,432 @@
+/* CampaignSuccess Component Styles - RitterFinder Campaigns Feature */
+
+.campaignSuccess {
+  background: white;
+  border: 1px solid #bbf7d0; /* green-200 */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: successEnter 0.8s ease-out;
+}
+
+@keyframes successEnter {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+/* Success Alert */
+.successAlert {
+  background: #dcfce7; /* green-100 */
+  border: 1px solid #bbf7d0; /* green-200 */
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  animation: alertPulse 0.6s ease-out 0.3s both;
+}
+
+@keyframes alertPulse {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.alertContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.alertIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #059669; /* green-600 */
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.alertText {
+  flex: 1;
+}
+
+.alertTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #166534; /* green-800 */
+  margin: 0;
+  margin-bottom: 0.25rem;
+}
+
+.alertDescription {
+  font-size: 0.875rem;
+  color: #15803d; /* green-700 */
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Statistics Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: statCardEnter 0.6s ease-out;
+}
+
+.statCard:nth-child(1) {
+  animation-delay: 0.4s;
+}
+
+.statCard:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.statCard:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes statCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.statIcon {
+  margin: 0 auto 0.5rem auto;
+  width: 2rem;
+  height: 2rem;
+}
+
+.statIconMail {
+  color: #3b82f6; /* blue-600 */
+}
+
+.statIconClock {
+  color: #f59e0b; /* amber-500 */
+}
+
+.statIconTarget {
+  color: #10b981; /* green-600 */
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1A1E25; /* ritter-dark */
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Summary Card */
+.summaryCard {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: summaryEnter 0.6s ease-out 0.7s both;
+}
+
+@keyframes summaryEnter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.summaryTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1A1E25; /* ritter-dark */
+  margin: 0;
+  margin-bottom: 0.75rem;
+}
+
+.summaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.summaryLabel {
+  color: #64748b;
+}
+
+.summaryValue {
+  font-weight: 500;
+  color: #1A1E25; /* ritter-dark */
+}
+
+/* Success Checkmark Animation */
+.checkmarkContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  animation: checkmarkEnter 0.8s ease-out 0.2s both;
+}
+
+@keyframes checkmarkEnter {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.checkmark {
+  width: 4rem;
+  height: 4rem;
+  background: #dcfce7; /* green-100 */
+  border: 2px solid #10b981; /* green-600 */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.checkmarkIcon {
+  width: 2rem;
+  height: 2rem;
+  color: #10b981; /* green-600 */
+  animation: checkmarkPulse 2s infinite;
+}
+
+@keyframes checkmarkPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Success Wave Animation */
+.waveAnimation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  animation: wave 2s infinite;
+}
+
+@keyframes wave {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 2rem;
+  animation: buttonsEnter 0.6s ease-out 0.8s both;
+}
+
+@keyframes buttonsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.actionButtonPrimary {
+  background: #F2B705; /* ritter-gold */
+  color: #1A1E25; /* ritter-dark */
+  border-color: #F2B705;
+}
+
+.actionButtonPrimary:hover {
+  background: #d97706; /* amber-600 */
+  border-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(242, 183, 5, 0.3);
+}
+
+.actionButtonSecondary {
+  background: white;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.actionButtonSecondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.buttonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .statCard {
+    padding: 0.75rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .checkmark {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .checkmarkIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statsGrid .statCard:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .campaignSuccess,
+  .successAlert,
+  .statCard,
+  .summaryCard {
+    border: 2px solid #d1d5db;
+  }
+
+  .checkmark {
+    border: 3px solid #10b981;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .campaignSuccess,
+  .successAlert,
+  .statCard,
+  .summaryCard,
+  .checkmarkContainer,
+  .actionButtons {
+    animation: none;
+  }
+
+  .statCard:hover,
+  .actionButtonPrimary:hover,
+  .actionButtonSecondary:hover {
+    transform: none;
+  }
+
+  .checkmarkIcon {
+    animation: none;
+  }
+
+  .waveAnimation {
+    display: none;
+  }
+} 

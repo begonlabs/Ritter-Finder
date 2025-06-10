@@ -14,6 +14,12 @@ export { SearchHistory } from "./components/SearchHistory"
 export { CampaignHistory } from "./components/CampaignHistory"
 export { ActivityTimeline } from "./components/ActivityTimeline"
 
+// Styles
+export { default as HistoryPageStyles } from "./styles/HistoryPage.module.css"
+export { default as SearchHistoryStyles } from "./styles/SearchHistory.module.css"
+export { default as CampaignHistoryStyles } from "./styles/CampaignHistory.module.css"
+export { default as ActivityTimelineStyles } from "./styles/ActivityTimeline.module.css"
+
 // Type aliases to avoid naming conflicts
 export type {
   SearchHistoryItem as HistorySearchItem,

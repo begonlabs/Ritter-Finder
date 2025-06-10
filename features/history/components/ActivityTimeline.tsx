@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { useActivityTimeline } from "../hooks/useActivityTimeline"
 import type { ActivityTimelineProps, ActivityItem } from "../types"
+import styles from "../styles/ActivityTimeline.module.css"
 
 interface ActivityTimelineComponentProps extends Omit<ActivityTimelineProps, 'activities'> {
   onViewDetails: (activityId: string) => void

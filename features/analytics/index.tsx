@@ -14,6 +14,13 @@ export { RecentActivity } from "./components/RecentActivity"
 export { useDashboardStats } from "./hooks/useDashboardStats"
 export { useScrapingStats, formatCurrency } from "./hooks/useScrapingStats"
 
+// Styles
+export { default as AnalyticsPageStyles } from "./styles/AnalyticsPage.module.css"
+export { default as DashboardStatsStyles } from "./styles/DashboardStats.module.css"
+export { default as TrendChartStyles } from "./styles/TrendChart.module.css"
+export { default as RecentActivityStyles } from "./styles/RecentActivity.module.css"
+export { default as ScrapingStatsStyles } from "./styles/ScrapingStats.module.css"
+
 // Types
 export type {
   StatsCard,

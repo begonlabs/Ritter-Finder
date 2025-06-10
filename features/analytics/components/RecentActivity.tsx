@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Users, Search, Mail, Download } from "lucide-react"
 import { useLanguage, formatMessage } from "@/lib/language-context"
+import styles from "../styles/RecentActivity.module.css"
 
 interface ActivityItem {
   id: string
@@ -85,13 +86,13 @@ const mockActivity: ActivityItem[] = [
 function getActivityIcon(type: string) {
   switch (type) {
     case 'search':
-      return <Search className="h-4 w-4 text-ritter-gold" />
+      return <Search className={`${styles.activityIconInner} h-4 w-4 text-ritter-gold`} />
     case 'campaign':
-      return <Mail className="h-4 w-4 text-blue-600" />
+      return <Mail className={`${styles.activityIconInner} h-4 w-4 text-blue-600`} />
     case 'export':
-      return <Download className="h-4 w-4 text-green-600" />
+      return <Download className={`${styles.activityIconInner} h-4 w-4 text-green-600`} />
     default:
-      return <Users className="h-4 w-4 text-gray-500" />
+      return <Users className={`${styles.activityIconInner} h-4 w-4 text-gray-500`} />
   }
 }
 
@@ -132,48 +133,58 @@ export function RecentActivity({
   const displayItems = mockActivity.slice(0, maxItems)
 
   return (
-    <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+    <Card className={`${styles.recentActivity} border-0 shadow-sm hover:shadow-md transition-shadow`}>
       {showHeader && (
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-ritter-gold" />
-            {t("dashboard.activity")}
-          </CardTitle>
-          <CardDescription>{t("dashboard.activity.desc")}</CardDescription>
+        <CardHeader className={styles.activityHeader}>
+          <div className={styles.headerContent}>
+            <Users className={`${styles.headerIcon} h-5 w-5 text-ritter-gold`} />
+            <CardTitle className={`${styles.activityTitle} flex items-center gap-2`}>
+              {t("dashboard.activity")}
+            </CardTitle>
+          </div>
+          <CardDescription className={styles.activityDescription}>
+            {t("dashboard.activity.desc")}
+          </CardDescription>
         </CardHeader>
       )}
       
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className={styles.activityContent}>
+        <div className={`${styles.activityList} space-y-4`}>
           {displayItems.map((item) => (
             <div 
               key={item.id} 
-              className="flex items-start gap-4 pb-4 border-b last:border-0"
+              className={`${styles.activityItem} flex items-start gap-4 pb-4 border-b last:border-0`}
             >
-              <div className="bg-ritter-gold/10 p-2 rounded-full">
+              <div className={`${styles.activityIcon} ${styles[item.type]} bg-ritter-gold/10 p-2 rounded-full`}>
                 {getActivityIcon(item.type)}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm">{item.title}</p>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formatRelativeTime(item.date)}
+              <div className={`${styles.activityDetails} flex-1 min-w-0`}>
+                <p className={`${styles.activityItemTitle} font-medium text-sm`}>
+                  {item.title}
                 </p>
+                <p className={`${styles.activityItemDescription} text-sm text-muted-foreground`}>
+                  {item.description}
+                </p>
+                <div className={styles.activityMeta}>
+                  <p className={`${styles.activityTime} text-xs text-muted-foreground mt-1`}>
+                    {formatRelativeTime(item.date)}
+                  </p>
+                </div>
               </div>
               {!compact && item.metadata && (
-                <div className="text-right">
+                <div className={`${styles.activityMetadata} text-right`}>
                   {item.type === 'search' && item.metadata.leadsFound && (
-                    <div className="text-xs text-ritter-gold font-medium">
+                    <div className={`${styles.metadataValue} ${styles.search} text-xs text-ritter-gold font-medium`}>
                       {item.metadata.leadsFound} leads
                     </div>
                   )}
                   {item.type === 'campaign' && item.metadata.recipients && (
-                    <div className="text-xs text-blue-600 font-medium">
+                    <div className={`${styles.metadataValue} ${styles.campaign} text-xs text-blue-600 font-medium`}>
                       {item.metadata.recipients} destinatarios
                     </div>
                   )}
                   {item.type === 'export' && item.metadata.leadsFound && (
-                    <div className="text-xs text-green-600 font-medium">
+                    <div className={`${styles.metadataValue} ${styles.export} text-xs text-green-600 font-medium`}>
                       {item.metadata.leadsFound} registros
                     </div>
                   )}
@@ -183,10 +194,10 @@ export function RecentActivity({
           ))}
           
           {displayItems.length === 0 && (
-            <div className="text-center py-8">
-              <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No hay actividad reciente</p>
-              <p className="text-sm text-gray-400">
+            <div className={`${styles.emptyState} text-center py-8`}>
+              <Users className={`${styles.emptyIcon} h-12 w-12 text-gray-300 mx-auto mb-4`} />
+              <p className={`${styles.emptyTitle} text-gray-500`}>No hay actividad reciente</p>
+              <p className={`${styles.emptyDescription} text-sm text-gray-400`}>
                 La actividad aparecerá aquí cuando realices búsquedas o campañas
               </p>
             </div>
