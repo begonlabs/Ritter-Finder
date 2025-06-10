@@ -1,12 +1,12 @@
 "use client"
 
-import { ScrapingStats } from "@/components/scraping-stats"
+import { ScrapingStats } from "@/features/analytics"
 import type { TabComponentProps } from "../types"
 
 export function ScrapingTab({ state, actions }: TabComponentProps) {
   return (
     <div className="space-y-6">
-      <ScrapingStats />
+      <ScrapingStats showHeader={true} showRefreshButton={true} />
     </div>
   )
 } 

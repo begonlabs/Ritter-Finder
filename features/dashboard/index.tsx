@@ -6,6 +6,7 @@ export { ResultsTab } from "./components/ResultsTab"
 export { CampaignTab } from "./components/CampaignTab"
 export { HistoryTab } from "./components/HistoryTab"
 export { ScrapingTab } from "./components/ScrapingTab"
+export { AnalyticsTab } from "./components/AnalyticsTab"
 
 // Hooks
 export { useDashboard } from "./hooks/useDashboard"

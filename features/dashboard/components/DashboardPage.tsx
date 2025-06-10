@@ -10,6 +10,7 @@ import { ResultsTab } from "./ResultsTab"
 import { CampaignTab } from "./CampaignTab"
 import { HistoryTab } from "./HistoryTab"
 import { ScrapingTab } from "./ScrapingTab"
+import { AnalyticsTab } from "./AnalyticsTab"
 
 export function DashboardPage() {
   const { state, actions, canStartSearch, selectedLeadsData } = useDashboard()
@@ -28,6 +29,8 @@ export function DashboardPage() {
         return <HistoryTab state={state} actions={actions} />
       case "scraping":
         return <ScrapingTab state={state} actions={actions} />
+      case "analytics":
+        return <AnalyticsTab state={state} actions={actions} />
       default:
         return <DashboardOverview state={state} actions={actions} />
     }
