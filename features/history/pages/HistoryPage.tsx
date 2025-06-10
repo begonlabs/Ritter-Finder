@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Download, History, Mail, Clock, BarChart3 } from "lucide-react"
-import { SearchHistory } from "./SearchHistory"
-import { CampaignHistory } from "./CampaignHistory"
-import { ActivityTimeline } from "./ActivityTimeline"
+import { SearchHistory } from "../components/SearchHistory"
+import { CampaignHistory } from "../components/CampaignHistory"
+import { ActivityTimeline } from "../components/ActivityTimeline"
 import type { HistoryPageProps } from "../types"
 
 interface HistoryPageComponentProps extends HistoryPageProps {

@@ -3,10 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Download, FileText, BarChart3 } from "lucide-react"
-import { DashboardStats } from "./DashboardStats"
-import { ScrapingStats } from "./ScrapingStats"
-import { TrendChart } from "./TrendChart"
-import { RecentActivity } from "./RecentActivity"
+import { DashboardStats } from "../components/DashboardStats"
+import { ScrapingStats } from "../components/ScrapingStats"
+import { TrendChart } from "../components/TrendChart"
+import { RecentActivity } from "../components/RecentActivity"
 import type { AnalyticsTabProps } from "../types"
 
 interface AnalyticsPageProps extends AnalyticsTabProps {

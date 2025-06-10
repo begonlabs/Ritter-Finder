@@ -1,3 +1,6 @@
+// Pages
+export { SearchPage } from "./pages/SearchPage"
+
 // Components
 export { SearchForm } from "./components/SearchForm"
 export { WebsiteSelector } from "./components/WebsiteSelector"

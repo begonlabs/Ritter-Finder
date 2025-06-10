@@ -1,5 +1,7 @@
+// Pages
+export { DashboardPage } from "./pages/DashboardPage"
+
 // Main components
-export { DashboardPage } from "./components/DashboardPage"
 export { DashboardOverview } from "./components/DashboardOverview"
 export { SearchTab } from "./components/SearchTab"
 export { ResultsTab } from "./components/ResultsTab"

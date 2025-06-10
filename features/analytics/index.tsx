@@ -1,12 +1,14 @@
 // Analytics Feature Exports
 // Modular analytics components for RitterFinder
 
+// Pages
+export { AnalyticsPage } from "./pages/AnalyticsPage"
+
 // Components
 export { DashboardStats } from "./components/DashboardStats"
 export { ScrapingStats } from "./components/ScrapingStats"
 export { TrendChart } from "./components/TrendChart"
 export { RecentActivity } from "./components/RecentActivity"
-export { AnalyticsPage } from "./components/AnalyticsPage"
 
 // Hooks
 export { useDashboardStats } from "./hooks/useDashboardStats"

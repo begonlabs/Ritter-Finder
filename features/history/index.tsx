@@ -6,11 +6,13 @@ export { useSearchHistory } from "./hooks/useSearchHistory"
 export { useCampaignHistory } from "./hooks/useCampaignHistory"
 export { useActivityTimeline } from "./hooks/useActivityTimeline"
 
+// Pages
+export { HistoryPage } from "./pages/HistoryPage"
+
 // Components
 export { SearchHistory } from "./components/SearchHistory"
 export { CampaignHistory } from "./components/CampaignHistory"
 export { ActivityTimeline } from "./components/ActivityTimeline"
-export { HistoryPage } from "./components/HistoryPage"
 
 // Type aliases to avoid naming conflicts
 export type {

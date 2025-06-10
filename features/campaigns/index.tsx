@@ -1,7 +1,9 @@
+// Pages
+export { CampaignPage } from './pages/CampaignPage'
+
 // Main components
 export { EmailComposer } from './components/EmailComposer'
 export { EmailHistory } from './components/EmailHistory'
-export { CampaignPage } from './components/CampaignPage'
 export { CampaignSuccess } from './components/CampaignSuccess'
 
 // Sub-components

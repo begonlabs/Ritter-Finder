@@ -1,5 +1,8 @@
 // Layout Feature - RitterFinder Layout System
 
+// Pages
+export { LayoutPage, PageContainer, SectionCard } from "./pages/LayoutPage"
+
 // Components
 export { DashboardHeader } from "./components/DashboardHeader"
 export { DashboardNavigation } from "./components/DashboardNavigation"

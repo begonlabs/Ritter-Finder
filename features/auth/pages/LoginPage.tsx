@@ -1,9 +1,9 @@
 "use client"
 
-import { LoginForm } from "./LoginForm"
-import { WelcomeSection } from "./WelcomeSection"
-import { MobileHeader } from "./MobileHeader"
-import { MobileFeatures } from "./MobileFeatures"
+import { LoginForm } from "../components/LoginForm"
+import { WelcomeSection } from "../components/WelcomeSection"
+import { MobileHeader } from "../components/MobileHeader"
+import { MobileFeatures } from "../components/MobileFeatures"
 
 export function LoginPage() {
   return (

@@ -1,3 +1,6 @@
+// Pages
+export { ResultsPage } from "./pages/ResultsPage"
+
 // Components
 export { ResultsTable } from "./components/ResultsTable"  // Standalone with internal state
 export { ResultsTableAdapter } from "./components/ResultsTableAdapter"  // For external state integration

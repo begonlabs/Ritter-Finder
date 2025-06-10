@@ -1,5 +1,7 @@
-// Main components
-export { LoginPage } from "./components/LoginPage"
+// Pages
+export { LoginPage } from "./pages/LoginPage"
+
+// Main components  
 export { LoginForm } from "./components/LoginForm"
 export { WelcomeSection } from "./components/WelcomeSection"
 export { MobileHeader } from "./components/MobileHeader"

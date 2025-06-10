@@ -3,13 +3,13 @@
 import { DashboardLayout } from "@/features/layout"
 import { Onboarding } from "@/components/onboarding"
 import { useDashboard } from "../hooks/useDashboard"
-import { DashboardOverview } from "./DashboardOverview"
-import { SearchTab } from "./SearchTab"
-import { ResultsTab } from "./ResultsTab"
-import { CampaignTab } from "./CampaignTab"
-import { HistoryTab } from "./HistoryTab"
-import { ScrapingTab } from "./ScrapingTab"
-import { AnalyticsTab } from "./AnalyticsTab"
+import { DashboardOverview } from "../components/DashboardOverview"
+import { SearchTab } from "../components/SearchTab"
+import { ResultsTab } from "../components/ResultsTab"
+import { CampaignTab } from "../components/CampaignTab"
+import { HistoryTab } from "../components/HistoryTab"
+import { ScrapingTab } from "../components/ScrapingTab"
+import { AnalyticsTab } from "../components/AnalyticsTab"
 
 export function DashboardPage() {
   const { state, actions, canStartSearch, selectedLeadsData } = useDashboard()

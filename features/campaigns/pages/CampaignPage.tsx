@@ -1,7 +1,7 @@
 "use client"
 
-import { EmailComposer } from "./EmailComposer"
-import { EmailHistory } from "./EmailHistory"
+import { EmailComposer } from "../components/EmailComposer"
+import { EmailHistory } from "../components/EmailHistory"
 import type { Lead, Campaign } from "../types"
 
 interface CampaignPageProps {
