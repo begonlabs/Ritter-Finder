@@ -4,23 +4,30 @@ import { LoginForm } from "../components/LoginForm"
 import { WelcomeSection } from "../components/WelcomeSection"
 import { MobileHeader } from "../components/MobileHeader"
 import { MobileFeatures } from "../components/MobileFeatures"
+import styles from "../styles/LoginPage.module.css"
 
 export function LoginPage() {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className={styles.loginPage}>
       {/* Mobile Welcome Header */}
-      <MobileHeader />
+      <div className={styles.mobileHeader}>
+        <MobileHeader />
+      </div>
 
       {/* Left: Login Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-4 md:p-0">
+      <div className={styles.loginFormContainer}>
         <LoginForm />
       </div>
 
       {/* Right: Welcome & Features - Desktop */}
-      <WelcomeSection />
+      <div className={styles.welcomeSection}>
+        <WelcomeSection />
+      </div>
 
       {/* Mobile Features Bottom Section */}
-      <MobileFeatures />
+      <div className={styles.mobileFeatures}>
+        <MobileFeatures />
+      </div>
     </div>
   )
 } 

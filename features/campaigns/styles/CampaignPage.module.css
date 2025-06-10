@@ -1,0 +1,710 @@
+/* CampaignPage Styles - RitterFinder Campaigns Feature */
+
+.campaignPage {
+  padding: 0;
+  margin: 0;
+}
+
+/* Campaign Header */
+.campaignHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .campaignHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+.campaignHeaderContent {
+  flex: 1;
+}
+
+.campaignTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.campaignSubtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.campaignActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Email Composer */
+.emailComposer {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.emailComposerHeader {
+  background: #fafbfc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .emailComposerHeader {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+.emailComposerTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.emailComposerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.emailComposerContent {
+  padding: 2rem;
+}
+
+@media (max-width: 640px) {
+  .emailComposerContent {
+    padding: 1.5rem;
+  }
+}
+
+/* Form Layout */
+.emailForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.formInput {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.formInput::placeholder {
+  color: #9ca3af;
+}
+
+.formTextarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  resize: vertical;
+  min-height: 200px;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.formTextarea::placeholder {
+  color: #9ca3af;
+}
+
+.formSelect {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.formSelect:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Rich Text Editor Styling */
+.emailEditor {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.emailEditorToolbar {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.editorButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.editorButton:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.editorButton.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: white;
+}
+
+.editorButtonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.emailEditorContent {
+  padding: 1rem;
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+  line-height: 1.6;
+  font-size: 0.875rem;
+}
+
+/* Recipients */
+.recipientsSection {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.recipientsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.recipientsTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.recipientsCount {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+}
+
+.recipientsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.recipientTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: #e0e7ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #3730a3;
+  font-weight: 500;
+}
+
+.recipientRemove {
+  width: 0.875rem;
+  height: 0.875rem;
+  cursor: pointer;
+  color: #6b46c1;
+  transition: color 0.2s ease;
+}
+
+.recipientRemove:hover {
+  color: #dc2626;
+}
+
+/* Campaign Templates */
+.templateSelector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.templateCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.templateCard:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.templateCard.selected {
+  border-color: #8b5cf6;
+  background: #f5f3ff;
+}
+
+.templatePreview {
+  width: 100%;
+  height: 100px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.templateName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.templateDescription {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Email Preview */
+.emailPreview {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.emailPreviewHeader {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emailPreviewTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.emailPreviewMeta {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.emailPreviewContent {
+  padding: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.emailPreviewSubject {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.emailPreviewBody {
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: 640px) {
+  .formActions {
+    flex-direction: column;
+    justify-content: stretch;
+  }
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.actionButtonPrimary {
+  background: #8b5cf6;
+  color: white;
+  border-color: #8b5cf6;
+}
+
+.actionButtonPrimary:hover:not(:disabled) {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.actionButtonSecondary {
+  background: white;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.actionButtonSecondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.actionButtonDanger {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.actionButtonDanger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.actionButtonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Campaign History */
+.campaignHistory {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.campaignHistoryHeader {
+  background: #fafbfc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.campaignHistoryTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.campaignList {
+  divide-y: 1px solid #f3f4f6;
+}
+
+.campaignItem {
+  padding: 1.5rem 2rem;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.campaignItem:hover {
+  background: #f8fafc;
+}
+
+@media (max-width: 640px) {
+  .campaignItem {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.campaignItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .campaignItemHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.campaignItemTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.campaignItemMeta {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.campaignItemActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.campaignItemStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.campaignStat {
+  text-align: center;
+}
+
+.campaignStatValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.125rem;
+}
+
+.campaignStatLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Status Badge */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.statusDraft {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.statusScheduled {
+  background: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+
+.statusSending {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.statusSent {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.statusPaused {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.emptyStateIcon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+.emptyStateTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.emptyStateDescription {
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.emptyStateAction {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.emptyStateAction:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .campaignHistoryHeader {
+    padding: 1rem 1.5rem;
+  }
+  
+  .campaignItemStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .emailComposerHeader {
+    padding: 1rem 1.5rem;
+  }
+  
+  .emailComposerContent {
+    padding: 1rem;
+  }
+} 

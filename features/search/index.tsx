@@ -1,6 +1,9 @@
 // Pages
 export { SearchPage } from "./pages/SearchPage"
 
+// Styles  
+export { default as SearchPageStyles } from "./styles/SearchPage.module.css"
+
 // Components
 export { SearchForm } from "./components/SearchForm"
 export { WebsiteSelector } from "./components/WebsiteSelector"

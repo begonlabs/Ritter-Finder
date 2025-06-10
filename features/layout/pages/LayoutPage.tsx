@@ -1,4 +1,5 @@
 import React from 'react'
+import styles from '../styles/LayoutPage.module.css'
 
 interface LayoutPageProps {
   children: React.ReactNode
@@ -16,25 +17,25 @@ export const LayoutPage: React.FC<LayoutPageProps> = ({
   className = ""
 }) => {
   return (
-    <div className={`layout-page min-h-screen bg-gray-50 ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className={`${styles.layoutPage} ${className}`}>
+      <div className={styles.layoutContainer}>
         {(title || subtitle || headerActions) && (
-          <div className="layout-header mb-8">
-            <div className="flex justify-between items-start">
-              <div className="layout-header-content">
+          <div className={styles.layoutHeader}>
+            <div className={styles.layoutHeaderContent}>
+              <div>
                 {title && (
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  <h1 className={styles.layoutTitle}>
                     {title}
                   </h1>
                 )}
                 {subtitle && (
-                  <p className="text-gray-600 text-lg">
+                  <p className={styles.layoutSubtitle}>
                     {subtitle}
                   </p>
                 )}
               </div>
               {headerActions && (
-                <div className="layout-header-actions">
+                <div className={styles.layoutHeaderActions}>
                   {headerActions}
                 </div>
               )}
@@ -42,9 +43,9 @@ export const LayoutPage: React.FC<LayoutPageProps> = ({
           </div>
         )}
         
-        <div className="layout-content">
-          <div className="bg-white rounded-lg shadow-sm border min-h-[400px]">
-            <div className="p-6">
+        <div className={styles.layoutContent}>
+          <div className={styles.layoutContentCard}>
+            <div className={styles.layoutContentInner}>
               {children}
             </div>
           </div>
@@ -57,13 +58,16 @@ export const LayoutPage: React.FC<LayoutPageProps> = ({
 // Layout wrapper for consistent spacing and structure
 export const PageContainer: React.FC<{ 
   children: React.ReactNode 
-  className?: string 
-}> = ({ children, className = "" }) => {
+  className?: string
+  gridCols?: 1 | 2 | 3
+}> = ({ children, className = "", gridCols = 1 }) => {
+  const gridClass = gridCols === 2 ? styles.responsive2Cols 
+    : gridCols === 3 ? styles.responsive3Cols 
+    : styles.pageContainer
+  
   return (
-    <div className={`page-container ${className}`}>
-      <div className="grid gap-6">
-        {children}
-      </div>
+    <div className={`${styles.pageContainer} ${gridClass} ${className}`}>
+      {children}
     </div>
   )
 }
@@ -73,17 +77,26 @@ export const SectionCard: React.FC<{
   children: React.ReactNode 
   title?: string
   className?: string
-}> = ({ children, title, className = "" }) => {
+  compact?: boolean
+  elevated?: boolean
+}> = ({ children, title, className = "", compact = false, elevated = false }) => {
+  const cardClasses = [
+    styles.sectionCard,
+    compact && styles.compact,
+    elevated && styles.elevated,
+    className
+  ].filter(Boolean).join(' ')
+
   return (
-    <div className={`section-card bg-white rounded-lg border shadow-sm ${className}`}>
+    <div className={cardClasses}>
       {title && (
-        <div className="section-header px-6 py-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className={styles.sectionHeader}>
+          <h3 className={styles.sectionTitle}>
             {title}
           </h3>
         </div>
       )}
-      <div className="section-content p-6">
+      <div className={styles.sectionContent}>
         {children}
       </div>
     </div>

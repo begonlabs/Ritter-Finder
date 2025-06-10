@@ -27,3 +27,7 @@ export type {
   ConfidenceLevel,
   LeadSummary
 } from "./types"
+
+// Styles - CSS Modules
+import resultsStyles from './styles/ResultsPage.module.css'
+export { resultsStyles }

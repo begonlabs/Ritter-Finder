@@ -1,6 +1,9 @@
 // Pages
 export { LoginPage } from "./pages/LoginPage"
 
+// Styles
+export { default as LoginPageStyles } from "./styles/LoginPage.module.css"
+
 // Main components  
 export { LoginForm } from "./components/LoginForm"
 export { WelcomeSection } from "./components/WelcomeSection"
