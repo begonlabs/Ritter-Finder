@@ -23,18 +23,29 @@ export function CampaignHistory({
 }: Omit<CampaignHistoryProps, 'campaigns'>) {
   const campaigns = useCampaignHistory()
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'sent':
-        return 'bg-green-100 text-green-800 border-green-200'
-      case 'draft':
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-      case 'scheduled':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'failed':
-        return 'bg-red-100 text-red-800 border-red-200'
+  const getCampaignTypeText = (type?: string) => {
+    switch (type) {
+      case 'promotional':
+        return 'Promocional'
+      case 'follow_up':
+        return 'Seguimiento'
+      case 'newsletter':
+        return 'Newsletter'
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return 'General'
+    }
+  }
+
+  const getCampaignTypeClass = (type?: string) => {
+    switch (type) {
+      case 'promotional':
+        return styles.promotional
+      case 'follow_up':
+        return styles.followUp
+      case 'newsletter':
+        return styles.newsletter
+      default:
+        return styles.default
     }
   }
 
@@ -53,118 +64,107 @@ export function CampaignHistory({
     }
   }
 
-  const getCampaignTypeColor = (type?: string) => {
-    switch (type) {
-      case 'promotional':
-        return 'bg-purple-100 text-purple-800'
-      case 'follow_up':
-        return 'bg-blue-100 text-blue-800'
-      case 'newsletter':
-        return 'bg-green-100 text-green-800'
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case 'sent':
+        return styles.sent
+      case 'draft':
+        return styles.draft
+      case 'scheduled':
+        return styles.scheduled
+      case 'failed':
+        return styles.failed
       default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getCampaignTypeText = (type?: string) => {
-    switch (type) {
-      case 'promotional':
-        return 'Promocional'
-      case 'follow_up':
-        return 'Seguimiento'
-      case 'newsletter':
-        return 'Newsletter'
-      default:
-        return 'General'
+        return styles.draft
     }
   }
 
   if (campaigns.isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-sm text-muted-foreground">Cargando historial de campañas...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={styles.campaignHistory}>
+        <div className={styles.loadingState}>
+          <div className={styles.loadingSpinner}></div>
+          <span className={styles.loadingText}>Cargando historial de campañas...</span>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card>
-      <CardHeader className={compact ? "pb-4" : "flex flex-row items-center justify-between"}>
-        <div>
-          <CardTitle className={compact ? "text-lg" : "text-xl"}>
-            Historial de Campañas
-          </CardTitle>
-          <CardDescription>
-            Seguimiento del rendimiento de tus campañas de email ({campaigns.stats.totalCampaigns} campañas)
-          </CardDescription>
-        </div>
-        
-        {!compact && (
-          <div className="flex items-center gap-2">
-            <div className="relative w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar campañas..."
-                className="pl-8"
-                value={campaigns.searchTerm}
-                onChange={(e) => campaigns.setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Select value={campaigns.statusFilter} onValueChange={campaigns.setStatusFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="sent">Enviadas</SelectItem>
-                <SelectItem value="draft">Borradores</SelectItem>
-                <SelectItem value="scheduled">Programadas</SelectItem>
-                <SelectItem value="failed">Fallidas</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={campaigns.typeFilter} onValueChange={campaigns.setTypeFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los tipos</SelectItem>
-                <SelectItem value="promotional">Promocional</SelectItem>
-                <SelectItem value="follow_up">Seguimiento</SelectItem>
-                <SelectItem value="newsletter">Newsletter</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className={styles.campaignHistory}>
+      <div className={`${styles.header} ${compact ? styles.compact : ''}`}>
+        <div className={styles.headerContent}>
+          <div>
+            <h3 className={`${styles.title} ${compact ? styles.compact : ''}`}>
+              Historial de Campañas
+            </h3>
+            <p className={styles.subtitle}>
+              Seguimiento del rendimiento de tus campañas de email ({campaigns.stats.totalCampaigns} campañas)
+            </p>
           </div>
-        )}
-      </CardHeader>
+          
+          {!compact && (
+            <div className={styles.headerActions}>
+              <div className={styles.filters}>
+                <div className={styles.searchWrapper}>
+                  <Search className={styles.searchIcon} />
+                  <input
+                    placeholder="Buscar campañas..."
+                    className={styles.searchInput}
+                    value={campaigns.searchTerm}
+                    onChange={(e) => campaigns.setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select 
+                  value={campaigns.statusFilter} 
+                  onChange={(e) => campaigns.setStatusFilter(e.target.value)}
+                  className={`${styles.searchInput} ${styles.statusFilter}`}
+                >
+                  <option value="all">Todas</option>
+                  <option value="sent">Enviadas</option>
+                  <option value="draft">Borradores</option>
+                  <option value="scheduled">Programadas</option>
+                  <option value="failed">Fallidas</option>
+                </select>
+                <select 
+                  value={campaigns.typeFilter} 
+                  onChange={(e) => campaigns.setTypeFilter(e.target.value)}
+                  className={`${styles.searchInput} ${styles.typeFilter}`}
+                >
+                  <option value="all">Todos los tipos</option>
+                  <option value="promotional">Promocional</option>
+                  <option value="follow_up">Seguimiento</option>
+                  <option value="newsletter">Newsletter</option>
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       
-      <CardContent>
+      <div className={`${styles.content} ${compact ? styles.compact : ''}`}>
         {!campaigns.hasCampaigns ? (
-          <div className="text-center py-12">
-            <Mail className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className={styles.emptyState}>
+            <Mail className={styles.emptyStateIcon} />
+            <h3 className={styles.emptyStateTitle}>
               No hay campañas de email
             </h3>
-            <p className="text-gray-500">
+            <p className={styles.emptyStateDescription}>
               Crea tu primera campaña para comenzar a ver el historial
             </p>
           </div>
         ) : !campaigns.hasFilteredResults ? (
-          <div className="text-center py-12">
-            <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className={styles.emptyState}>
+            <Search className={styles.emptyStateIcon} />
+            <h3 className={styles.emptyStateTitle}>
               No se encontraron campañas
             </h3>
-            <p className="text-gray-500">
+            <p className={styles.emptyStateDescription}>
               Intenta ajustar tus filtros de búsqueda
             </p>
           </div>
         ) : (
-          <div className="rounded-md border">
+          <div className={styles.tableWrapper}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -180,96 +180,116 @@ export function CampaignHistory({
               </TableHeader>
               <TableBody>
                 {campaigns.campaigns.map((campaign) => (
-                  <TableRow key={campaign.id} className="hover:bg-muted/50">
+                  <TableRow key={campaign.id} className={styles.tableRow}>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">
+                      <div className={styles.dateCell}>
+                        <Calendar className={styles.dateIcon} />
+                        <div className={styles.dateContent}>
+                          <div className={styles.dateValue}>
                             {format(new Date(campaign.sentAt), "MMM d, yyyy")}
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className={styles.timeValue}>
                             {format(new Date(campaign.sentAt), "h:mm a")}
                           </div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="max-w-64">
-                        <div className="font-medium truncate" title={campaign.subject}>
+                      <div className={styles.subjectCell}>
+                        <div className={styles.subjectTitle} title={campaign.subject}>
                           {campaign.subject}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className={styles.subjectSender}>
                           {campaign.senderName}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getCampaignTypeColor(campaign.metadata?.campaign_type)}>
+                      <div className={`${styles.campaignTypeBadge} ${getCampaignTypeClass(campaign.metadata?.campaign_type)}`}>
                         {getCampaignTypeText(campaign.metadata?.campaign_type)}
-                      </Badge>
+                      </div>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <Send className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">{campaign.recipients}</span>
+                    <TableCell className={styles.center}>
+                      <div className={styles.recipientsCell}>
+                        <Send className={styles.recipientsIcon} />
+                        <span className={styles.recipientsValue}>{campaign.recipients}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       {campaign.status === 'sent' ? (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{campaign.openRate.toFixed(1)}%</span>
+                        <div className={styles.progressCell}>
+                          <div className={styles.progressContainer}>
+                            <div className={styles.progressHeader}>
+                              <span className={styles.progressValue}>{campaign.openRate.toFixed(1)}%</span>
+                            </div>
+                            <div className={styles.progressBar}>
+                              <div 
+                                className={styles.progressFill} 
+                                style={{ width: `${campaign.openRate}%` }}
+                              ></div>
+                            </div>
                           </div>
-                          <Progress value={campaign.openRate} className="h-1.5" />
                         </div>
                       ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
+                        <span className={styles.progressUnavailable}>-</span>
                       )}
                     </TableCell>
                     <TableCell>
                       {campaign.status === 'sent' ? (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{campaign.clickRate.toFixed(1)}%</span>
+                        <div className={styles.progressCell}>
+                          <div className={styles.progressContainer}>
+                            <div className={styles.progressHeader}>
+                              <span className={styles.progressValue}>{campaign.clickRate.toFixed(1)}%</span>
+                            </div>
+                            <div className={styles.progressBar}>
+                              <div 
+                                className={styles.progressFill} 
+                                style={{ width: `${campaign.clickRate}%` }}
+                              ></div>
+                            </div>
                           </div>
-                          <Progress value={campaign.clickRate} className="h-1.5" />
                         </div>
                       ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
+                        <span className={styles.progressUnavailable}>-</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge className={`border ${getStatusColor(campaign.status)}`}>
+                      <div className={`${styles.statusBadge} ${getStatusClass(campaign.status)}`}>
                         {getStatusText(campaign.status)}
-                      </Badge>
+                      </div>
                     </TableCell>
                     {showActions && (
-                      <TableCell className="text-right">
+                      <TableCell className={styles.actionsCell}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <button className={styles.actionsButton}>
+                              <MoreHorizontal className={styles.actionsIcon} />
                               <span className="sr-only">Acciones</span>
-                            </Button>
+                            </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onViewCampaign(campaign.id)}>
-                              <Eye className="mr-2 h-4 w-4" />
+                          <DropdownMenuContent align="end" className={styles.dropdownContent}>
+                            <button 
+                              className={styles.dropdownItem}
+                              onClick={() => onViewCampaign(campaign.id)}
+                            >
+                              <Eye className={styles.dropdownItemIcon} />
                               Ver Detalles
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onDuplicateCampaign(campaign.id)}>
-                              <Copy className="mr-2 h-4 w-4" />
+                            </button>
+                            <button 
+                              className={styles.dropdownItem}
+                              onClick={() => onDuplicateCampaign(campaign.id)}
+                            >
+                              <Copy className={styles.dropdownItemIcon} />
                               Duplicar Campaña
-                            </DropdownMenuItem>
+                            </button>
                             {onDeleteCampaign && (
-                              <DropdownMenuItem 
+                              <button 
+                                className={`${styles.dropdownItem} ${styles.danger}`}
                                 onClick={() => onDeleteCampaign(campaign.id)}
-                                className="text-red-600"
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className={styles.dropdownItemIcon} />
                                 Eliminar
-                              </DropdownMenuItem>
+                              </button>
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -284,26 +304,26 @@ export function CampaignHistory({
 
         {/* Campaign Stats */}
         {campaigns.hasCampaigns && !compact && (
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-lg font-semibold text-blue-700">{campaigns.stats.totalCampaigns}</div>
-              <div className="text-xs text-blue-600">Campañas Totales</div>
+          <div className={styles.statsGrid}>
+            <div className={`${styles.statCard} ${styles.blue}`}>
+              <div className={`${styles.statValue} ${styles.blue}`}>{campaigns.stats.totalCampaigns}</div>
+              <div className={`${styles.statLabel} ${styles.blue}`}>Campañas Totales</div>
             </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-lg font-semibold text-green-700">{campaigns.stats.totalRecipients}</div>
-              <div className="text-xs text-green-600">Destinatarios</div>
+            <div className={`${styles.statCard} ${styles.green}`}>
+              <div className={`${styles.statValue} ${styles.green}`}>{campaigns.stats.totalRecipients}</div>
+              <div className={`${styles.statLabel} ${styles.green}`}>Destinatarios</div>
             </div>
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <div className="text-lg font-semibold text-purple-700">{campaigns.stats.averageOpenRate}%</div>
-              <div className="text-xs text-purple-600">Apertura Promedio</div>
+            <div className={`${styles.statCard} ${styles.purple}`}>
+              <div className={`${styles.statValue} ${styles.purple}`}>{campaigns.stats.averageOpenRate}%</div>
+              <div className={`${styles.statLabel} ${styles.purple}`}>Apertura Promedio</div>
             </div>
-            <div className="text-center p-3 bg-orange-50 rounded-lg">
-              <div className="text-lg font-semibold text-orange-700">{campaigns.stats.averageClickRate}%</div>
-              <div className="text-xs text-orange-600">Clicks Promedio</div>
+            <div className={`${styles.statCard} ${styles.orange}`}>
+              <div className={`${styles.statValue} ${styles.orange}`}>{campaigns.stats.averageClickRate}%</div>
+              <div className={`${styles.statLabel} ${styles.orange}`}>Clicks Promedio</div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 } 

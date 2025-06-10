@@ -249,11 +249,11 @@
   display: inline-flex;
   align-items: center;
   padding: 0.125rem 0.5rem;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 12px;
   font-size: 0.75rem;
-  color: #0c4a6e;
+  color: #1e40af;
   font-weight: 500;
 }
 
@@ -274,14 +274,15 @@
 /* Results Stats */
 .resultsStats {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
-  justify-content: center;
+  gap: 0.125rem;
 }
 
 .resultsValue {
   font-weight: 600;
   color: #059669;
+  font-size: 0.875rem;
 }
 
 .resultsLabel {
@@ -292,7 +293,6 @@
 .searchTime {
   color: #6b7280;
   font-size: 0.75rem;
-  margin-top: 0.125rem;
 }
 
 /* Status */
@@ -306,6 +306,18 @@
   width: 0.75rem;
   height: 0.75rem;
   flex-shrink: 0;
+}
+
+.statusIcon:first-child {
+  color: #16a34a; /* green for completed */
+}
+
+.statusIcon[data-status="failed"] {
+  color: #dc2626; /* red for failed */
+}
+
+.statusIcon[data-status="cancelled"] {
+  color: #6b7280; /* gray for cancelled */
 }
 
 .statusBadge {
@@ -331,7 +343,7 @@
 }
 
 .statusBadge.cancelled {
-  background: #f3f4f6;
+  background: #f9fafb;
   color: #374151;
   border-color: #e5e7eb;
 }
@@ -496,10 +508,11 @@
 
 .statCard {
   text-align: center;
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: 8px;
   border: 1px solid;
   animation: fadeIn 0.5s ease-out backwards;
+  transition: all 0.2s ease;
 }
 
 .statCard:nth-child(1) { animation-delay: 0.1s; }
@@ -518,9 +531,14 @@
   }
 }
 
+.statCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .statCard.blue {
-  background: #f0f9ff;
-  border-color: #bae6fd;
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 .statCard.green {
@@ -539,13 +557,13 @@
 }
 
 .statValue {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
 .statValue.blue { color: #1e40af; }
-.statValue.green { color: #166534; }
+.statValue.green { color: #16a34a; }
 .statValue.purple { color: #7c3aed; }
 .statValue.orange { color: #ea580c; }
 
@@ -555,7 +573,7 @@
 }
 
 .statLabel.blue { color: #1e40af; }
-.statLabel.green { color: #166534; }
+.statLabel.green { color: #16a34a; }
 .statLabel.purple { color: #7c3aed; }
 .statLabel.orange { color: #ea580c; }
 
@@ -602,6 +620,10 @@
   .websiteTag {
     border-color: #000;
   }
+  
+  .statusBadge {
+    border-width: 2px;
+  }
 }
 
 /* Reduced Motion */
@@ -614,7 +636,8 @@
   
   .searchInput,
   .actionsButton,
-  .dropdownItem {
+  .dropdownItem,
+  .statCard {
     transition: none;
   }
 } 

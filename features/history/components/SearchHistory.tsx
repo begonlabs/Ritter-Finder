@@ -26,26 +26,39 @@ export function SearchHistory({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-3 w-3 text-green-500" />
+        return <CheckCircle className={styles.statusIcon} />
       case 'failed':
-        return <AlertCircle className="h-3 w-3 text-red-500" />
+        return <AlertCircle className={styles.statusIcon} />
       case 'cancelled':
-        return <Clock className="h-3 w-3 text-gray-500" />
+        return <Clock className={styles.statusIcon} />
       default:
-        return <Clock className="h-3 w-3 text-blue-500" />
+        return <Clock className={styles.statusIcon} />
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusClass = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return styles.completed
       case 'failed':
-        return 'bg-red-100 text-red-800 border-red-200'
+        return styles.failed
       case 'cancelled':
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return styles.cancelled
       default:
-        return 'bg-blue-100 text-blue-800 border-blue-200'
+        return styles.completed
+    }
+  }
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Completada'
+      case 'failed':
+        return 'Fallida'
+      case 'cancelled':
+        return 'Cancelada'
+      default:
+        return status
     }
   }
 
@@ -138,81 +151,89 @@ export function SearchHistory({
               </TableHeader>
               <TableBody>
                 {history.history.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-muted/50">
+                  <TableRow key={item.id} className={styles.tableRow}>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">
+                      <div className={styles.dateCell}>
+                        <Calendar className={styles.dateIcon} />
+                        <div className={styles.dateContent}>
+                          <div className={styles.dateValue}>
                             {format(new Date(item.date), "MMM d, yyyy")}
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className={styles.timeValue}>
                             {format(new Date(item.date), "h:mm a")}
                           </div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1 max-w-48">
+                      <div className={styles.websiteTags}>
                         {item.websites.map((website, index) => (
-                          <Badge key={index} variant="outline" className="bg-blue-50 text-xs">
+                          <div key={index} className={styles.websiteTag}>
                             {website.replace("www.", "").replace(".com", "").replace(".net", "").replace(".org", "")}
-                          </Badge>
+                          </div>
                         ))}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="capitalize">
+                      <div className={styles.clientTypeBadge}>
                         {item.clientType}
-                      </Badge>
+                      </div>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="font-medium">{item.leadsFound}</div>
-                      {item.searchTime && (
-                        <div className="text-xs text-muted-foreground">
-                          {item.searchTime}s
-                        </div>
-                      )}
+                    <TableCell className={styles.center}>
+                      <div className={styles.resultsStats}>
+                        <div className={styles.resultsValue}>{item.leadsFound}</div>
+                        {item.searchTime && (
+                          <div className={styles.searchTime}>
+                            {item.searchTime}s
+                          </div>
+                        )}
+                      </div>
                     </TableCell>
-                    <TableCell className="text-center font-medium">
-                      {item.leadsContacted}
+                    <TableCell className={styles.center}>
+                      <div className={styles.resultsValue}>
+                        {item.leadsContacted}
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
+                      <div className={styles.statusCell}>
                         {getStatusIcon(item.status)}
-                        <Badge className={`border ${getStatusColor(item.status)}`}>
-                          {item.status === 'completed' ? 'Completada' :
-                           item.status === 'failed' ? 'Fallida' :
-                           item.status === 'cancelled' ? 'Cancelada' : item.status}
-                        </Badge>
+                        <div className={`${styles.statusBadge} ${getStatusClass(item.status)}`}>
+                          {getStatusText(item.status)}
+                        </div>
                       </div>
                     </TableCell>
                     {showActions && (
-                      <TableCell className="text-right">
+                      <TableCell className={styles.actionsCell}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <button className={styles.actionsButton}>
+                              <MoreHorizontal className={styles.actionsIcon} />
                               <span className="sr-only">Acciones</span>
-                            </Button>
+                            </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onRerunSearch(item)}>
-                              <RefreshCw className="mr-2 h-4 w-4" />
+                          <DropdownMenuContent align="end" className={styles.dropdownContent}>
+                            <button 
+                              className={styles.dropdownItem}
+                              onClick={() => onRerunSearch(item)}
+                            >
+                              <RefreshCw className={styles.dropdownItemIcon} />
                               Repetir Búsqueda
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onViewLeads(item.id)}>
-                              <Eye className="mr-2 h-4 w-4" />
+                            </button>
+                            <button 
+                              className={styles.dropdownItem}
+                              onClick={() => onViewLeads(item.id)}
+                            >
+                              <Eye className={styles.dropdownItemIcon} />
                               Ver Leads
-                            </DropdownMenuItem>
+                            </button>
                             {onDeleteSearch && (
-                              <DropdownMenuItem 
+                              <button 
+                                className={`${styles.dropdownItem} ${styles.danger}`}
                                 onClick={() => onDeleteSearch(item.id)}
-                                className="text-red-600"
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className={styles.dropdownItemIcon} />
                                 Eliminar
-                              </DropdownMenuItem>
+                              </button>
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>

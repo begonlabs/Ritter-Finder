@@ -4,6 +4,9 @@
   padding: 0;
   margin: 0;
   animation: fadeIn 0.6s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 @keyframes fadeIn {
@@ -38,10 +41,19 @@
 }
 
 .analyticsTitle {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analyticsTitleIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #f59e0b;
 }
 
 .analyticsSubtitle {
@@ -55,6 +67,300 @@
   gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* Export Buttons */
+.exportButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.exportButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.exportButtonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.generateReportButton {
+  background: #f59e0b;
+  color: #92400e;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.generateReportButton:hover {
+  background: #d97706;
+}
+
+.generateReportButtonIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Charts Grid */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Chart Card */
+.chartCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chartCardHeader {
+  background: #fafbfc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chartCardTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chartCardTitleIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.chartCardContent {
+  padding: 2rem;
+}
+
+/* Performance Metrics Grid */
+.performanceMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .performanceMetrics {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Performance Section */
+.performanceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.performanceSectionTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+.performanceSectionMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Performance Metric Cards */
+.performanceMetric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.performanceMetric:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Blue Theme - Search Efficiency */
+.performanceMetricBlue {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+
+.performanceMetricBlue:hover {
+  background: #dbeafe;
+}
+
+/* Green Theme - Quality */
+.performanceMetricGreen {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.performanceMetricGreen:hover {
+  background: #dcfce7;
+}
+
+/* Purple Theme - Leads */
+.performanceMetricPurple {
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+}
+
+.performanceMetricPurple:hover {
+  background: #f3e8ff;
+}
+
+/* Orange Theme - Open Rate */
+.performanceMetricOrange {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.performanceMetricOrange:hover {
+  background: #ffedd5;
+}
+
+/* Red Theme - Click Rate */
+.performanceMetricRed {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.performanceMetricRed:hover {
+  background: #fee2e2;
+}
+
+/* Indigo Theme - Responses */
+.performanceMetricIndigo {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+}
+
+.performanceMetricIndigo:hover {
+  background: #e0f2fe;
+}
+
+/* Emerald Theme - Cost */
+.performanceMetricEmerald {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+
+.performanceMetricEmerald:hover {
+  background: #d1fae5;
+}
+
+/* Cyan Theme - ROI */
+.performanceMetricCyan {
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+}
+
+.performanceMetricCyan:hover {
+  background: #cffafe;
+}
+
+/* Amber Theme - Savings */
+.performanceMetricAmber {
+  background: #fffbeb;
+  border: 1px solid #fed7aa;
+}
+
+.performanceMetricAmber:hover {
+  background: #fef3c7;
+}
+
+/* Performance Metric Text */
+.performanceMetricLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.performanceMetricValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Value Colors */
+.performanceMetricValueBlue {
+  color: #2563eb;
+}
+
+.performanceMetricValueGreen {
+  color: #16a34a;
+}
+
+.performanceMetricValuePurple {
+  color: #9333ea;
+}
+
+.performanceMetricValueOrange {
+  color: #ea580c;
+}
+
+.performanceMetricValueRed {
+  color: #dc2626;
+}
+
+.performanceMetricValueIndigo {
+  color: #4f46e5;
+}
+
+.performanceMetricValueEmerald {
+  color: #059669;
+}
+
+.performanceMetricValueCyan {
+  color: #0891b2;
+}
+
+.performanceMetricValueAmber {
+  color: #d97706;
 }
 
 /* Date Range Selector */
@@ -190,81 +496,6 @@
   transition: width 0.3s ease;
 }
 
-/* Chart Containers */
-.chartsGrid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 1024px) {
-  .chartsGrid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-}
-
-.chartCard {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.chartCardHeader {
-  background: #fafbfc;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 1.5rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@media (max-width: 640px) {
-  .chartCardHeader {
-    padding: 1rem 1.5rem;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-}
-
-.chartCardTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-}
-
-.chartCardSubtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.chartCardActions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.chartCardContent {
-  padding: 2rem;
-  min-height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (max-width: 640px) {
-  .chartCardContent {
-    padding: 1rem;
-    min-height: 250px;
-  }
-}
-
 /* Trend Chart */
 .trendChart {
   width: 100%;
@@ -324,44 +555,6 @@
   justify-content: center;
   color: #6b7280;
   font-weight: 600;
-}
-
-/* Performance Metrics */
-.performanceMetrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.performanceMetric {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.performanceMetricValue {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.25rem;
-}
-
-.performanceMetricLabel {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.performanceMetricChange {
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-top: 0.25rem;
 }
 
 /* Recent Activity */
@@ -490,40 +683,6 @@
   }
 }
 
-/* Export Actions */
-.exportActions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.exportButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  background: white;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.exportButton:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  color: #374151;
-}
-
-.exportButtonIcon {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
 /* Loading State */
 .loadingContainer {
   display: flex;
@@ -609,73 +768,74 @@
   box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
-/* Responsive Grid */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .performanceMetrics {
-    grid-template-columns: repeat(2, 1fr);
+  .chartCardHeader {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
   }
   
-  .statsOverview {
+  .chartCardContent {
+    padding: 1rem;
+  }
+  
+  .performanceMetrics {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
 @media (max-width: 640px) {
-  .performanceMetrics {
-    grid-template-columns: 1fr;
-  }
-  
-  .dateRangeSelector {
-    flex-wrap: wrap;
-  }
-}
-
-/* Data Insights */
-.dataInsights {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 768px) {
-  .dataInsights {
-    grid-template-columns: 1fr;
+  .analyticsPage {
     gap: 1.5rem;
   }
+  
+  .analyticsTitle {
+    font-size: 1.25rem;
+  }
+  
+  .performanceMetric {
+    padding: 0.5rem;
+  }
+  
+  .performanceMetricValue {
+    font-size: 1rem;
+  }
+  
+  .performanceMetricLabel {
+    font-size: 0.8125rem;
+  }
 }
 
-.insightCard {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .performanceMetric {
+    border-width: 2px;
+    border-color: #000;
+  }
+  
+  .chartCard {
+    border-color: #000;
+  }
 }
 
-.insightCardTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.insightCardIcon {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #059669;
-}
-
-.insightCardContent {
-  font-size: 0.875rem;
-  color: #6b7280;
-  line-height: 1.5;
-}
-
-.insightHighlight {
-  font-weight: 600;
-  color: #059669;
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .analyticsPage,
+  .performanceMetric,
+  .statCard {
+    animation: none;
+    transition: none;
+  }
+  
+  .performanceMetric:hover,
+  .statCard:hover {
+    transform: none;
+  }
+  
+  .loadingSpinner {
+    animation: none;
+  }
 } 

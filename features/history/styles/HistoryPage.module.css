@@ -3,6 +3,16 @@
 .historyPage {
   padding: 0;
   margin: 0;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* History Header */
@@ -46,6 +56,11 @@
   gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* Tabs Container */
+.tabsContainer {
+  width: 100%;
 }
 
 /* Tabs System */
@@ -103,6 +118,35 @@
 /* Tab Content */
 .tabContent {
   margin-top: 2rem;
+}
+
+/* Export Button */
+.exportButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.exportButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.exportButtonIcon {
+  width: 1rem;
+  height: 1rem;
 }
 
 /* History Cards */
@@ -421,33 +465,6 @@
 .actionButtonIcon {
   width: 0.875rem;
   height: 0.875rem;
-}
-
-/* Export Button */
-.exportButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.exportButton:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
-.exportButtonIcon {
-  width: 1rem;
-  height: 1rem;
 }
 
 /* Empty State */

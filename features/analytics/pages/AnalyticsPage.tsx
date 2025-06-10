@@ -33,44 +33,44 @@ export function AnalyticsPage({
   }
 
   return (
-    <div className={`${styles.analyticsPage} space-y-8`}>
+    <div className={styles.analyticsPage}>
       {/* Header */}
-      <div className={`${styles.analyticsHeader} flex items-center justify-between`}>
+      <div className={styles.analyticsHeader}>
         <div className={styles.analyticsHeaderContent}>
-          <h2 className={`${styles.analyticsTitle} text-2xl font-bold text-gray-900 flex items-center gap-2`}>
-            <BarChart3 className="h-6 w-6 text-ritter-gold" />
+          <h2 className={styles.analyticsTitle}>
+            <BarChart3 className={styles.analyticsTitleIcon} />
             Analytics y Métricas
           </h2>
-          <p className={`${styles.analyticsSubtitle} text-gray-600`}>
+          <p className={styles.analyticsSubtitle}>
             Panel completo de análisis y rendimiento de RitterFinder
           </p>
         </div>
         
         {showDetailedView && (
-          <div className={`${styles.analyticsActions} flex items-center gap-3`}>
+          <div className={styles.analyticsActions}>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleExportData('csv')}
-              className={`${styles.exportButton} flex items-center gap-2`}
+              className={styles.exportButton}
             >
-              <Download className={`${styles.exportButtonIcon} h-4 w-4`} />
+              <Download className={styles.exportButtonIcon} />
               Exportar CSV
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleExportData('pdf')}
-              className={`${styles.exportButton} flex items-center gap-2`}
+              className={styles.exportButton}
             >
-              <FileText className={`${styles.exportButtonIcon} h-4 w-4`} />
+              <FileText className={styles.exportButtonIcon} />
               Exportar PDF
             </Button>
             <Button
               onClick={handleGenerateReport}
-              className="bg-ritter-gold hover:bg-amber-500 text-ritter-dark flex items-center gap-2"
+              className={styles.generateReportButton}
             >
-              <FileText className="h-4 w-4" />
+              <FileText className={styles.generateReportButtonIcon} />
               Generar Reporte
             </Button>
           </div>
@@ -85,7 +85,7 @@ export function AnalyticsPage({
 
       {/* Trend Analysis and Activity */}
       {showDetailedView && (
-        <div className={`${styles.chartsGrid} grid gap-6 md:grid-cols-2`}>
+        <div className={styles.chartsGrid}>
           <TrendChart showHeader={true} compact={false} />
           <RecentActivity showHeader={true} compact={false} />
         </div>
@@ -100,40 +100,40 @@ export function AnalyticsPage({
 
       {/* Performance Summary */}
       {showDetailedView && (
-        <Card className={`${styles.chartCard} border-0 shadow-sm`}>
+        <Card className={styles.chartCard}>
           <CardHeader className={styles.chartCardHeader}>
-            <CardTitle className={`${styles.chartCardTitle} flex items-center gap-2`}>
-              <BarChart3 className="h-5 w-5 text-ritter-gold" />
+            <CardTitle className={styles.chartCardTitle}>
+              <BarChart3 className={styles.chartCardTitleIcon} />
               Resumen de Rendimiento - {period === 'month' ? 'Este Mes' : 'Este Período'}
             </CardTitle>
           </CardHeader>
           <CardContent className={styles.chartCardContent}>
-            <div className={`${styles.performanceMetrics} grid gap-6 md:grid-cols-3`}>
+            <div className={styles.performanceMetrics}>
               {/* Lead Generation Performance */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Generación de Leads</h3>
-                <div className="space-y-3">
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-blue-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+              <div className={styles.performanceSection}>
+                <h3 className={styles.performanceSectionTitle}>Generación de Leads</h3>
+                <div className={styles.performanceSectionMetrics}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricBlue}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Eficiencia de búsqueda
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-blue-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueBlue}`}>
                       92%
                     </span>
                   </div>
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-green-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricGreen}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Calidad promedio
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-green-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueGreen}`}>
                       87%
                     </span>
                   </div>
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-purple-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricPurple}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Leads por búsqueda
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-purple-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValuePurple}`}>
                       24
                     </span>
                   </div>
@@ -141,30 +141,30 @@ export function AnalyticsPage({
               </div>
 
               {/* Campaign Performance */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Rendimiento de Campañas</h3>
-                <div className="space-y-3">
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-orange-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+              <div className={styles.performanceSection}>
+                <h3 className={styles.performanceSectionTitle}>Rendimiento de Campañas</h3>
+                <div className={styles.performanceSectionMetrics}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricOrange}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Tasa de apertura
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-orange-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueOrange}`}>
                       68%
                     </span>
                   </div>
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-red-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricRed}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Tasa de click
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-red-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueRed}`}>
                       23%
                     </span>
                   </div>
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-indigo-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricIndigo}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Respuestas
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-indigo-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueIndigo}`}>
                       12%
                     </span>
                   </div>
@@ -172,30 +172,30 @@ export function AnalyticsPage({
               </div>
 
               {/* Cost Analysis */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Análisis de Costos</h3>
-                <div className="space-y-3">
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-emerald-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+              <div className={styles.performanceSection}>
+                <h3 className={styles.performanceSectionTitle}>Análisis de Costos</h3>
+                <div className={styles.performanceSectionMetrics}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricEmerald}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Costo por lead
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-emerald-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueEmerald}`}>
                       €15
                     </span>
                   </div>
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-cyan-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricCyan}`}>
+                    <span className={styles.performanceMetricLabel}>
                       ROI estimado
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-cyan-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueCyan}`}>
                       340%
                     </span>
                   </div>
-                  <div className={`${styles.performanceMetric} flex justify-between items-center p-3 bg-amber-50 rounded-lg`}>
-                    <span className={`${styles.performanceMetricLabel} text-sm font-medium`}>
+                  <div className={`${styles.performanceMetric} ${styles.performanceMetricAmber}`}>
+                    <span className={styles.performanceMetricLabel}>
                       Ahorro total
                     </span>
-                    <span className={`${styles.performanceMetricValue} text-lg font-bold text-amber-600`}>
+                    <span className={`${styles.performanceMetricValue} ${styles.performanceMetricValueAmber}`}>
                       €58K
                     </span>
                   </div>

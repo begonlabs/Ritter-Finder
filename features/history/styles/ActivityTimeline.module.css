@@ -75,6 +75,21 @@
   align-items: center;
 }
 
+.searchInput {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
 .typeFilter {
   width: 9rem;
 }
@@ -606,10 +621,11 @@
 
 .statCard {
   text-align: center;
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: 8px;
   border: 1px solid;
   animation: scaleIn 0.4s ease-out backwards;
+  transition: all 0.2s ease;
 }
 
 .statCard:nth-child(1) { animation-delay: 0.1s; }
@@ -628,9 +644,14 @@
   }
 }
 
+.statCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .statCard.blue {
-  background: #f0f9ff;
-  border-color: #bae6fd;
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 .statCard.green {
@@ -649,13 +670,13 @@
 }
 
 .statValue {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
 .statValue.blue { color: #1e40af; }
-.statValue.green { color: #166534; }
+.statValue.green { color: #16a34a; }
 .statValue.purple { color: #7c3aed; }
 .statValue.orange { color: #ea580c; }
 
@@ -665,7 +686,7 @@
 }
 
 .statLabel.blue { color: #1e40af; }
-.statLabel.green { color: #166534; }
+.statLabel.green { color: #16a34a; }
 .statLabel.purple { color: #7c3aed; }
 .statLabel.orange { color: #ea580c; }
 
@@ -712,6 +733,10 @@
     border-color: #000;
     box-shadow: 0 0 0 2px #000;
   }
+  
+  .activityTypeBadge {
+    border-width: 2px;
+  }
 }
 
 /* Reduced Motion */
@@ -726,7 +751,8 @@
   
   .activityContent,
   .viewDetailsButton,
-  .activityMarker {
+  .activityMarker,
+  .statCard {
     transition: none;
   }
   

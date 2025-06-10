@@ -135,21 +135,19 @@ export function HistoryPage({
           </div>
           
           <div className={styles.historyActions}>
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => handleExportHistory(activeTab as 'search' | 'campaign' | 'activity')}
               className={styles.exportButton}
             >
-              <Download className={`${styles.exportButtonIcon} h-4 w-4 mr-2`} />
+              <Download className={styles.exportButtonIcon} />
               Exportar
-            </Button>
+            </button>
           </div>
         </div>
       )}
 
       {showTabs ? (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className={styles.tabsContainer}>
           <div className={styles.tabsList}>
             {availableTabs.map((tab) => {
               const Icon = tab.icon
@@ -191,7 +189,7 @@ export function HistoryPage({
               />
             )}
           </div>
-        </Tabs>
+        </div>
       ) : (
         <div className={styles.tabContent}>
           {showSearchHistory && (

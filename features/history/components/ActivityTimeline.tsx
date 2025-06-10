@@ -41,9 +41,11 @@ export function ActivityTimeline({
   const timeline = useActivityTimeline(maxItems)
 
   const getActivityIcon = (type: string, status: string) => {
-    const iconClass = `h-4 w-4 ${status === 'error' ? 'text-red-500' : 
-                                 status === 'success' ? 'text-green-500' : 
-                                 'text-blue-500'}`
+    const iconClass = `${styles.activityIconSvg} ${
+      status === 'error' ? styles.error : 
+      status === 'success' ? styles.success : 
+      styles.search
+    }`
 
     switch (type) {
       case 'search':
@@ -61,21 +63,61 @@ export function ActivityTimeline({
     }
   }
 
-  const getActivityColor = (type: string) => {
+  const getActivityIconClass = (type: string, status: string) => {
+    let baseClass = `${styles.activityIcon}`
+    
     switch (type) {
       case 'search':
-        return 'bg-blue-100 text-blue-800'
+        baseClass += ` ${styles.search}`
+        break
       case 'campaign':
-        return 'bg-purple-100 text-purple-800'
+        baseClass += ` ${styles.campaign}`
+        break
       case 'export':
-        return 'bg-green-100 text-green-800'
+        baseClass += ` ${styles.export}`
+        break
       case 'import':
-        return 'bg-orange-100 text-orange-800'
+        baseClass += ` ${styles.import}`
+        break
       case 'lead_update':
-        return 'bg-indigo-100 text-indigo-800'
+        baseClass += ` ${styles.leadUpdate}`
+        break
       default:
-        return 'bg-gray-100 text-gray-800'
+        baseClass += ` ${styles.system}`
     }
+
+    if (status === 'error') baseClass += ` ${styles.error}`
+    if (status === 'success') baseClass += ` ${styles.success}`
+
+    return baseClass
+  }
+
+  const getActivityMarkerClass = (type: string, status: string) => {
+    let baseClass = `${styles.activityMarker}`
+    
+    switch (type) {
+      case 'search':
+        baseClass += ` ${styles.search}`
+        break
+      case 'campaign':
+        baseClass += ` ${styles.campaign}`
+        break
+      case 'export':
+        baseClass += ` ${styles.export}`
+        break
+      case 'import':
+        baseClass += ` ${styles.import}`
+        break
+      case 'lead_update':
+        baseClass += ` ${styles.leadUpdate}`
+        break
+      default:
+        baseClass += ` ${styles.system}`
+    }
+
+    if (status === 'error') baseClass += ` ${styles.error}`
+
+    return baseClass
   }
 
   const getActivityTypeText = (type: string) => {
@@ -95,96 +137,115 @@ export function ActivityTimeline({
     }
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <CheckCircle className="h-3 w-3 text-green-500" />
-      case 'error':
-        return <AlertCircle className="h-3 w-3 text-red-500" />
-      case 'pending':
-        return <Clock className="h-3 w-3 text-blue-500" />
+  const getActivityTypeBadgeClass = (type: string) => {
+    switch (type) {
+      case 'search':
+        return `${styles.activityTypeBadge} ${styles.search}`
+      case 'campaign':
+        return `${styles.activityTypeBadge} ${styles.campaign}`
+      case 'export':
+        return `${styles.activityTypeBadge} ${styles.export}`
+      case 'import':
+        return `${styles.activityTypeBadge} ${styles.import}`
+      case 'lead_update':
+        return `${styles.activityTypeBadge} ${styles.leadUpdate}`
       default:
-        return <Clock className="h-3 w-3 text-gray-500" />
+        return styles.activityTypeBadge
     }
   }
 
-  const ActivityItem = ({ activity }: { activity: ActivityItem }) => (
-    <div className="flex items-start gap-3 group">
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle className={styles.activityStatusIcon} />
+      case 'error':
+        return <AlertCircle className={styles.activityStatusIcon} />
+      case 'pending':
+        return <Clock className={styles.activityStatusIcon} />
+      default:
+        return <Clock className={styles.activityStatusIcon} />
+    }
+  }
+
+  const ActivityItemComponent = ({ activity }: { activity: ActivityItem }) => (
+    <div className={styles.activityItem}>
+      {/* Activity Marker */}
+      <div className={getActivityMarkerClass(activity.type, activity.status)}></div>
+
       {/* Activity Icon */}
-      <div className={`flex-shrink-0 p-2 rounded-full border-2 border-white shadow-sm ${
-        activity.status === 'error' ? 'bg-red-50' :
-        activity.status === 'success' ? 'bg-green-50' :
-        'bg-blue-50'
-      }`}>
+      <div className={getActivityIconClass(activity.type, activity.status)}>
         {getActivityIcon(activity.type, activity.status)}
       </div>
 
       {/* Activity Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h4 className="text-sm font-medium text-gray-900 truncate">
-                {activity.title}
-              </h4>
-              <Badge className={getActivityColor(activity.type)}>
-                {getActivityTypeText(activity.type)}
-              </Badge>
-              {getStatusIcon(activity.status)}
+      <div className={styles.activityContent}>
+        <div className={styles.activityHeader}>
+          <div>
+            <div className={styles.activityTitle}>
+              {activity.title}
             </div>
             
-            <p className="text-sm text-gray-600 mb-2">
+            <p className={styles.activityDescription}>
               {activity.description}
             </p>
 
+            {/* Activity Badges */}
+            <div className={styles.activityBadges}>
+              <div className={getActivityTypeBadgeClass(activity.type)}>
+                {getActivityTypeText(activity.type)}
+              </div>
+              {getStatusIcon(activity.status)}
+            </div>
+
             {/* Activity Metadata */}
             {activity.metadata && Object.keys(activity.metadata).length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-2">
+              <div className={styles.activityMetadata}>
                 {activity.metadata.leadsCount && (
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                  <span className={styles.metadataTag}>
                     {activity.metadata.leadsCount} leads
                   </span>
                 )}
                 {activity.metadata.duration && (
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                  <span className={styles.metadataTag}>
                     {activity.metadata.duration}s
                   </span>
                 )}
                 {activity.metadata.exportFormat && (
-                  <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                  <span className={styles.metadataTag}>
                     {activity.metadata.exportFormat.toUpperCase()}
                   </span>
                 )}
                 {activity.metadata.errorMessage && (
-                  <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                  <span className={`${styles.metadataTag} ${styles.error}`}>
                     {activity.metadata.errorMessage}
                   </span>
                 )}
               </div>
             )}
 
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <span>
-                {formatDistanceToNow(new Date(activity.timestamp), { 
-                  addSuffix: true, 
-                  locale: es 
-                })}
-              </span>
-              <span>
-                {format(new Date(activity.timestamp), "h:mm a")}
-              </span>
+            {/* Activity Footer */}
+            <div className={styles.activityFooter}>
+              <div className={styles.activityTime}>
+                <span className={styles.activityTimestamp}>
+                  {formatDistanceToNow(new Date(activity.timestamp), { 
+                    addSuffix: true, 
+                    locale: es 
+                  })}
+                </span>
+                <span>
+                  {format(new Date(activity.timestamp), "h:mm a")}
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Action Button */}
-          <Button
-            variant="ghost"
-            size="sm"
+          {/* View Details Button */}
+          <button
             onClick={() => onViewDetails(activity.id)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className={styles.viewDetailsButton}
           >
-            <Eye className="h-3 w-3" />
-          </Button>
+            <Eye className={styles.viewDetailsIcon} />
+          </button>
         </div>
       </div>
     </div>
@@ -192,116 +253,110 @@ export function ActivityTimeline({
 
   if (timeline.isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-sm text-muted-foreground">Cargando actividad...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={styles.activityTimeline}>
+        <div className={styles.loadingState}>
+          <div className={styles.loadingSpinner}></div>
+          <span className={styles.loadingText}>Cargando actividad...</span>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card>
-      <CardHeader className={compact ? "pb-4" : ""}>
-        <div className="flex items-center justify-between">
+    <div className={styles.activityTimeline}>
+      <div className={`${styles.header} ${compact ? styles.compact : ''}`}>
+        <div className={styles.headerContent}>
           <div>
-            <CardTitle className={compact ? "text-lg" : "text-xl"}>
+            <h3 className={`${styles.title} ${compact ? styles.compact : ''}`}>
               Línea de Tiempo de Actividad
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className={styles.subtitle}>
               Actividad reciente en tu cuenta ({timeline.stats.totalActivities} actividades)
-            </CardDescription>
+            </p>
           </div>
 
           {showFilters && !compact && (
-            <div className="flex items-center gap-2">
-              <Select value={timeline.typeFilter} onValueChange={timeline.setTypeFilter}>
-                <SelectTrigger className="w-36">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los tipos</SelectItem>
-                  <SelectItem value="search">Búsquedas</SelectItem>
-                  <SelectItem value="campaign">Campañas</SelectItem>
-                  <SelectItem value="export">Exportaciones</SelectItem>
-                  <SelectItem value="import">Importaciones</SelectItem>
-                  <SelectItem value="lead_update">Actualizaciones</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={timeline.statusFilter} onValueChange={timeline.setStatusFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="success">Éxito</SelectItem>
-                  <SelectItem value="error">Error</SelectItem>
-                  <SelectItem value="pending">Pendiente</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className={styles.headerActions}>
+              <div className={styles.filters}>
+                <select 
+                  value={timeline.typeFilter} 
+                  onChange={(e) => timeline.setTypeFilter(e.target.value)}
+                  className={`${styles.searchInput} ${styles.typeFilter}`}
+                >
+                  <option value="all">Todos los tipos</option>
+                  <option value="search">Búsquedas</option>
+                  <option value="campaign">Campañas</option>
+                  <option value="export">Exportaciones</option>
+                  <option value="import">Importaciones</option>
+                  <option value="lead_update">Actualizaciones</option>
+                </select>
+                
+                <select 
+                  value={timeline.statusFilter} 
+                  onChange={(e) => timeline.setStatusFilter(e.target.value)}
+                  className={`${styles.searchInput} ${styles.statusFilter}`}
+                >
+                  <option value="all">Todos</option>
+                  <option value="success">Éxito</option>
+                  <option value="error">Error</option>
+                  <option value="pending">Pendiente</option>
+                </select>
+              </div>
             </div>
           )}
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent>
+      <div className={`${styles.content} ${compact ? styles.compact : ''}`}>
         {!timeline.hasActivities ? (
-          <div className="text-center py-12">
-            <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className={styles.emptyState}>
+            <Clock className={styles.emptyStateIcon} />
+            <h3 className={styles.emptyStateTitle}>
               No hay actividad reciente
             </h3>
-            <p className="text-gray-500">
+            <p className={styles.emptyStateDescription}>
               Comienza a usar la plataforma para ver tu actividad aquí
             </p>
           </div>
         ) : !timeline.hasFilteredResults ? (
-          <div className="text-center py-12">
-            <Filter className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className={styles.emptyState}>
+            <Filter className={styles.emptyStateIcon} />
+            <h3 className={styles.emptyStateTitle}>
               No hay actividad que coincida
             </h3>
-            <p className="text-gray-500">
+            <p className={styles.emptyStateDescription}>
               Intenta ajustar tus filtros
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className={styles.timelineContainer}>
             {groupByDate ? (
               /* Grouped by Date */
               Object.entries(timeline.groupedActivities).map(([date, activities]) => (
-                <div key={date} className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-sm font-medium text-gray-900">
+                <div key={date} className={styles.dateGroup}>
+                  <div className={styles.dateHeader}>
+                    <h3 className={styles.dateTitle}>
                       {format(new Date(date), "EEEE, d 'de' MMMM", { locale: es })}
                     </h3>
-                    <Separator className="flex-1" />
-                    <Badge variant="secondary" className="text-xs">
+                    <div className={styles.dateSeparator}></div>
+                    <div className={styles.dateCount}>
                       {activities.length} actividad{activities.length !== 1 ? 'es' : ''}
-                    </Badge>
+                    </div>
                   </div>
                   
-                  <div className="space-y-4 pl-4 border-l-2 border-gray-200">
-                    {activities.map((activity, index) => (
-                      <div key={activity.id}>
-                        <ActivityItem activity={activity} />
-                        {index < activities.length - 1 && <div className="h-4" />}
-                      </div>
+                  <div className={styles.activityList}>
+                    {activities.map((activity) => (
+                      <ActivityItemComponent key={activity.id} activity={activity} />
                     ))}
                   </div>
                 </div>
               ))
             ) : (
               /* Simple List */
-              <div className="space-y-4">
-                {timeline.activities.map((activity, index) => (
-                  <div key={activity.id}>
-                    <ActivityItem activity={activity} />
-                    {index < timeline.activities.length - 1 && <Separator className="my-4" />}
+              <div className={styles.simpleList}>
+                {timeline.activities.map((activity) => (
+                  <div key={activity.id} className={styles.simpleListItem}>
+                    <ActivityItemComponent activity={activity} />
                   </div>
                 ))}
               </div>
@@ -311,28 +366,28 @@ export function ActivityTimeline({
 
         {/* Quick Stats */}
         {timeline.hasActivities && !compact && (
-          <div className="mt-8 pt-6 border-t">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <div className="text-lg font-semibold text-blue-700">{timeline.stats.activitiesLast24h}</div>
-                <div className="text-xs text-blue-600">Últimas 24h</div>
+          <div className={styles.statsSection}>
+            <div className={styles.statsGrid}>
+              <div className={`${styles.statCard} ${styles.blue}`}>
+                <div className={`${styles.statValue} ${styles.blue}`}>{timeline.stats.activitiesLast24h}</div>
+                <div className={`${styles.statLabel} ${styles.blue}`}>Últimas 24h</div>
               </div>
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <div className="text-lg font-semibold text-green-700">{timeline.stats.activitiesLast7d}</div>
-                <div className="text-xs text-green-600">Últimos 7 días</div>
+              <div className={`${styles.statCard} ${styles.green}`}>
+                <div className={`${styles.statValue} ${styles.green}`}>{timeline.stats.activitiesLast7d}</div>
+                <div className={`${styles.statLabel} ${styles.green}`}>Últimos 7 días</div>
               </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg">
-                <div className="text-lg font-semibold text-purple-700">{timeline.stats.successRate}%</div>
-                <div className="text-xs text-purple-600">Tasa de Éxito</div>
+              <div className={`${styles.statCard} ${styles.purple}`}>
+                <div className={`${styles.statValue} ${styles.purple}`}>{timeline.stats.successRate}%</div>
+                <div className={`${styles.statLabel} ${styles.purple}`}>Tasa de Éxito</div>
               </div>
-              <div className="text-center p-3 bg-orange-50 rounded-lg">
-                <div className="text-lg font-semibold text-orange-700">{timeline.stats.failedActivities}</div>
-                <div className="text-xs text-orange-600">Actividades Fallidas</div>
+              <div className={`${styles.statCard} ${styles.orange}`}>
+                <div className={`${styles.statValue} ${styles.orange}`}>{timeline.stats.failedActivities}</div>
+                <div className={`${styles.statLabel} ${styles.orange}`}>Actividades Fallidas</div>
               </div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
