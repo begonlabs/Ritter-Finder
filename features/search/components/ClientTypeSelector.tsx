@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
+import styles from "../styles/ClientTypeSelector.module.css"
 
 const clientTypes = [
   { value: "industrial", label: "client.industrial" },
@@ -26,36 +27,41 @@ export function ClientTypeSelector({ selectedClientType, setSelectedClientType }
   const selectedType = clientTypes.find((type) => type.value === selectedClientType)
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">{t("search.client.title")}</CardTitle>
+    <Card className={styles.clientTypeSelector}>
+      <CardHeader className={styles.header}>
+        <CardTitle className={styles.title}>{t("search.client.title")}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className={styles.content}>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" role="combobox" className="w-full justify-between">
+            <Button variant="outline" role="combobox" className={styles.dropdownTrigger}>
               {selectedType ? t(selectedType.label) : t("search.client.placeholder")}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ChevronsUpDown className={styles.dropdownIcon} />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
+          <PopoverContent className={styles.popoverContent}>
             <Command>
               <CommandInput placeholder={t("search.client.search")} />
               <CommandList>
                 <CommandEmpty>{t("search.client.empty")}</CommandEmpty>
                 <CommandGroup>
                   {clientTypes.map((type) => (
-                    <CommandItem key={type.value} value={type.value} onSelect={() => setSelectedClientType(type.value)}>
-                      <div className="flex items-center gap-2 w-full">
+                    <CommandItem 
+                      key={type.value} 
+                      value={type.value} 
+                      onSelect={() => setSelectedClientType(type.value)}
+                      className={styles.commandItem}
+                    >
+                      <div className={styles.commandItemContent}>
                         <div
                           className={cn(
-                            "flex h-4 w-4 items-center justify-center rounded-sm border",
-                            selectedClientType === type.value ? "bg-ritter-gold border-ritter-gold" : "border-gray-300",
+                            styles.commandItemCheckbox,
+                            selectedClientType === type.value && styles.checked
                           )}
                         >
-                          {selectedClientType === type.value && <Check className="h-3 w-3 text-white" />}
+                          {selectedClientType === type.value && <Check className={styles.commandItemCheckIcon} />}
                         </div>
-                        <span>{t(type.label)}</span>
+                        <span className={styles.commandItemLabel}>{t(type.label)}</span>
                       </div>
                     </CommandItem>
                   ))}

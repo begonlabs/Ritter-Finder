@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
 import { useResponsive } from "../hooks/useResponsive"
 import type { NavigationProps, NavigationItem } from "../types"
+import styles from "../styles/DashboardNavigation.module.css"
 
 interface DashboardNavigationProps extends NavigationProps {
   className?: string
@@ -88,45 +89,47 @@ export function DashboardNavigation({
     }
   }
 
+  const containerClasses = cn(
+    styles.navigationContainer,
+    compact ? styles.compact : styles.normal,
+    className
+  )
+
+  const wrapperClasses = cn(
+    styles.navigationWrapper,
+    isMobile ? styles.mobile : styles.desktop
+  )
+
   return (
-    <div className={cn(
-      "bg-white border border-gray-200 rounded-xl shadow-sm mb-6",
-      compact ? "p-1" : "p-2",
-      className
-    )}>
-      <div className={cn(
-        "flex items-center space-x-1 overflow-x-auto",
-        isMobile ? "justify-start" : "justify-center md:justify-start"
-      )}>
+    <div className={containerClasses}>
+      <div className={wrapperClasses}>
         {navigationItems.map((item) => {
           const IconComponent = item.icon
           const isActive = activeTab === item.id
           const isDisabled = item.disabled
 
+          const itemClasses = cn(
+            styles.navigationItem,
+            compact ? styles.compact : styles.normal,
+            isActive ? styles.active : styles.inactive,
+            isDisabled && styles.disabled
+          )
+
           return (
-            <Button
+            <button
               key={item.id}
-              variant="ghost"
               onClick={() => handleTabChange(item.id)}
               disabled={isDisabled}
               data-onboarding={item.dataOnboarding}
-              className={cn(
-                "flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200 relative group",
-                compact ? "min-w-[60px] h-12" : "min-w-[80px] h-16",
-                isActive
-                  ? "bg-ritter-gold text-ritter-dark shadow-sm scale-105"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:scale-102",
-                isDisabled && "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-gray-600 hover:scale-100",
-              )}
+              className={itemClasses}
             >
               <IconComponent className={cn(
-                "mb-1 transition-colors",
-                compact ? "h-4 w-4" : "h-5 w-5",
-                isActive ? "text-ritter-dark" : "text-gray-500"
+                styles.navigationIcon,
+                compact ? styles.compact : styles.normal
               )} />
               <span className={cn(
-                "font-medium leading-none",
-                compact ? "text-[10px]" : "text-xs"
+                styles.navigationLabel,
+                compact ? styles.compact : styles.normal
               )}>
                 {item.label}
               </span>
@@ -134,10 +137,8 @@ export function DashboardNavigation({
               {/* Badge */}
               {item.badge && (
                 <div className={cn(
-                  "absolute bg-red-500 text-white text-xs rounded-full flex items-center justify-center",
-                  compact 
-                    ? "-top-0.5 -right-0.5 h-4 w-4" 
-                    : "-top-1 -right-1 h-5 w-5"
+                  styles.navigationBadge,
+                  compact ? styles.compact : styles.normal
                 )}>
                   {item.badge}
                 </div>
@@ -146,30 +147,30 @@ export function DashboardNavigation({
               {/* Active indicator */}
               {isActive && (
                 <div className={cn(
-                  "absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-ritter-dark rounded-full transition-all",
-                  compact ? "w-6 h-0.5" : "w-8 h-0.5"
+                  styles.activeIndicator,
+                  compact ? styles.compact : styles.normal
                 )} />
               )}
 
               {/* Hover effect */}
               {!isDisabled && (
-                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-5 bg-ritter-gold transition-opacity" />
+                <div className={styles.hoverEffect} />
               )}
-            </Button>
+            </button>
           )
         })}
       </div>
 
       {/* Progress indicator for small screens */}
       {isMobile && (
-        <div className="flex justify-center mt-2">
-          <div className="flex space-x-1">
+        <div className={styles.progressIndicator}>
+          <div className={styles.progressDots}>
             {navigationItems.map((item) => (
               <div
                 key={`indicator-${item.id}`}
                 className={cn(
-                  "w-1 h-1 rounded-full transition-colors",
-                  activeTab === item.id ? "bg-ritter-gold" : "bg-gray-300"
+                  styles.progressDot,
+                  activeTab === item.id ? styles.active : styles.inactive
                 )}
               />
             ))}

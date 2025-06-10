@@ -1,0 +1,320 @@
+/* LeadDetailsModal Styles - RitterFinder Results Feature */
+
+.modalContent {
+  max-width: 42rem;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modalHeader {
+  margin-bottom: 1.5rem;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Content Sections */
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contactGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 768px) {
+  .contactGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contactSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Field Groups */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fieldLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+}
+
+.fieldValue {
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+.fieldValueSecondary {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.fieldValueEmail {
+  color: #2563eb;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.fieldValueEmail:hover {
+  color: #1d4ed8;
+}
+
+/* Contact Details */
+.contactInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.contactIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+/* Website Link */
+.websiteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.websiteLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.externalIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Company Metrics */
+.metricsGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 640px) {
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metricValue {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.metricIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: #6b7280;
+}
+
+/* Industry Badge */
+.industryBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Confidence Badge */
+.confidenceBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border: none;
+}
+
+.confidenceHigh {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.confidenceMedium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.confidenceLow {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Notes Section */
+.notesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notesContent {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+/* Footer */
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .modalFooter {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+}
+
+.footerInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.footerIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.footerSource {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .modalContent {
+    max-width: calc(100vw - 2rem);
+    margin: 1rem;
+  }
+  
+  .contactGrid {
+    gap: 0.75rem;
+  }
+  
+  .contactSection {
+    gap: 0.5rem;
+  }
+  
+  .metricsGrid {
+    gap: 0.75rem;
+  }
+}
+
+/* Animation for badges */
+.confidenceBadge {
+  animation: fadeInScale 0.3s ease-out 0.2s both;
+}
+
+.industryBadge {
+  animation: fadeInScale 0.3s ease-out 0.15s both;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .modalContent {
+    border: 2px solid #000;
+  }
+  
+  .confidenceBadge,
+  .industryBadge {
+    border: 1px solid #000;
+  }
+  
+  .fieldValueEmail,
+  .websiteLink {
+    text-decoration: underline;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .modalContent,
+  .confidenceBadge,
+  .industryBadge {
+    animation: none;
+  }
+} 

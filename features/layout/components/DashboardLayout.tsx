@@ -7,6 +7,7 @@ import { useLayout } from "../hooks/useLayout"
 import { useResponsive } from "../hooks/useResponsive"
 import { cn } from "@/lib/utils"
 import type { DashboardLayoutProps, SidebarItem } from "../types"
+import styles from "../styles/DashboardLayout.module.css"
 
 interface ExtendedDashboardLayoutProps extends DashboardLayoutProps {
   showSidebar?: boolean
@@ -34,7 +35,7 @@ export function DashboardLayout({
   const { isMobile } = useResponsive()
 
   return (
-    <div className={cn("min-h-screen bg-gradient-to-br from-gray-50 to-gray-100", className)}>
+    <div className={cn(styles.dashboardLayout, className)}>
       {/* Header */}
       <DashboardHeader 
         user={user}
@@ -42,7 +43,7 @@ export function DashboardLayout({
         {...headerProps}
       />
 
-      <div className="flex">
+      <div className={styles.layoutContainer}>
         {/* Sidebar (optional) */}
         {showSidebar && !isMobile && (
           <Sidebar
@@ -62,22 +63,27 @@ export function DashboardLayout({
 
         {/* Main Content */}
         <main className={cn(
-          "flex-1 transition-all duration-300",
-          showSidebar && !isMobile && (state.sidebarCollapsed ? "ml-0" : "ml-0"),
-          "container mx-auto py-6 px-4"
+          styles.mainContent,
+          showSidebar && !isMobile && (state.sidebarCollapsed ? styles.withSidebarCollapsed : styles.withSidebarExpanded)
         )}>
-          {/* Navigation */}
-          <DashboardNavigation
-            activeTab={activeTab}
-            onTabChange={onTabChange}
-            searchComplete={searchComplete}
-            selectedLeadsCount={selectedLeadsCount}
-            {...navigationProps}
-          />
+          <div className={styles.contentContainer}>
+            {/* Navigation */}
+            <div className={styles.navigationSection}>
+              <DashboardNavigation
+                activeTab={activeTab}
+                onTabChange={onTabChange}
+                searchComplete={searchComplete}
+                selectedLeadsCount={selectedLeadsCount}
+                {...navigationProps}
+              />
+            </div>
 
-          {/* Page Content */}
-          <div className="space-y-6">
-            {children}
+            {/* Page Content */}
+            <div className={styles.pageContent}>
+              <div className={styles.contentArea}>
+                {children}
+              </div>
+            </div>
           </div>
         </main>
       </div>

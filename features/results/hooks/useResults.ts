@@ -77,11 +77,11 @@ export function useResults(leads: Lead[]) {
     ...filterActions,
   }
 
-  // Utility functions
+  // Utility functions - returns CSS module class names
   const getConfidenceColor = (confidence: number): string => {
-    if (confidence >= 90) return "bg-green-100 text-green-800"
-    if (confidence >= 80) return "bg-yellow-100 text-yellow-800"
-    return "bg-red-100 text-red-800"
+    if (confidence >= 90) return "confidenceHigh"
+    if (confidence >= 80) return "confidenceMedium"
+    return "confidenceLow"
   }
 
   const exportSelectedLeads = () => {
@@ -99,8 +99,10 @@ export function useResults(leads: Lead[]) {
       Revenue: lead.revenue,
     }))
 
+    if (selectedData.length === 0) return
+
     // Create CSV content
-    const headers = Object.keys(selectedData[0] || {})
+    const headers = Object.keys(selectedData[0])
     const csvContent = [
       headers.join(","),
       ...selectedData.map(row => 
@@ -130,4 +132,4 @@ export function useResults(leads: Lead[]) {
     getConfidenceColor,
     exportSelectedLeads,
   }
-} 
+}

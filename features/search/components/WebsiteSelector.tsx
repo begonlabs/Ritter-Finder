@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useLanguage, formatMessage } from "@/lib/language-context"
+import styles from "../styles/WebsiteSelector.module.css"
 
 const websites = [
   { value: "www.solarinstallers.com", label: "website.solarinstallers" },
@@ -42,28 +43,28 @@ export function WebsiteSelector({ selectedWebsites, setSelectedWebsites }: Websi
   }
 
   return (
-    <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Globe className="h-5 w-5 text-ritter-gold" />
+    <Card className={styles.websiteSelector}>
+      <CardHeader className={styles.header}>
+        <CardTitle className={styles.title}>
+          <Globe className={styles.titleIcon} />
           {t("search.websites.title")}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className={styles.content}>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
-              className="w-full justify-between h-12 border-2 border-dashed border-gray-300 hover:border-ritter-gold hover:bg-ritter-gold/5"
+              className={styles.dropdownTrigger}
             >
               {selectedWebsites.length > 0
                 ? formatMessage(t("search.websites.selected"), { count: selectedWebsites.length })
                 : t("search.websites.placeholder")}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ChevronsUpDown className={styles.dropdownIcon} />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0" align="start">
+          <PopoverContent className={styles.popoverContent} align="start">
             <Command>
               <CommandInput placeholder={t("search.websites.search")} />
               <CommandList>
@@ -74,22 +75,20 @@ export function WebsiteSelector({ selectedWebsites, setSelectedWebsites }: Websi
                       key={website.value}
                       value={website.value}
                       onSelect={() => toggleWebsite(website.value)}
-                      className="cursor-pointer"
+                      className={styles.commandItem}
                     >
-                      <div className="flex items-center gap-3 w-full">
+                      <div className={styles.commandItemContent}>
                         <div
                           className={cn(
-                            "flex h-4 w-4 items-center justify-center rounded-sm border",
-                            selectedWebsites.includes(website.value)
-                              ? "bg-ritter-gold border-ritter-gold"
-                              : "border-gray-300",
+                            styles.commandItemCheckbox,
+                            selectedWebsites.includes(website.value) && styles.checked
                           )}
                         >
-                          {selectedWebsites.includes(website.value) && <Check className="h-3 w-3 text-white" />}
+                          {selectedWebsites.includes(website.value) && <Check className={styles.commandItemCheckIcon} />}
                         </div>
-                        <div className="flex-1">
-                          <span className="font-medium">{t(website.label)}</span>
-                          <div className="text-xs text-gray-500">{website.value}</div>
+                        <div className={styles.commandItemDetails}>
+                          <span className={styles.commandItemLabel}>{t(website.label)}</span>
+                          <div className={styles.commandItemUrl}>{website.value}</div>
                         </div>
                       </div>
                     </CommandItem>
@@ -101,29 +100,29 @@ export function WebsiteSelector({ selectedWebsites, setSelectedWebsites }: Websi
         </Popover>
 
         {selectedWebsites.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Sitios seleccionados:</span>
-              <Button variant="ghost" size="sm" onClick={clearAll} className="text-red-500 hover:text-red-700">
-                <X className="h-3 w-3 mr-1" />
+          <div className={styles.selectedSection}>
+            <div className={styles.selectedHeader}>
+              <span className={styles.selectedLabel}>Sitios seleccionados:</span>
+              <Button variant="ghost" size="sm" onClick={clearAll} className={styles.clearButton}>
+                <X className={styles.clearButtonIcon} />
                 Limpiar todo
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className={styles.badgesContainer}>
               {selectedWebsites.map((websiteValue) => {
                 const website = websites.find((w) => w.value === websiteValue)
                 return (
                   <Badge
                     key={websiteValue}
                     variant="secondary"
-                    className="px-3 py-1 bg-ritter-gold/10 text-ritter-dark border border-ritter-gold/20 hover:bg-ritter-gold/20 transition-colors"
+                    className={styles.badge}
                   >
                     {website ? t(website.label) : websiteValue}
                     <button
-                      className="ml-2 text-xs hover:text-red-600 transition-colors"
+                      className={styles.badgeRemoveButton}
                       onClick={() => removeWebsite(websiteValue)}
                     >
-                      <X className="h-3 w-3" />
+                      <X className={styles.badgeRemoveIcon} />
                     </button>
                   </Badge>
                 )

@@ -20,6 +20,7 @@ import { useLayout } from "../hooks/useLayout"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import type { HeaderProps } from "../types"
+import styles from "../styles/DashboardHeader.module.css"
 
 interface DashboardHeaderProps extends Partial<HeaderProps> {
   className?: string
@@ -46,83 +47,81 @@ export function DashboardHeader({
   }
 
   return (
-    <header className={`bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40 ${className}`}>
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+    <header className={`${styles.header} ${className}`}>
+      <div className={styles.headerContainer}>
         {/* Logo */}
-        <div className="flex items-center">
+        <div className={styles.logoSection}>
           <Image
             src="/images/ritterlogo.png"
             alt="RitterMor Energy"
             width={150}
             height={60}
             priority
-            className="h-auto"
+            className={styles.logo}
           />
         </div>
 
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center space-x-3">
+        <div className={styles.desktopActions}>
           <LanguageSelector />
 
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative hover:bg-gray-100">
-                <Bell className="h-5 w-5 text-gray-600" />
+              <button className={styles.actionButton}>
+                <Bell className={styles.actionIcon} />
                 {unreadCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-ritter-gold text-ritter-dark text-xs">
+                  <div className={styles.notificationBadge}>
                     {unreadCount}
-                  </Badge>
+                  </div>
                 )}
-              </Button>
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel className="flex items-center justify-between">
-                Notificaciones
+            <DropdownMenuContent align="end" className={styles.dropdownContent}>
+              <div className={styles.dropdownHeader}>
+                <h3 className={styles.dropdownTitle}>Notificaciones</h3>
                 {unreadCount > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <button
                     onClick={() => state.notifications.forEach(n => !n.read && actions.markNotificationRead(n.id))}
-                    className="h-6 text-xs"
+                    className={styles.markAllButton}
                   >
                     Marcar todas
-                  </Button>
+                  </button>
                 )}
-              </DropdownMenuLabel>
+              </div>
               <DropdownMenuSeparator />
-              <div className="max-h-80 overflow-auto">
+              <div className={styles.notificationList}>
                 {state.notifications.length > 0 ? (
                   state.notifications.map((notification) => (
-                    <DropdownMenuItem 
+                    <div 
                       key={notification.id}
-                      className="cursor-pointer"
+                      className={styles.notificationItem}
                       onClick={() => handleNotificationClick(notification)}
                     >
-                      <div className="flex flex-col space-y-1 w-full">
-                        <div className="flex items-start justify-between">
-                          <span className={`font-medium ${!notification.read ? 'text-ritter-dark' : 'text-gray-600'}`}>
-                            {notification.title}
-                          </span>
-                          {!notification.read && (
-                            <div className="w-2 h-2 bg-ritter-gold rounded-full flex-shrink-0 ml-2 mt-1" />
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {notification.description}
+                      <div className={styles.notificationHeader}>
+                        <span className={`${styles.notificationTitle} ${!notification.read ? styles.unread : ''}`}>
+                          {notification.title}
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(notification.timestamp, { 
-                            addSuffix: true, 
-                            locale: es 
-                          })}
-                        </span>
+                        {!notification.read && (
+                          <div className={styles.unreadIndicator} />
+                        )}
                       </div>
-                    </DropdownMenuItem>
+                      <p className={styles.notificationDescription}>
+                        {notification.description}
+                      </p>
+                      <p className={styles.notificationTime}>
+                        {formatDistanceToNow(notification.timestamp, { 
+                          addSuffix: true, 
+                          locale: es 
+                        })}
+                      </p>
+                    </div>
                   ))
                 ) : (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
-                    No hay notificaciones
+                  <div className={styles.emptyNotifications}>
+                    <p className={styles.emptyNotificationsText}>
+                      No hay notificaciones
+                    </p>
                   </div>
                 )}
               </div>
@@ -132,9 +131,9 @@ export function DashboardHeader({
           {/* Profile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-gray-100">
-                <User className="h-5 w-5 text-gray-600" />
-              </Button>
+              <button className={styles.actionButton}>
+                <User className={styles.actionIcon} />
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{state.user?.name || 'Usuario Demo'}</DropdownMenuLabel>
@@ -155,29 +154,29 @@ export function DashboardHeader({
         <div className="md:hidden">
           <Sheet open={state.mobileMenuOpen} onOpenChange={actions.toggleMobileMenu}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-              </Button>
+              <button className={styles.mobileMenuButton}>
+                <Menu className={styles.mobileMenuIcon} />
+              </button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-white">
-              <div className="flex flex-col space-y-4 mt-8">
-                <div className="flex items-center justify-center space-x-4 pb-4 border-b">
+            <SheetContent side="right" className={styles.mobileSidebar}>
+              <div className={styles.mobileActions}>
+                <div className={styles.mobileActionGroup}>
                   <LanguageSelector />
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5 text-gray-600" />
+                  <button className={styles.actionButton}>
+                    <Bell className={styles.actionIcon} />
                     {unreadCount > 0 && (
-                      <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center bg-ritter-gold text-ritter-dark text-xs">
+                      <div className={styles.notificationBadge}>
                         {unreadCount}
-                      </Badge>
+                      </div>
                     )}
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={onProfileClick}>
-                    <User className="h-5 w-5 text-gray-600" />
-                  </Button>
+                  </button>
+                  <button className={styles.actionButton} onClick={onProfileClick}>
+                    <User className={styles.actionIcon} />
+                  </button>
                 </div>
                 <Link 
                   href="/" 
-                  className="px-4 py-2 rounded-md hover:bg-gray-100 text-red-500"
+                  className={styles.mobileLogoutLink}
                   onClick={onLogout}
                 >
                   {t("nav.logout")}

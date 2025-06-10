@@ -23,6 +23,7 @@ import { useLanguage, formatMessage } from "@/lib/language-context"
 import { LeadDetailsModal } from "./LeadDetailsModal"
 import { useResultsFiltering } from "../hooks/useResultsFiltering"
 import type { Lead } from "../types"
+import styles from "../styles/ResultsTable.module.css"
 
 interface ResultsTableAdapterProps {
   leads: Lead[]
@@ -52,10 +53,11 @@ export function ResultsTableAdapter({
     actions,
   } = useResultsFiltering(leads, selectedLeads)
 
-  const getConfidenceColor = (confidence: number): string => {
-    if (confidence >= 90) return "bg-green-100 text-green-800"
-    if (confidence >= 80) return "bg-yellow-100 text-yellow-800"
-    return "bg-red-100 text-red-800"
+  // Map confidence levels to CSS module classes
+  const getConfidenceStyle = (confidence: number): string => {
+    if (confidence >= 90) return styles.confidenceHigh
+    if (confidence >= 80) return styles.confidenceMedium
+    return styles.confidenceLow
   }
 
   const exportSelectedLeads = () => {
@@ -110,9 +112,9 @@ export function ResultsTableAdapter({
   const getSortIcon = (field: keyof Lead) => {
     if (sorting.sortField === field) {
       return sorting.sortDirection === "asc" ? (
-        <SortAsc className="ml-1 h-3 w-3" />
+        <SortAsc className={styles.sortIcon} />
       ) : (
-        <SortDesc className="ml-1 h-3 w-3" />
+        <SortDesc className={styles.sortIcon} />
       )
     }
     return null
@@ -121,36 +123,36 @@ export function ResultsTableAdapter({
   const allSelected = filteredLeads.length > 0 && filteredLeads.every((lead) => selectedLeads.includes(lead.id))
 
   return (
-    <div className="space-y-6">
+    <div className={styles.tableContainer}>
       {/* Header with Search and Actions */}
-      <Card className="border-0 shadow-sm">
+      <Card className={styles.headerCard}>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-xl">Resultados de Leads</CardTitle>
-              <p className="text-sm text-muted-foreground">
+          <div className={styles.headerContent}>
+            <div className={styles.headerInfo}>
+              <CardTitle className={styles.headerTitle}>Resultados de Leads</CardTitle>
+              <p className={styles.headerSubtitle}>
                 {formatMessage("Se encontraron {total} leads. {selected} seleccionados.", {
                   total: filteredLeads.length,
                   selected: selectedLeads.length,
                 })}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className={styles.headerActions}>
+              <div className={styles.searchContainer}>
+                <Search className={styles.searchIcon} />
                 <Input
                   placeholder="Buscar leads..."
-                  className="pl-8 w-64"
+                  className={styles.searchInput}
                   value={filters.searchTerm}
                   onChange={(e) => actions.setSearchTerm(e.target.value)}
                 />
               </div>
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
+              <Button variant="outline" size="icon" className={styles.actionButton}>
+                <Filter className={styles.actionButtonIcon} />
               </Button>
               {selectedLeads.length > 0 && (
-                <Button variant="outline" size="icon" onClick={exportSelectedLeads}>
-                  <Download className="h-4 w-4" />
+                <Button variant="outline" size="icon" className={styles.actionButton} onClick={exportSelectedLeads}>
+                  <Download className={styles.actionButtonIcon} />
                 </Button>
               )}
             </div>
@@ -159,96 +161,96 @@ export function ResultsTableAdapter({
       </Card>
 
       {/* Results Table */}
-      <Card className="border-0 shadow-sm">
+      <Card className={styles.tableCard}>
         <CardContent className="p-0">
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-12">
+          <div className={styles.tableWrapper}>
+            <Table className={styles.table}>
+              <TableHeader className={styles.tableHeader}>
+                <TableRow className={styles.tableHeaderRow}>
+                  <TableHead className={`${styles.tableHeaderCell} ${styles.checkboxCell}`}>
                     <Checkbox 
                       checked={allSelected} 
                       onCheckedChange={onSelectAll} 
                       aria-label="Select all" 
                     />
                   </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("name")} className="h-auto p-0 font-semibold">
+                  <TableHead className={styles.tableHeaderCell}>
+                    <Button variant="ghost" onClick={() => handleSort("name")} className={styles.sortButton}>
                       Contacto
                       {getSortIcon("name")}
                     </Button>
                   </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("company")} className="h-auto p-0 font-semibold">
+                  <TableHead className={styles.tableHeaderCell}>
+                    <Button variant="ghost" onClick={() => handleSort("company")} className={styles.sortButton}>
                       Empresa
                       {getSortIcon("company")}
                     </Button>
                   </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("confidence")} className="h-auto p-0 font-semibold">
+                  <TableHead className={styles.tableHeaderCell}>
+                    <Button variant="ghost" onClick={() => handleSort("confidence")} className={styles.sortButton}>
                       Confianza
                       {getSortIcon("confidence")}
                     </Button>
                   </TableHead>
-                  <TableHead className="hidden lg:table-cell">Industria</TableHead>
-                  <TableHead className="hidden xl:table-cell">Ubicación</TableHead>
-                  <TableHead className="text-center">Acciones</TableHead>
+                  <TableHead className={`${styles.tableHeaderCell} hidden lg:table-cell`}>Industria</TableHead>
+                  <TableHead className={`${styles.tableHeaderCell} hidden xl:table-cell`}>Ubicación</TableHead>
+                  <TableHead className={`${styles.tableHeaderCell} text-center`}>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className={styles.tableBody}>
                 {filteredLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      No se encontraron resultados.
+                    <TableCell colSpan={7} className={styles.emptyState}>
+                      <p className={styles.emptyStateText}>No se encontraron resultados.</p>
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredLeads.map((lead) => (
-                    <TableRow key={lead.id} className="hover:bg-gray-50">
-                      <TableCell>
+                    <TableRow key={lead.id} className={styles.tableRow}>
+                      <TableCell className={`${styles.tableCell} ${styles.checkboxCell}`}>
                         <Checkbox
                           checked={selectedLeads.includes(lead.id)}
                           onCheckedChange={() => onSelectLead(lead.id)}
                           aria-label={`Select ${lead.name}`}
                         />
                       </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          <p className="font-medium">{lead.name}</p>
-                          <p className="text-sm text-muted-foreground">{lead.position}</p>
-                          <p className="text-sm text-blue-600">{lead.email}</p>
+                      <TableCell className={styles.tableCell}>
+                        <div className={styles.contactInfo}>
+                          <p className={styles.contactName}>{lead.name}</p>
+                          <p className={styles.contactPosition}>{lead.position}</p>
+                          <p className={styles.contactEmail}>{lead.email}</p>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          <p className="font-medium">{lead.company}</p>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Users className="h-3 w-3" />
+                      <TableCell className={styles.tableCell}>
+                        <div className={styles.companyInfo}>
+                          <p className={styles.companyName}>{lead.company}</p>
+                          <div className={styles.companyDetails}>
+                            <Users className={styles.companyIcon} />
                             {lead.employees}
                           </div>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Euro className="h-3 w-3" />
+                          <div className={styles.companyDetails}>
+                            <Euro className={styles.companyIcon} />
                             {lead.revenue}
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge className={`${getConfidenceColor(lead.confidence)} border-0`}>
+                      <TableCell className={styles.tableCell}>
+                        <span className={`${styles.confidenceBadge} ${getConfidenceStyle(lead.confidence)}`}>
                           {lead.confidence}%
-                        </Badge>
+                        </span>
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        <Badge variant="outline">{lead.industry}</Badge>
+                      <TableCell className={`${styles.tableCell} hidden lg:table-cell`}>
+                        <span className={styles.industryBadge}>{lead.industry}</span>
                       </TableCell>
-                      <TableCell className="hidden xl:table-cell">
-                        <div className="flex items-center gap-1 text-sm">
-                          <MapPin className="h-3 w-3" />
+                      <TableCell className={`${styles.tableCell} hidden xl:table-cell`}>
+                        <div className={styles.locationInfo}>
+                          <MapPin className={styles.locationIcon} />
                           {lead.location}
                         </div>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Button variant="ghost" size="sm" onClick={() => handleViewLead(lead)}>
-                          <Eye className="h-4 w-4" />
+                      <TableCell className={`${styles.tableCell} text-center`}>
+                        <Button variant="ghost" size="sm" className={styles.viewButton} onClick={() => handleViewLead(lead)}>
+                          <Eye className={styles.viewButtonIcon} />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -262,28 +264,28 @@ export function ResultsTableAdapter({
 
       {/* Action Bar */}
       {showActions && selectedLeads.length > 0 && (
-        <Card className="border-0 shadow-sm bg-ritter-gold/5 border-ritter-gold/20">
-          <CardContent className="py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="bg-ritter-gold text-ritter-dark rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+        <Card className={styles.actionBar}>
+          <CardContent className={styles.actionBarContent}>
+            <div className={styles.actionBarInner}>
+              <div className={styles.actionBarLeft}>
+                <div className={styles.selectionCounter}>
+                  <div className={styles.selectionBadge}>
                     {selectedLeads.length}
                   </div>
-                  <span className="font-medium">
+                  <span className={styles.selectionText}>
                     {selectedLeads.length === 1 ? "lead seleccionado" : "leads seleccionados"}
                   </span>
                 </div>
-                <div className="text-sm text-muted-foreground">Listo para crear campaña de email</div>
+                <div className={styles.selectionSubtext}>Listo para crear campaña de email</div>
               </div>
               {onProceedToCampaign && (
                 <Button
                   onClick={onProceedToCampaign}
-                  className="bg-ritter-gold hover:bg-amber-500 text-ritter-dark"
+                  className={styles.campaignButton}
                   size="lg"
                 >
                   Crear Campaña de Email
-                  <ExternalLink className="ml-2 h-4 w-4" />
+                  <ExternalLink className={styles.campaignButtonIcon} />
                 </Button>
               )}
             </div>

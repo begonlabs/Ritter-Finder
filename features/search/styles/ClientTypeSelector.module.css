@@ -1,0 +1,348 @@
+/* ClientTypeSelector Styles - RitterFinder Search Feature */
+
+/* Main Container */
+.clientTypeSelector {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: white;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.3s ease-out 0.1s both;
+}
+
+.clientTypeSelector:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Header */
+.header {
+  padding-bottom: 0.75rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Dropdown Trigger */
+.dropdownTrigger {
+  width: 100%;
+  justify-content: space-between;
+  height: 3rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.dropdownTrigger:hover {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dropdownTrigger:focus {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  outline: none;
+}
+
+.dropdownIcon {
+  margin-left: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.dropdownTrigger[data-state="open"] .dropdownIcon {
+  transform: rotate(180deg);
+}
+
+/* Popover Content */
+.popoverContent {
+  width: var(--radix-popover-trigger-width);
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background: white;
+  animation: slideDownAndFade 0.2s ease-out;
+  z-index: 50;
+}
+
+/* Command Input */
+.commandInput {
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  border-radius: 0;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.commandInput:focus {
+  border-color: #f59e0b;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Command List */
+.commandList {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.commandEmpty {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Command Items */
+.commandItem {
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 2px 0;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.commandItem:hover {
+  background: #f8fafc;
+}
+
+.commandItem:focus {
+  background: #fef3c7;
+}
+
+.commandItem[data-selected="true"] {
+  background: #fef3c7;
+}
+
+.commandItemContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.commandItemCheckbox {
+  display: flex;
+  height: 1rem;
+  width: 1rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.commandItemCheckbox.checked {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: white;
+}
+
+.commandItemCheckIcon {
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.commandItemLabel {
+  font-weight: 500;
+  color: #1f2937;
+  flex: 1;
+}
+
+/* Selected State Indicator */
+.selectedIndicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+/* Loading State */
+.loading {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #f3f4f6;
+  border-top: 2px solid #f59e0b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+/* Placeholder Text */
+.placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.selectedText {
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .title {
+    font-size: 1rem;
+  }
+  
+  .dropdownTrigger {
+    height: 2.75rem;
+    font-size: 0.875rem;
+    padding: 0 0.75rem;
+  }
+  
+  .commandInput {
+    font-size: 0.8125rem;
+    padding: 0.625rem;
+  }
+  
+  .commandItem {
+    padding: 0.625rem;
+  }
+  
+  .commandItemLabel {
+    font-size: 0.875rem;
+  }
+  
+  .selectedIndicator {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.375rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .clientTypeSelector {
+    border: 2px solid #000;
+  }
+  
+  .dropdownTrigger {
+    border-color: #000;
+  }
+  
+  .commandItemCheckbox.checked {
+    background: #000;
+    border-color: #000;
+  }
+  
+  .selectedIndicator {
+    background: #000;
+    color: #fff;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .clientTypeSelector,
+  .dropdownTrigger,
+  .commandItem,
+  .commandItemCheckbox {
+    transition: none;
+  }
+  
+  .clientTypeSelector,
+  .popoverContent {
+    animation: none;
+  }
+  
+  .clientTypeSelector:hover {
+    transform: none;
+  }
+  
+  .dropdownIcon {
+    transition: none;
+  }
+  
+  .loadingSpinner {
+    animation: none;
+  }
+}
+
+/* Focus Visible Support */
+@supports selector(:focus-visible) {
+  .dropdownTrigger:focus {
+    outline: none;
+  }
+  
+  .dropdownTrigger:focus-visible {
+    outline: 2px solid #f59e0b;
+    outline-offset: 2px;
+  }
+  
+  .commandItem:focus {
+    outline: none;
+  }
+  
+  .commandItem:focus-visible {
+    outline: 2px solid #f59e0b;
+    outline-offset: -2px;
+  }
+} 

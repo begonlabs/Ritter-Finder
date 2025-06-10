@@ -26,3 +26,18 @@ export type {
   ClientType,
   Website
 } from "./types"
+
+// Styles - CSS Modules
+import searchPageStyles from "./styles/SearchPage.module.css"
+import searchFormStyles from "./styles/SearchForm.module.css"
+import websiteSelectorStyles from "./styles/WebsiteSelector.module.css"
+import clientTypeSelectorStyles from "./styles/ClientTypeSelector.module.css"
+import scrapingSimulationStyles from "./styles/ScrapingSimulation.module.css"
+
+export { 
+  searchPageStyles,
+  searchFormStyles,
+  websiteSelectorStyles,
+  clientTypeSelectorStyles,
+  scrapingSimulationStyles
+}

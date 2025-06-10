@@ -1,7 +1,9 @@
 import React from 'react'
+import { CheckCircle } from 'lucide-react'
 import { SearchForm } from '../components/SearchForm'
 import { useSearch } from '../hooks/useSearch'
 import { LayoutPage, PageContainer, SectionCard } from '../../layout'
+import styles from '../styles/SearchPage.module.css'
 
 export const SearchPage: React.FC = () => {
   const { 
@@ -13,32 +15,37 @@ export const SearchPage: React.FC = () => {
   } = useSearch()
 
   return (
-    <LayoutPage 
-      title="Lead Search"
-      subtitle="Configure your search parameters and find potential leads"
-    >
-      <PageContainer>
-        <SectionCard title="Search Configuration">
-          <SearchForm 
-            state={state}
-            actions={actions}
-            canStartSearch={canStartSearch}
-          />
-        </SectionCard>
-
-        {results && (
-          <SectionCard title="Search Results">
-            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-              <p className="text-green-800 font-medium">
-                ✓ Found {results.leads?.length || 0} potential leads
-              </p>
-              <p className="text-green-600 text-sm mt-1">
-                Search completed in {(results.searchTime / 1000).toFixed(1)} seconds
-              </p>
-            </div>
+    <div className={styles.searchPage}>
+      <LayoutPage 
+        title="Lead Search"
+        subtitle="Configure your search parameters and find potential leads"
+      >
+        <PageContainer>
+          <SectionCard title="Search Configuration">
+            <SearchForm 
+              state={state}
+              actions={actions}
+              canStartSearch={canStartSearch}
+            />
           </SectionCard>
-        )}
-      </PageContainer>
-    </LayoutPage>
+
+          {results && (
+            <div className={styles.resultsSection}>
+              <SectionCard title="Search Results">
+                <div className={styles.successState}>
+                  <p className={styles.successMessage}>
+                    <CheckCircle className={styles.successIcon} />
+                    ✓ Found {results.leads?.length || 0} potential leads
+                  </p>
+                  <p className={styles.successDetails}>
+                    Search completed in {(results.searchTime / 1000).toFixed(1)} seconds
+                  </p>
+                </div>
+              </SectionCard>
+            </div>
+          )}
+        </PageContainer>
+      </LayoutPage>
+    </div>
   )
 } 

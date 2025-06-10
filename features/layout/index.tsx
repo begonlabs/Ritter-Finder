@@ -5,6 +5,10 @@ export { LayoutPage, PageContainer, SectionCard } from "./pages/LayoutPage"
 
 // Styles
 export { default as LayoutPageStyles } from "./styles/LayoutPage.module.css"
+export { default as SidebarStyles } from "./styles/Sidebar.module.css"
+export { default as DashboardNavigationStyles } from "./styles/DashboardNavigation.module.css"
+export { default as DashboardLayoutStyles } from "./styles/DashboardLayout.module.css"
+export { default as DashboardHeaderStyles } from "./styles/DashboardHeader.module.css"
 
 // Components
 export { DashboardHeader } from "./components/DashboardHeader"

@@ -1,0 +1,382 @@
+/* DashboardNavigation Styles - RitterFinder Layout System */
+
+.navigationContainer {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navigationContainer.compact {
+  padding: 0.25rem;
+}
+
+.navigationContainer.normal {
+  padding: 0.5rem;
+}
+
+/* Navigation Items */
+.navigationWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigationWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.navigationWrapper.mobile {
+  justify-content: flex-start;
+}
+
+.navigationWrapper.desktop {
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .navigationWrapper.desktop {
+    justify-content: flex-start;
+  }
+}
+
+/* Navigation Item */
+.navigationItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  font-family: inherit;
+  overflow: visible;
+  animation: fadeInScale 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.navigationItem.compact {
+  min-width: 3.75rem;
+  height: 3rem;
+  padding: 0.5rem;
+}
+
+.navigationItem.normal {
+  min-width: 5rem;
+  height: 4rem;
+  padding: 0.75rem;
+}
+
+/* States */
+.navigationItem.active {
+  background: #f59e0b;
+  color: #92400e;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  transform: scale(1.05);
+}
+
+.navigationItem.inactive {
+  color: #6b7280;
+}
+
+.navigationItem.inactive:hover:not(.disabled) {
+  background: #f9fafb;
+  color: #1f2937;
+  transform: scale(1.02);
+}
+
+.navigationItem.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #d1d5db;
+}
+
+.navigationItem.disabled:hover {
+  background: transparent;
+  transform: scale(1);
+}
+
+/* Icon */
+.navigationIcon {
+  margin-bottom: 0.25rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.navigationIcon.compact {
+  width: 1rem;
+  height: 1rem;
+}
+
+.navigationIcon.normal {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.navigationItem.active .navigationIcon {
+  color: #92400e;
+  transform: scale(1.1);
+}
+
+.navigationItem.inactive .navigationIcon {
+  color: #9ca3af;
+}
+
+/* Label */
+.navigationLabel {
+  font-weight: 500;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.navigationLabel.compact {
+  font-size: 0.625rem;
+}
+
+.navigationLabel.normal {
+  font-size: 0.75rem;
+}
+
+/* Badge */
+.navigationBadge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ef4444;
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 10;
+  animation: pulse 2s infinite;
+}
+
+.navigationBadge.compact {
+  top: -0.125rem;
+  right: -0.125rem;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.625rem;
+}
+
+.navigationBadge.normal {
+  top: -0.25rem;
+  right: -0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.75rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Active Indicator */
+.activeIndicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.activeIndicator.compact {
+  width: 1.5rem;
+  height: 0.125rem;
+}
+
+.activeIndicator.normal {
+  width: 2rem;
+  height: 0.125rem;
+}
+
+/* Hover Effect */
+.hoverEffect {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+  opacity: 0;
+  background: #f59e0b;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.navigationItem:hover:not(.disabled) .hoverEffect {
+  opacity: 0.05;
+}
+
+/* Progress Indicator (Mobile) */
+.progressIndicator {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.progressDots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.progressDot {
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.progressDot.active {
+  background: #f59e0b;
+}
+
+.progressDot.inactive {
+  background: #d1d5db;
+}
+
+/* Animation Delays */
+.navigationItem:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.navigationItem:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.navigationItem:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.navigationItem:nth-child(4) {
+  animation-delay: 0.25s;
+}
+
+.navigationItem:nth-child(5) {
+  animation-delay: 0.3s;
+}
+
+.navigationItem:nth-child(6) {
+  animation-delay: 0.35s;
+}
+
+.navigationItem:nth-child(7) {
+  animation-delay: 0.4s;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .navigationWrapper {
+    padding: 0.25rem;
+  }
+  
+  .navigationItem {
+    min-width: 3rem;
+    height: 2.5rem;
+  }
+  
+  .navigationIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  
+  .navigationLabel {
+    font-size: 0.5rem;
+  }
+}
+
+/* Accessibility */
+.navigationItem:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.navigationItem[data-onboarding] {
+  position: relative;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .navigationItem.active {
+    border: 2px solid #000;
+  }
+  
+  .navigationBadge {
+    border: 1px solid #000;
+  }
+  
+  .activeIndicator {
+    background: #000;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .navigationContainer,
+  .navigationItem,
+  .activeIndicator,
+  .hoverEffect {
+    animation: none;
+    transition: none;
+  }
+  
+  .navigationItem:hover {
+    transform: none;
+  }
+  
+  .navigationItem.active {
+    transform: none;
+  }
+  
+  .navigationBadge {
+    animation: none;
+  }
+} 

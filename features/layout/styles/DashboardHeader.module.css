@@ -1,0 +1,472 @@
+/* DashboardHeader Styles - RitterFinder Layout System */
+
+.header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header Container */
+.headerContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo Section */
+.logoSection {
+  display: flex;
+  align-items: center;
+  animation: fadeInLeft 0.4s ease-out 0.1s both;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.logo {
+  height: auto;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* Desktop Actions */
+.desktopActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: fadeInRight 0.4s ease-out 0.1s both;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopActions {
+    display: none;
+  }
+}
+
+/* Action Button */
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  position: relative;
+}
+
+.actionButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+  transform: scale(1.05);
+}
+
+.actionButton:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.actionIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.actionButton:hover .actionIcon {
+  transform: scale(1.1);
+}
+
+/* Notification Badge */
+.notificationBadge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  background: #f59e0b;
+  color: #92400e;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Dropdown Menu */
+.dropdownContent {
+  width: 20rem;
+  max-height: 20rem;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  animation: dropdownSlideIn 0.2s ease-out;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafbfc;
+}
+
+.dropdownTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.markAllButton {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.markAllButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Notification List */
+.notificationList {
+  max-height: 20rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.notificationList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.notificationList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notificationList::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.notificationItem {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.notificationItem:hover {
+  background: #f9fafb;
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.notificationTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.notificationTitle.unread {
+  color: #92400e;
+  font-weight: 600;
+}
+
+.unreadIndicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #f59e0b;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  margin-top: 0.125rem;
+  animation: glow 2s infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 4px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  }
+}
+
+.notificationDescription {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.4;
+}
+
+.notificationTime {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Empty State */
+.emptyNotifications {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.emptyNotificationsText {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Mobile Menu */
+.mobileMenuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .mobileMenuButton {
+    display: flex;
+  }
+}
+
+.mobileMenuButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.mobileMenuIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Mobile Sidebar */
+.mobileSidebar {
+  background: white;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.mobileActionGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.mobileLogoutLink {
+  display: block;
+  padding: 1rem;
+  border-radius: 6px;
+  background: transparent;
+  color: #ef4444;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.mobileLogoutLink:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* User Info */
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: #1f2937;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.userAvatar {
+  width: 2rem;
+  height: 2rem;
+  background: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+/* Accessibility */
+.skipToMain {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #1f2937;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skipToMain:focus {
+  top: 6px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .header {
+    border-bottom-color: #000;
+  }
+  
+  .notificationBadge {
+    border: 1px solid #000;
+  }
+  
+  .dropdownContent {
+    border-color: #000;
+  }
+  
+  .unreadIndicator {
+    border: 1px solid #000;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .logoSection,
+  .desktopActions,
+  .dropdownContent {
+    animation: none;
+  }
+  
+  .actionButton,
+  .logo {
+    transition: none;
+  }
+  
+  .actionButton:hover {
+    transform: none;
+  }
+  
+  .logo:hover {
+    transform: none;
+  }
+  
+  .notificationBadge,
+  .unreadIndicator {
+    animation: none;
+  }
+} 

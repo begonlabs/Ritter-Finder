@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { useLanguage, formatMessage } from "@/lib/language-context"
+import styles from "../styles/ScrapingSimulation.module.css"
 
 interface ScrapingSimulationProps {
   websites: string[]
@@ -57,32 +58,25 @@ export function ScrapingSimulation({ websites }: ScrapingSimulationProps) {
   }, [websites, progress, t])
 
   return (
-    <Card className="mt-6 border-0 shadow-sm bg-white">
-      <CardContent className="pt-6">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-ritter-dark">{t("search.progress")}</h3>
-            <span className="text-sm font-medium text-ritter-gold">{progress}%</span>
-          </div>
+    <Card className={styles.scrapingSimulation}>
+      <CardContent className={styles.content}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{t("search.progress")}</h3>
+          <span className={styles.progressPercentage}>{progress}%</span>
+        </div>
 
-          <div className="relative">
-            <Progress value={progress} className="h-2 bg-gray-200" />
-            <style jsx>{`
-              :global(.progress-indicator) {
-                background-color: #F2B705 !important;
-              }
-            `}</style>
-          </div>
+        <div className={styles.progressContainer}>
+          <Progress value={progress} className={styles.progressBar} />
+        </div>
 
-          <div className="space-y-2">
-            {currentWebsite && (
-              <p className="text-sm text-gray-700">
-                {formatMessage(t("search.analyzing"), { website: currentWebsite })}
-              </p>
-            )}
+        <div className={styles.messagesContainer}>
+          {currentWebsite && (
+            <p className={styles.currentWebsite}>
+              {formatMessage(t("search.analyzing"), { website: currentWebsite })}
+            </p>
+          )}
 
-            {message && <p className="text-sm text-gray-700">{message}</p>}
-          </div>
+          {message && <p className={styles.stepMessage}>{message}</p>}
         </div>
       </CardContent>
     </Card>

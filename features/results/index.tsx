@@ -2,8 +2,7 @@
 export { ResultsPage } from "./pages/ResultsPage"
 
 // Components
-export { ResultsTable } from "./components/ResultsTable"  // Standalone with internal state
-export { ResultsTableAdapter } from "./components/ResultsTableAdapter"  // For external state integration
+export { ResultsTableAdapter as ResultsTable } from "./components/ResultsTableAdapter"  // Main table component (external state)
 export { LeadDetailsModal } from "./components/LeadDetailsModal"
 
 // Hooks
@@ -29,5 +28,12 @@ export type {
 } from "./types"
 
 // Styles - CSS Modules
-import resultsStyles from './styles/ResultsPage.module.css'
-export { resultsStyles }
+import resultsPageStyles from './styles/ResultsPage.module.css'
+import resultsTableStyles from './styles/ResultsTable.module.css'
+import leadDetailsModalStyles from './styles/LeadDetailsModal.module.css'
+
+export { 
+  resultsPageStyles, 
+  resultsTableStyles, 
+  leadDetailsModalStyles 
+}

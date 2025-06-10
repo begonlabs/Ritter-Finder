@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { useLayout } from "../hooks/useLayout"
 import { useResponsive } from "../hooks/useResponsive"
 import type { SidebarProps, SidebarItem } from "../types"
+import styles from "../styles/Sidebar.module.css"
 
 interface ModularSidebarProps extends Partial<SidebarProps> {
   className?: string
@@ -39,123 +40,118 @@ export function Sidebar({
     }
   }
 
-  const sidebarWidth = state.sidebarCollapsed ? 'w-16' : 'w-64'
   const isFloating = variant === 'floating'
   const isCompact = variant === 'compact' || state.sidebarCollapsed
 
+  const sidebarClasses = cn(
+    styles.sidebar,
+    state.sidebarCollapsed ? styles.collapsed : styles.expanded,
+    isFloating && styles.floating,
+    className
+  )
+
   return (
-    <aside className={cn(
-      "flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
-      sidebarWidth,
-      isFloating && "m-2 rounded-lg shadow-lg border",
-      className
-    )}>
+    <aside className={sidebarClasses}>
       {/* Header with toggle */}
       {showToggle && (
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className={styles.sidebarHeader}>
           {!state.sidebarCollapsed && (
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className={styles.sidebarTitle}>
               Navigation
             </h2>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={actions.toggleSidebar}
-            className="h-8 w-8 hover:bg-gray-100"
+            className={styles.toggleButton}
           >
             {state.sidebarCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className={styles.toggleIcon} />
             ) : (
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className={styles.toggleIcon} />
             )}
-          </Button>
+          </button>
         </div>
       )}
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
+      <nav className={styles.navigation}>
         {items.map((item) => {
           const IconComponent = item.icon
           const isActive = activeItem === item.id
           const hasChildren = item.children && item.children.length > 0
 
+          const itemClasses = cn(
+            styles.navigationItem,
+            isActive && styles.active,
+            item.disabled && styles.disabled,
+            isCompact && styles.compact
+          )
+
           return (
             <div key={item.id}>
-              <Button
-                variant="ghost"
+              <button
                 onClick={() => handleItemClick(item)}
                 disabled={item.disabled}
-                className={cn(
-                  "w-full justify-start transition-all duration-200",
-                  isCompact ? "h-10 px-2" : "h-10 px-3",
-                  isActive
-                    ? "bg-ritter-gold text-ritter-dark hover:bg-ritter-gold/80"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
-                  item.disabled && "opacity-50 cursor-not-allowed",
-                  state.sidebarCollapsed && "justify-center"
-                )}
+                className={itemClasses}
               >
                 <IconComponent className={cn(
-                  "flex-shrink-0",
-                  isCompact ? "h-4 w-4" : "h-5 w-5",
-                  !state.sidebarCollapsed && "mr-3"
+                  styles.navigationIcon,
+                  isCompact && styles.compact
                 )} />
                 
                 {!state.sidebarCollapsed && (
                   <>
-                    <span className="flex-1 text-left truncate">
+                    <span className={styles.navigationLabel}>
                       {item.label}
                     </span>
                     
                     {/* Badge */}
                     {item.badge && item.badge > 0 && (
-                      <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-full">
+                      <span className={styles.navigationBadge}>
                         {item.badge}
                       </span>
                     )}
                     
                     {/* Chevron for children */}
                     {hasChildren && (
-                      <ChevronRight className="h-4 w-4 ml-2" />
+                      <ChevronRight className={styles.navigationChevron} />
                     )}
                   </>
                 )}
-              </Button>
+              </button>
 
               {/* Children items (only show when not collapsed and has children) */}
               {!state.sidebarCollapsed && hasChildren && (
-                <div className="ml-4 mt-1 space-y-1">
+                <div className={styles.childrenContainer}>
                   {item.children?.map((child) => {
                     const ChildIcon = child.icon
                     const isChildActive = activeItem === child.id
 
+                    const childClasses = cn(
+                      styles.childItem,
+                      isChildActive && styles.active,
+                      child.disabled && styles.disabled
+                    )
+
                     return (
-                      <Button
+                      <button
                         key={child.id}
-                        variant="ghost"
                         onClick={() => handleItemClick(child)}
                         disabled={child.disabled}
-                        className={cn(
-                          "w-full justify-start h-8 px-3 text-sm",
-                          isChildActive
-                            ? "bg-ritter-gold/20 text-ritter-dark"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-800",
-                          child.disabled && "opacity-50 cursor-not-allowed"
-                        )}
+                        className={childClasses}
                       >
-                        <ChildIcon className="h-4 w-4 mr-2 flex-shrink-0" />
-                        <span className="flex-1 text-left truncate">
+                        <ChildIcon className={styles.childIcon} />
+                        <span className={styles.childLabel}>
                           {child.label}
                         </span>
                         
                         {/* Child badge */}
                         {child.badge && child.badge > 0 && (
-                          <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-gray-500 text-white rounded-full">
+                          <span className={styles.childBadge}>
                             {child.badge}
                           </span>
                         )}
-                      </Button>
+                      </button>
                     )
                   })}
                 </div>
@@ -167,10 +163,10 @@ export function Sidebar({
 
       {/* Footer */}
       {!state.sidebarCollapsed && (
-        <div className="p-4 border-t border-gray-200">
-          <div className="text-xs text-gray-500 text-center">
+        <div className={styles.sidebarFooter}>
+          <p className={styles.footerText}>
             RitterFinder v1.0
-          </div>
+          </p>
         </div>
       )}
     </aside>

@@ -8,6 +8,7 @@ import { WebsiteSelector } from "./WebsiteSelector"
 import { ClientTypeSelector } from "./ClientTypeSelector"
 import { ScrapingSimulation } from "./ScrapingSimulation"
 import type { SearchState, SearchActions } from "../types"
+import styles from "../styles/SearchForm.module.css"
 
 interface SearchFormProps {
   state: SearchState
@@ -19,13 +20,13 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
   const { t } = useLanguage()
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Búsqueda Inteligente de Leads</h2>
-        <p className="text-gray-600">Configura tu búsqueda y deja que nuestra IA encuentre los mejores leads</p>
+    <div className={styles.searchForm}>
+      <div className={styles.formHeader}>
+        <h2 className={styles.formTitle}>Búsqueda Inteligente de Leads</h2>
+        <p className={styles.formDescription}>Configura tu búsqueda y deja que nuestra IA encuentre los mejores leads</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className={styles.configGrid}>
         <WebsiteSelector 
           selectedWebsites={state.selectedWebsites} 
           setSelectedWebsites={actions.setSelectedWebsites} 
@@ -37,28 +38,28 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
       </div>
 
       {!canStartSearch && !state.isSearching && (
-        <Alert>
-          <AlertDescription>
+        <Alert className={styles.alert}>
+          <AlertDescription className={styles.alertText}>
             Selecciona al menos un sitio web y un tipo de cliente para comenzar la búsqueda.
           </AlertDescription>
         </Alert>
       )}
 
-      <div className="flex justify-center mt-6">
+      <div className={styles.searchButtonContainer}>
         <Button
           onClick={actions.handleSearch}
           disabled={!canStartSearch}
-          className="bg-ritter-gold hover:bg-amber-500 text-ritter-dark px-8 h-12 text-lg"
+          className={`${styles.searchButton} ${state.isSearching ? styles.loadingButton : ''}`}
           size="lg"
         >
           {state.isSearching ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-ritter-dark mr-2"></div>
-              Buscando...
+              <div className={styles.loadingSpinner}></div>
+              <span className={styles.loadingText}>Buscando...</span>
             </>
           ) : (
             <>
-              <Search className="mr-2 h-5 w-5" />
+              <Search className={styles.searchButtonIcon} />
               {t("search.button")}
             </>
           )}
