@@ -1,15 +1,17 @@
-// @deprecated - Use SearchHistory from @/features/history instead
-// This component is kept for backward compatibility only
-
+/**
+ * @deprecated This component has been moved to features/history/SearchHistory.tsx
+ * Please use the modular version from @/features/history instead.
+ * This file will be removed in a future version.
+ */
 import { SearchHistory as ModularSearchHistory } from "@/features/history"
 
 interface SearchHistoryProps {
-  history: any[]
-  onRerunSearch: (searchData: any) => void
+  history: unknown[]
+  onRerunSearch: (searchData: unknown) => void
   onViewLeads: (searchId: string) => void
 }
 
-export function SearchHistory({ history, onRerunSearch, onViewLeads }: SearchHistoryProps) {
+export function SearchHistory({ onRerunSearch, onViewLeads }: SearchHistoryProps) {
   console.warn('Using deprecated SearchHistory component. Please use @/features/history/SearchHistory instead.')
   
   return (

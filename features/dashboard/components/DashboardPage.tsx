@@ -1,7 +1,6 @@
 "use client"
 
-import { DashboardHeader } from "@/components/dashboard-header"
-import { DashboardNavigation } from "@/components/dashboard-navigation"
+import { DashboardLayout } from "@/features/layout"
 import { Onboarding } from "@/components/onboarding"
 import { useDashboard } from "../hooks/useDashboard"
 import { DashboardOverview } from "./DashboardOverview"
@@ -37,22 +36,14 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <DashboardHeader />
+    <DashboardLayout
+      activeTab={state.activeTab}
+      onTabChange={(tab: string) => actions.setActiveTab(tab as any)}
+      searchComplete={state.searchComplete}
+      selectedLeadsCount={state.selectedLeads.length}
+    >
       <Onboarding />
-
-      <main className="container mx-auto py-6 px-4">
-        <DashboardNavigation
-          activeTab={state.activeTab}
-          onTabChange={(tab: string) => actions.setActiveTab(tab as any)}
-          searchComplete={state.searchComplete}
-          selectedLeadsCount={state.selectedLeads.length}
-        />
-
-        <div className="space-y-6">
-          {renderActiveTab()}
-        </div>
-      </main>
-    </div>
+      {renderActiveTab()}
+    </DashboardLayout>
   )
 }
