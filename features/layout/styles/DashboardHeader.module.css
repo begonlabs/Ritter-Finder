@@ -26,9 +26,10 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.75rem 1rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
 }
 
 /* Logo Section */
@@ -63,6 +64,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  justify-self: end;
   animation: fadeInRight 0.4s ease-out 0.1s both;
 }
 
@@ -80,6 +82,12 @@
 @media (max-width: 768px) {
   .desktopActions {
     display: none;
+  }
+  
+  .headerContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 0;
   }
 }
 

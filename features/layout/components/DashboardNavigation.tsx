@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, Users, Mail, History, Home, Zap, BarChart3 } from "lucide-react"
+import { Search, Users, Mail, History, Home, Zap, BarChart3, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
@@ -79,6 +79,14 @@ export function DashboardNavigation({
       disabled: false,
       badge: null,
       dataOnboarding: "analytics",
+    },
+    {
+      id: "admin",
+      label: "Admin",
+      icon: Shield,
+      disabled: false,
+      badge: null,
+      dataOnboarding: "admin",
     },
   ]
 

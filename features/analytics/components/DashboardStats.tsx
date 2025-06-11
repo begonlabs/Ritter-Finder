@@ -1,8 +1,9 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Mail, Search, BarChart3, RefreshCw } from "lucide-react"
+import { Users, Mail, Search, BarChart3, RefreshCw, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { useDashboardStats } from "../hooks/useDashboardStats"
 import { useLanguage } from "@/lib/language-context"
 import type { ReactNode } from "react"
@@ -127,9 +128,12 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
     <div className={`${styles.dashboardStats} space-y-4`}>
       {showRefreshButton && (
         <div className={`${styles.statsHeader} flex items-center justify-between`}>
-          <div className={`${styles.headerInfo} text-sm text-muted-foreground`}>
+          <div className={`${styles.headerActions} flex items-center gap-3`}>
             {lastUpdated && (
-              <>Última actualización: {lastUpdated.toLocaleTimeString()}</>
+              <Badge variant="outline" className={`${styles.statusBadge} bg-green-50 text-green-700 border-green-200`}>
+                <Clock className={`${styles.statusIcon} h-3 w-3 mr-1`} />
+                Actualizado hace {Math.floor((Date.now() - lastUpdated.getTime()) / (1000 * 60))} min
+              </Badge>
             )}
           </div>
           <Button

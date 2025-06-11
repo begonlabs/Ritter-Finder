@@ -1,4 +1,4 @@
-export type TabType = "dashboard" | "search" | "results" | "campaign" | "history" | "scraping" | "analytics"
+export type TabType = "dashboard" | "search" | "results" | "campaign" | "history" | "scraping" | "analytics" | "admin"
 
 export interface DashboardState {
   selectedWebsites: string[]

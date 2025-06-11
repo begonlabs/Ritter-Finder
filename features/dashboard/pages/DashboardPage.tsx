@@ -2,6 +2,7 @@
 
 import { DashboardLayout } from "@/features/layout"
 import { Onboarding } from "@/components/onboarding"
+import { AdminDashboard } from "@/features/admin"
 import { useDashboard } from "../hooks/useDashboard"
 import { DashboardOverview } from "../components/DashboardOverview"
 import { SearchTab } from "../components/SearchTab"
@@ -31,6 +32,8 @@ export function DashboardPage() {
         return <ScrapingTab state={state} actions={actions} />
       case "analytics":
         return <AnalyticsTab state={state} actions={actions} />
+      case "admin":
+        return <AdminDashboard />
       default:
         return <DashboardOverview state={state} actions={actions} />
     }
