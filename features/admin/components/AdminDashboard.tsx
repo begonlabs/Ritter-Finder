@@ -14,7 +14,8 @@ import {
   RefreshCw,
   TrendingUp,
   UserCheck,
-  Clock
+  Clock,
+  Mail
 } from "lucide-react"
 import { useAdmin } from "../hooks/useAdmin"
 import type { AdminDashboardProps, AdminTab } from "../types"
@@ -24,6 +25,7 @@ import styles from "../styles/AdminDashboard.module.css"
 import { UserManagement } from "./UserManagement"
 import { RoleManagement } from "./RoleManagement"
 import { PermissionManagement } from "./PermissionManagement"
+import { TemplateManagement } from "./TemplateManagement"
 
 export function AdminDashboard({ className = "" }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState("overview")
@@ -70,6 +72,13 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
       component: PermissionManagement,
       permissions: ["admin.permissions.view"],
       badge: stats.totalPermissions,
+    },
+    {
+      id: "templates",
+      label: "Plantillas",
+      icon: Mail,
+      component: TemplateManagement,
+      permissions: ["admin.templates.view"],
     },
     {
       id: "settings",

@@ -50,6 +50,7 @@ export type PermissionCategory =
   | 'analytics'
   | 'settings'
   | 'system'
+  | 'templates'
 
 export interface AdminStats {
   totalUsers: number
@@ -211,5 +212,9 @@ export interface RoleManagementProps {
 }
 
 export interface PermissionManagementProps {
+  className?: string
+}
+
+export interface TemplateManagementProps {
   className?: string
 } 
