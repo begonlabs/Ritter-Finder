@@ -6,25 +6,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, Code, FileText, ExternalLink } from "lucide-react"
 import type { Lead, EmailTemplate } from "../types"
+import { AUTO_VARIABLES } from "../types"
 import styles from "../styles/PreviewTab.module.css"
 
+import type { UseEmailComposerReturn } from '../hooks/useEmailComposer';
+
 interface PreviewTabProps {
-  composer: {
-    data: {
-      subject: string;
-      content: string;
-      htmlContent?: string;
-      selectedTemplate: EmailTemplate | null;
-      isHtmlMode: boolean;
-      senderName: string;
-      senderEmail: string;
-      previewLead?: Lead;
-      templateVariables: Record<string, string>;
-    };
-    setPreviewLead: (lead: Lead) => void;
-    personalizeEmail: (content: string, lead: Lead) => string;
-    renderHtmlContent: (lead: Lead) => string;
-  }
+  composer: UseEmailComposerReturn;
   selectedLeads: Lead[]
 }
 
@@ -46,7 +34,7 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
   }
 
   const personalizedSubject = composer.personalizeEmail(composer.data.subject, previewLead)
-  const personalizedContent = composer.data.isHtmlMode ? 
+  const personalizedContent = composer.data.contentMode === 'html' ? 
     composer.renderHtmlContent(previewLead) : 
     composer.personalizeEmail(composer.data.content, previewLead)
 
@@ -86,7 +74,7 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
             
             <div className={styles.previewMeta}>
               <Badge variant="outline" className={styles.modeBadge}>
-                {composer.data.isHtmlMode ? (
+                {composer.data.contentMode === 'html' ? (
                   <>
                     <Code className="h-3 w-3 mr-1" />
                     HTML
@@ -131,7 +119,7 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
             
             {/* Email Body */}
             <div className={styles.emailBodyContainer}>
-              {composer.data.isHtmlMode && personalizedContent ? (
+              {composer.data.contentMode === 'html' && personalizedContent ? (
                 <div className={styles.htmlPreview}>
                   <iframe
                     srcDoc={`
@@ -198,18 +186,27 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
 
           {/* Template Variables Info */}
           {composer.data.selectedTemplate && Object.keys(composer.data.templateVariables).length > 0 && (
-            <div className={styles.variablesInfo}>
-              <Label className={styles.variablesLabel}>Variables utilizadas:</Label>
-              <div className={styles.variablesList}>
-                {Object.entries(composer.data.templateVariables).map(([key, value]) => (
-                  <div key={key} className={styles.variableItem}>
-                    <Badge variant="outline" className={styles.variableBadge}>
-                      {key}: {value || '(vacío)'}
-                    </Badge>
+            (() => {
+              // Filtrar variables automáticas 
+              const customVariables = Object.entries(composer.data.templateVariables).filter(([key]) => 
+                !AUTO_VARIABLES.includes(key)
+              );
+              
+              return customVariables.length > 0 ? (
+                <div className={styles.variablesInfo}>
+                  <Label className={styles.variablesLabel}>Variables personalizadas utilizadas:</Label>
+                  <div className={styles.variablesList}>
+                    {customVariables.map(([key, value]) => (
+                      <div key={key} className={styles.variableItem}>
+                        <Badge variant="outline" className={styles.variableBadge}>
+                          {key}: {value || '(vacío)'}
+                        </Badge>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              ) : null;
+            })()
           )}
 
           {/* Validation Warnings */}
@@ -228,16 +225,19 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
               </div>
             )}
 
-            {composer.data.selectedTemplate && composer.data.selectedTemplate.variables && composer.data.selectedTemplate.variables.some(v => 
+            {composer.data.selectedTemplate && composer.data.selectedTemplate.variables && composer.data.selectedTemplate.variables.filter(v => {
+              // Solo mostrar warning para variables personalizadas (no automáticas)
+              return !AUTO_VARIABLES.includes(v.key);
+            }).some(v => 
               v.required && !(composer.data.templateVariables?.[v.key] || '').trim()
             ) && (
               <div className={`${styles.warningItem} text-sm text-orange-600`}>
                 <span className={styles.warningIcon}>⚠️</span>
-                Algunas variables obligatorias están vacías
+                Algunas variables personalizadas obligatorias están vacías
               </div>
             )}
 
-            {composer.data.isHtmlMode && composer.data.htmlContent && !(composer.data.htmlContent || '').includes('<html>') && (
+            {composer.data.contentMode === 'html' && personalizedContent && !personalizedContent.includes('<html>') && (
               <div className={`${styles.warningItem} text-sm text-blue-600`}>
                 <span className={styles.warningIcon}>ℹ️</span>
                 El contenido HTML se mostrará dentro de un documento básico

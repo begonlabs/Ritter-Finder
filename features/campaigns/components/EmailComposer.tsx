@@ -20,7 +20,7 @@ interface EmailComposerProps {
 
 export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false }: EmailComposerProps) {
   const { language } = useLanguage()
-  const composer = useEmailComposer(language as Language, onSendCampaign)
+  const composer = useEmailComposer()
 
   if (selectedLeads.length === 0) {
     return (
@@ -39,7 +39,7 @@ export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false
     )
   }
 
-  if (emailSent || composer.emailSent) {
+  if (emailSent || composer.data.emailSent) {
     return <CampaignSuccess selectedLeads={selectedLeads} />
   }
 
@@ -56,6 +56,7 @@ export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false
           <ComposeTab 
             composer={composer}
             selectedLeads={selectedLeads}
+            recipientCount={selectedLeads.length}
           />
         </TabsContent>
 

@@ -8,17 +8,23 @@ import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
 import { Switch } from '../../../components/ui/switch';
 import { Send, Mail, FileText, X, Info, AlertTriangle, Code, Type } from 'lucide-react';
-import { useEmailComposer } from '../hooks/useEmailComposer';
 import { useEmailTemplates } from '../hooks/useEmailTemplates';
+import type { Lead } from '../types';
+import { AUTO_VARIABLES } from '../types';
+import type { UseEmailComposerReturn } from '../hooks/useEmailComposer';
 import styles from '../styles/ComposeTab.module.css';
 
 interface ComposeTabProps {
+  composer: UseEmailComposerReturn;
+  selectedLeads: Lead[];
   recipientCount?: number;
   leadId?: string;
   onSuccess?: () => void;
 }
 
 export const ComposeTab: React.FC<ComposeTabProps> = ({
+  composer,
+  selectedLeads,
   recipientCount = 0,
   leadId,
   onSuccess
@@ -34,20 +40,40 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
     validation,
     sendEmail,
     isSending
-  } = useEmailComposer();
+  } = composer;
 
   const { getTemplatesByCategory } = useEmailTemplates();
 
   React.useEffect(() => {
-    updateField('recipientCount', recipientCount);
-    updateField('leadId', leadId);
-  }, [recipientCount, leadId, updateField]);
+    updateField('recipientCount', selectedLeads.length);
+    if (leadId) {
+      updateField('leadId', leadId);
+    }
+  }, [selectedLeads.length, leadId, updateField]);
+
+  // Set preview lead only when leads array changes - avoid dependency on data.previewLead to prevent loops
+  const leadsHashRef = React.useRef<string>('');
+  
+  React.useEffect(() => {
+    const currentHash = selectedLeads.map(lead => lead.id).join(',');
+    
+    if (selectedLeads.length > 0 && currentHash !== leadsHashRef.current) {
+      composer.setPreviewLead(selectedLeads[0]);
+      leadsHashRef.current = currentHash;
+    } else if (selectedLeads.length === 0) {
+      leadsHashRef.current = '';
+    }
+  }, [selectedLeads, composer.setPreviewLead]);
 
   const templatesByCategory = getTemplatesByCategory();
 
   const handleSend = async () => {
     try {
-      await sendEmail();
+      if (composer.sendCampaign) {
+        await composer.sendCampaign(selectedLeads);
+      } else {
+        await sendEmail();
+      }
       onSuccess?.();
     } catch (error) {
       console.error('Error sending email:', error);
@@ -306,19 +332,22 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
           </div>
 
           {/* Template Variables Section */}
-          {data.selectedTemplate?.variables && data.selectedTemplate.variables.length > 0 && (
+          {data.selectedTemplate?.variables && data.selectedTemplate.variables.filter((variable: any) => !AUTO_VARIABLES.includes(variable.key)).length > 0 && (
             <section className={styles.variablesSection}>
               <div>
                 <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: '600', color: '#374151' }}>
-                  Variables del Template
+                  Variables Personalizadas
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.875rem', color: '#6b7280' }}>
-                  Personaliza tu email completando las siguientes variables
+                  Personaliza tu email. Los datos de empresa se cargan automáticamente
                 </p>
               </div>
 
               <div className={styles.variablesGrid}>
-                {data.selectedTemplate.variables.map((variable) => (
+                {data.selectedTemplate.variables.filter((variable: any) => {
+                  // Filtrar variables que se relacionan con datos de empresa/lead
+                  return !AUTO_VARIABLES.includes(variable.key);
+                }).map((variable: any) => (
                   <div key={variable.key} className={styles.variableGroup}>
                     <Label className={styles.variableLabel}>
                       {variable.label}
@@ -348,7 +377,7 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
       <div className={styles.footer}>
         <div className={styles.footerInfo}>
           <div className={styles.recipientCount}>
-            {recipientCount} destinatario{recipientCount !== 1 ? 's' : ''}
+            {selectedLeads.length} destinatario{selectedLeads.length !== 1 ? 's' : ''}
           </div>
           <div className={styles.deliveryTime}>
             Envío estimado: Inmediato

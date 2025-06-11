@@ -13,6 +13,7 @@ export { PreviewTab } from './components/PreviewTab'
 
 // Hooks
 export { useEmailComposer } from './hooks/useEmailComposer'
+export { useEmailTemplates } from './hooks/useEmailTemplates'
 export { useCampaignHistory } from './hooks/useCampaignHistory'
 
 // Styles
@@ -28,6 +29,7 @@ export { default as campaignSuccessStyles } from './styles/CampaignSuccess.modul
 export type {
   Lead,
   EmailTemplate,
+  TemplateVariable,
   Campaign,
   EmailComposerState,
   EmailComposerActions,
@@ -35,5 +37,10 @@ export type {
   CampaignHistoryActions,
   Language,
   TemplateData,
-  CampaignTabProps
+  CampaignTabProps,
+  TemplateFilters,
+  UseTemplatesReturn
 } from './types'
+
+// Hook Types
+export type { UseEmailComposerReturn } from './hooks/useEmailComposer'

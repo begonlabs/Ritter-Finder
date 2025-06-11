@@ -105,6 +105,12 @@ export interface CampaignHistoryActions {
 
 export type Language = 'es' | 'en'
 
+// Variables que se cargan automáticamente desde la base de datos
+export const AUTO_VARIABLES = [
+  'contact_name', 'company_name', 'contact_email', 'contact_phone',
+  'first_name', 'last_name', 'full_name', 'lead_id', 'position', 'industry'
+];
+
 export interface TemplateData {
   contactName: string
   companyName: string

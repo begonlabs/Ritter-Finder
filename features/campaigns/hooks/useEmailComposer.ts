@@ -10,6 +10,7 @@ import type {
   Campaign,
   TemplateVariable
 } from "../types"
+import { AUTO_VARIABLES } from "../types"
 import { useEmailTemplates } from './useEmailTemplates'
 
 interface EmailComposerData {
@@ -47,7 +48,7 @@ interface ValidationError {
   type: 'error' | 'warning';
 }
 
-interface UseEmailComposerReturn {
+export interface UseEmailComposerReturn {
   // Data
   data: EmailComposerData;
   
@@ -154,10 +155,13 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
       return;
     }
 
-    // Initialize template variables with default values
+    // Initialize template variables with default values (solo variables personalizadas)    
     const initialVariables: Record<string, string> = {};
     template.variables?.forEach(variable => {
-      initialVariables[variable.key] = variable.defaultValue || '';
+      // Solo inicializar variables personalizadas
+      if (!AUTO_VARIABLES.includes(variable.key)) {
+        initialVariables[variable.key] = variable.defaultValue || '';
+      }
     });
 
     setData(prev => ({
@@ -385,19 +389,22 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
       });
     }
 
-    // Template variable validation
+    // Template variable validation (solo variables personalizadas)
     if (data.selectedTemplate?.variables) {
-      data.selectedTemplate.variables.forEach(variable => {
-        const value = data.templateVariables[variable.key];
-        
-        if (variable.required && (!value || !value.trim())) {
-          errors.push({
-            field: `templateVariable_${variable.key}`,
-            message: `La variable "${variable.key}" es obligatoria`,
-            type: 'error'
-          });
-        }
-      });
+      // Filtrar variables automáticas
+      data.selectedTemplate.variables
+        .filter(variable => !AUTO_VARIABLES.includes(variable.key))
+        .forEach(variable => {
+          const value = data.templateVariables[variable.key];
+          
+          if (variable.required && (!value || !value.trim())) {
+            errors.push({
+              field: `templateVariable_${variable.key}`,
+              message: `La variable personalizada "${variable.key}" es obligatoria`,
+              type: 'error'
+            });
+          }
+        });
     }
 
     // Warnings
