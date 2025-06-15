@@ -33,12 +33,28 @@ export interface NotificationItem {
   }
 }
 
+// Role information interface
+export interface RoleInfo {
+  id: string
+  name: string
+  displayName: string
+  description: string
+  level: 'basic' | 'intermediate' | 'advanced' | 'admin'
+  permissions: string[]
+  color: {
+    background: string
+    text: string
+    border: string
+  }
+}
+
 export interface UserProfile {
   id: string
   name: string
   email: string
   avatar?: string
   role: string
+  roleInfo?: RoleInfo
 }
 
 export interface HeaderProps {
@@ -137,6 +153,14 @@ export interface UseResponsiveReturn {
   breakpoint: keyof ResponsiveBreakpoints
   width: number
   height: number
+}
+
+// User Profile Props
+export interface UserProfileProps {
+  className?: string
+  user?: UserProfile
+  onProfileUpdate?: (data: any) => void
+  onPasswordChange?: (data: any) => void
 }
 
 // Export utility types for external use

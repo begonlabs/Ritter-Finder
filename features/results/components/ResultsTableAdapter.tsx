@@ -18,6 +18,10 @@ import {
   SortAsc,
   SortDesc,
   Download,
+  Globe,
+  Mail,
+  CheckCircle,
+  XCircle,
 } from "lucide-react"
 import { useLanguage, formatMessage } from "@/lib/language-context"
 import { LeadDetailsModal } from "./LeadDetailsModal"
@@ -60,6 +64,32 @@ export function ResultsTableAdapter({
     return styles.confidenceLow
   }
 
+  // Validation indicators component
+  const ValidationIndicators = ({ lead }: { lead: Lead }) => (
+    <div className={styles.validationIndicators}>
+      <div className={styles.validationItem}>
+        <Globe className={styles.validationIcon} />
+        {lead.hasWebsite ? (
+          lead.websiteExists ? (
+            <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
+          ) : (
+            <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
+          )
+        ) : (
+          <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
+        )}
+      </div>
+      <div className={styles.validationItem}>
+        <Mail className={styles.validationIcon} />
+        {lead.emailValidated ? (
+          <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
+        ) : (
+          <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
+        )}
+      </div>
+    </div>
+  )
+
   const exportSelectedLeads = () => {
     const selectedData = leads
       .filter(lead => selectedLeads.includes(lead.id))
@@ -75,6 +105,9 @@ export function ResultsTableAdapter({
         Confidence: `${lead.confidence}%`,
         Employees: lead.employees,
         Revenue: lead.revenue,
+        HasWebsite: lead.hasWebsite ? 'Sí' : 'No',
+        WebsiteExists: lead.websiteExists ? 'Sí' : 'No',
+        EmailValidated: lead.emailValidated ? 'Sí' : 'No',
       }))
 
     if (selectedData.length === 0) return
@@ -192,6 +225,7 @@ export function ResultsTableAdapter({
                       {getSortIcon("confidence")}
                     </Button>
                   </TableHead>
+                  <TableHead className={`${styles.tableHeaderCell} hidden lg:table-cell`}>Validación</TableHead>
                   <TableHead className={`${styles.tableHeaderCell} hidden lg:table-cell`}>Industria</TableHead>
                   <TableHead className={`${styles.tableHeaderCell} hidden xl:table-cell`}>Ubicación</TableHead>
                   <TableHead className={`${styles.tableHeaderCell} text-center`}>Acciones</TableHead>
@@ -200,7 +234,7 @@ export function ResultsTableAdapter({
               <TableBody className={styles.tableBody}>
                 {filteredLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className={styles.emptyState}>
+                    <TableCell colSpan={8} className={styles.emptyState}>
                       <p className={styles.emptyStateText}>No se encontraron resultados.</p>
                     </TableCell>
                   </TableRow>
@@ -238,6 +272,9 @@ export function ResultsTableAdapter({
                         <span className={`${styles.confidenceBadge} ${getConfidenceStyle(lead.confidence)}`}>
                           {lead.confidence}%
                         </span>
+                      </TableCell>
+                      <TableCell className={`${styles.tableCell} hidden lg:table-cell`}>
+                        <ValidationIndicators lead={lead} />
                       </TableCell>
                       <TableCell className={`${styles.tableCell} hidden lg:table-cell`}>
                         <span className={styles.industryBadge}>{lead.industry}</span>

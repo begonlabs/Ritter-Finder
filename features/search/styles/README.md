@@ -17,6 +17,8 @@ features/search/styles/
 ├── SearchForm.module.css          # Main form container
 ├── WebsiteSelector.module.css     # Website selection component
 ├── ClientTypeSelector.module.css  # Client type dropdown
+├── LocationSelector.module.css    # Location selection for Spain
+├── ValidationOptions.module.css   # Email and website validation options
 ├── ScrapingSimulation.module.css  # Progress animation component
 └── README.md                      # This documentation
 ```
@@ -33,14 +35,14 @@ Estilos principales del formulario de búsqueda.
 .formHeader         /* Title and description area */
 .formTitle          /* Main heading */
 .formDescription    /* Subtitle text */
-.configGrid         /* 2-column responsive grid */
+.configGrid         /* 2x2 responsive grid for 4 components */
 .alert              /* Validation messages */
 .searchButton       /* Primary CTA button */
 .loadingSpinner     /* Loading animation */
 ```
 
 **Características:**
-- Layout responsivo con grid 2→1 columnas
+- Layout responsivo con grid 2x2→1 columna en móvil
 - Animaciones de entrada escalonadas (0.2s-0.6s)
 - Botón principal con efectos hover y shimmer
 - Estados de loading y error
@@ -88,7 +90,49 @@ Selector único de tipo de cliente.
 - Iconos de estado y hover effects
 - Accesibilidad con focus states
 
-### 4. ScrapingSimulation.module.css
+### 4. LocationSelector.module.css
+
+Selector de ubicación para España con regiones.
+
+**Clases principales:**
+```css
+.locationSelector    /* Main card container */
+.selectedLocation   /* Display for selected location */
+.locationName       /* Location name display */
+.locationRegion     /* Region subtitle */
+.commandItemDetails /* Location details in dropdown */
+.commandItemRegion  /* Region info in options */
+```
+
+**Características:**
+- Dropdown con ubicaciones de España
+- Display de nombre y región
+- Opción especial "Toda España"
+- Animación de entrada con delay (0.2s)
+- Búsqueda filtrable de ubicaciones
+
+### 5. ValidationOptions.module.css
+
+Opciones de validación de email y sitio web.
+
+**Clases principales:**
+```css
+.validationOptions   /* Main card container */
+.optionsGrid        /* Vertical layout for options */
+.optionItem         /* Individual validation option */
+.optionHeader       /* Checkbox and label container */
+.optionNote         /* Warning about search time */
+.validationSummary  /* Summary of selected options */
+```
+
+**Características:**
+- Checkboxes con estados visuales
+- Notas dinámicas sobre tiempo de búsqueda
+- Resumen de opciones seleccionadas
+- Animación de entrada con delay (0.3s)
+- Estados hover y focus accesibles
+
+### 6. ScrapingSimulation.module.css
 
 Simulación de progreso de scraping con animaciones.
 
@@ -110,7 +154,7 @@ Simulación de progreso de scraping con animaciones.
 - Dots de actividad con bounce animation
 - Tipografía monospace para URLs
 
-### 5. SearchPage.module.css
+### 7. SearchPage.module.css
 
 Layout de la página completa (legacy - siendo reemplazado por componentes modulares).
 
@@ -129,25 +173,24 @@ import styles from '@/features/search/styles/SearchForm.module.css'
 />
 ```
 
-### Integración con componentes existentes:
+### Integración con nuevos componentes:
 
 ```tsx
-// WebsiteSelector usage
-<WebsiteSelector
-  selectedWebsites={selectedSites}
-  setSelectedWebsites={setSites}
+// LocationSelector usage
+<LocationSelector
+  selectedLocation={selectedLocation}
+  setSelectedLocation={setLocation}
 />
 
-// ClientTypeSelector usage  
-<ClientTypeSelector
-  selectedClientType={clientType}
-  setSelectedClientType={setClientType}
+// ValidationOptions usage  
+<ValidationOptions
+  requireWebsite={requireWebsite}
+  validateEmail={validateEmail}
+  validateWebsite={validateWebsite}
+  setRequireWebsite={setRequireWebsite}
+  setValidateEmail={setValidateEmail}
+  setValidateWebsite={setValidateWebsite}
 />
-
-// ScrapingSimulation usage
-{isSearching && (
-  <ScrapingSimulation websites={selectedWebsites} />
-)}
 ```
 
 ## 🎨 Sistema de Animaciones
@@ -156,11 +199,13 @@ import styles from '@/features/search/styles/SearchForm.module.css'
 - **fadeInUp**: Componentes principales (0.3s-0.6s)
 - **slideInDown**: Alertas y notificaciones (0.3s)
 - **fadeInScale**: Estados de éxito/error (0.4s)
+- **slideInNote**: Notas de validación (0.3s)
 
 ### Interacciones
 - **hover**: Transform scale/translate + box-shadow
 - **focus**: Outline con colores RitterMor
 - **active**: Pressed state feedback
+- **checked**: Estados de checkbox con transiciones
 
 ### Progreso y Loading
 - **shimmer**: Efecto en barra de progreso (2s infinite)
@@ -174,12 +219,14 @@ import styles from '@/features/search/styles/SearchForm.module.css'
 - **Mobile**: < 640px
 - **Tablet**: < 768px  
 - **Desktop**: > 768px
+- **Large Desktop**: > 1024px
 
 ### Adaptaciones móviles:
-- Grid 2→1 columnas en `configGrid`
+- Grid 2x2→1 columna en `configGrid`
 - Botones full-width en móvil
 - Reducción de padding y font-sizes
 - Touch-optimized tap targets (min 44px)
+- Validation indicators en fila horizontal
 
 ## ♿ Accesibilidad
 
@@ -189,17 +236,18 @@ import styles from '@/features/search/styles/SearchForm.module.css'
 - **Focus visible**: Enhanced focus indicators
 - **ARIA labels**: Semantic markup
 - **Color independence**: No information conveyed by color alone
+- **Keyboard navigation**: Full keyboard support
 
 ### Ejemplos:
 ```css
 @media (prefers-contrast: high) {
-  .searchButton {
+  .validationOptions {
     border: 2px solid #000;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .searchForm { animation: none; }
+  .locationSelector { animation: none; }
 }
 ```
 
@@ -229,12 +277,14 @@ import styles from '@/features/search/styles/SearchForm.module.css'
 - Progressive disclosure en formularios
 - Contextual feedback messages
 - Real-time progress simulation
+- Dynamic validation notes
 
 ### Modern CSS Features:
 - CSS Custom Properties para theming
-- CSS Grid para layouts
+- CSS Grid para layouts complejos
 - Flexbox para componentes
 - CSS Animations con performance
+- `:has()` selector para estados dinámicos
 
 ## 📊 Testing y Quality Assurance
 
@@ -252,4 +302,4 @@ import styles from '@/features/search/styles/SearchForm.module.css'
 
 **💡 Nota**: Este sistema CSS está diseñado para máxima modularidad y reutilización, manteniendo la consistencia visual con RitterMor mientras ofrece flexibilidad para futuras extensiones de la feature de search. 
 
-**💡 Sistema CSS modular con RitterMor design system integrado.** 
+**💡 Sistema CSS modular con RitterMor design system integrado y nuevas funcionalidades de ubicación y validación.** 

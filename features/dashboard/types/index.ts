@@ -2,13 +2,21 @@ export type TabType = "dashboard" | "search" | "results" | "campaign" | "history
 
 export interface DashboardState {
   selectedWebsites: string[]
-  selectedClientType: string
+  selectedClientTypes: string[]
+  selectedLocations: string[]
+  requireWebsite: boolean
+  validateEmail: boolean
+  validateWebsite: boolean
   isSearching: boolean
   searchComplete: boolean
+  searchProgress: number
+  currentStep: string
   leads: Lead[]
   selectedLeads: string[]
   activeTab: TabType
   emailSent: boolean
+  searchResults: SearchResults | null
+  searchHistory: SearchHistoryItem[]
 }
 
 export interface Lead {
@@ -27,6 +35,9 @@ export interface Lead {
   confidence: number
   lastActivity: string
   notes: string
+  hasWebsite: boolean
+  websiteExists: boolean
+  emailValidated: boolean
 }
 
 export interface SearchConfig {
@@ -38,9 +49,15 @@ export interface SearchHistoryItem {
   id: string
   date: string
   websites: string[]
-  clientType: string
+  clientTypes: string[]
+  locations: string[]
+  requireWebsite: boolean
+  validateEmail: boolean
+  validateWebsite: boolean
   leadsFound: number
   leadsContacted: number
+  searchTime: number
+  status: 'completed' | 'failed' | 'cancelled'
 }
 
 export interface EmailCampaign {
@@ -64,8 +81,20 @@ export interface CampaignData {
 
 export interface DashboardActions {
   setSelectedWebsites: (websites: string[]) => void
-  setSelectedClientType: (clientType: string) => void
+  setSelectedClientTypes: (clientTypes: string[]) => void
+  setSelectedLocations: (locations: string[]) => void
+  setRequireWebsite: (require: boolean) => void
+  setValidateEmail: (validate: boolean) => void
+  setValidateWebsite: (validate: boolean) => void
   setActiveTab: (tab: TabType) => void
+  setIsSearching: (searching: boolean) => void
+  setSearchComplete: (complete: boolean) => void
+  setSearchProgress: (progress: number) => void
+  setCurrentStep: (step: string) => void
+  setSearchResults: (results: SearchResults | null) => void
+  addSearchToHistory: (search: SearchHistoryItem) => void
+  clearSearchHistory: () => void
+  resetSearch: () => void
   handleSearch: () => void
   handleSelectLead: (id: string) => void
   handleSelectAll: (select: boolean) => void
@@ -82,4 +111,11 @@ export interface DashboardProps {
 export interface TabComponentProps {
   state: DashboardState
   actions: DashboardActions
+}
+
+export interface SearchResults {
+  leads: Lead[]
+  totalFound: number
+  searchTime: number
+  searchId: string
 }

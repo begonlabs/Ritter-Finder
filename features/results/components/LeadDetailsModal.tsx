@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Phone, MapPin, Users, Euro, Calendar, ExternalLink } from "lucide-react"
+import { Phone, MapPin, Users, Euro, Calendar, ExternalLink, Globe, Mail, CheckCircle, XCircle } from "lucide-react"
 import type { LeadDetailsModalProps } from "../types"
 import styles from "../styles/LeadDetailsModal.module.css"
 
@@ -72,6 +72,54 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Industria</label>
                 <span className={styles.industryBadge}>{lead.industry}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Validation Status */}
+          <div className={styles.validationSection}>
+            <label className={styles.fieldLabel}>Estado de Validación</label>
+            <div className={styles.validationGrid}>
+              <div className={styles.validationItem}>
+                <div className={styles.validationHeader}>
+                  <Globe className={styles.validationIcon} />
+                  <span className={styles.validationLabel}>Sitio Web</span>
+                </div>
+                <div className={styles.validationStatus}>
+                  {lead.hasWebsite ? (
+                    <>
+                      <CheckCircle className={styles.validationSuccess} />
+                      <span className={styles.validationText}>
+                        {lead.websiteExists ? "Sitio web activo" : "Sitio web no accesible"}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className={styles.validationError} />
+                      <span className={styles.validationText}>Sin sitio web</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              <div className={styles.validationItem}>
+                <div className={styles.validationHeader}>
+                  <Mail className={styles.validationIcon} />
+                  <span className={styles.validationLabel}>Email</span>
+                </div>
+                <div className={styles.validationStatus}>
+                  {lead.emailValidated ? (
+                    <>
+                      <CheckCircle className={styles.validationSuccess} />
+                      <span className={styles.validationText}>Email validado</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className={styles.validationError} />
+                      <span className={styles.validationText}>Email no validado</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>

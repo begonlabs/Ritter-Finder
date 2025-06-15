@@ -2,6 +2,7 @@
 
 // Pages
 export { LayoutPage, PageContainer, SectionCard } from "./pages/LayoutPage"
+export { ProfilePage, UserProfilePage } from "./pages/ProfilePage"
 
 // Styles
 export { default as LayoutPageStyles } from "./styles/LayoutPage.module.css"
@@ -9,12 +10,14 @@ export { default as SidebarStyles } from "./styles/Sidebar.module.css"
 export { default as DashboardNavigationStyles } from "./styles/DashboardNavigation.module.css"
 export { default as DashboardLayoutStyles } from "./styles/DashboardLayout.module.css"
 export { default as DashboardHeaderStyles } from "./styles/DashboardHeader.module.css"
+export { default as UserProfileStyles } from "./styles/UserProfile.module.css"
 
 // Components
 export { DashboardHeader } from "./components/DashboardHeader"
 export { DashboardNavigation } from "./components/DashboardNavigation"
 export { Sidebar } from "./components/Sidebar"
 export { DashboardLayout } from "./components/DashboardLayout"
+export { UserProfile as UserProfileComponent } from "./components/UserProfile"
 
 // Hooks
 export { useLayout } from "./hooks/useLayout"
@@ -36,7 +39,8 @@ export type {
   LayoutState,
   LayoutActions,
   UseLayoutReturn,
-  UseResponsiveReturn
+  UseResponsiveReturn,
+  UserProfileProps
 } from "./types"
 
 // Type aliases for external use

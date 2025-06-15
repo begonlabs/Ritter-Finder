@@ -1,6 +1,10 @@
 export interface SearchConfig {
   selectedWebsites: string[]
-  selectedClientType: string
+  selectedClientTypes: string[]
+  selectedLocations: string[]
+  requireWebsite: boolean
+  validateEmail: boolean
+  validateWebsite: boolean
 }
 
 export interface SearchState extends SearchConfig {
@@ -12,7 +16,11 @@ export interface SearchState extends SearchConfig {
 
 export interface SearchActions {
   setSelectedWebsites: (websites: string[]) => void
-  setSelectedClientType: (clientType: string) => void
+  setSelectedClientTypes: (clientTypes: string[]) => void
+  setSelectedLocations: (locations: string[]) => void
+  setRequireWebsite: (require: boolean) => void
+  setValidateEmail: (validate: boolean) => void
+  setValidateWebsite: (validate: boolean) => void
   handleSearch: () => void
   resetSearch: () => void
   rerunSearch: (config: SearchConfig) => void
@@ -41,6 +49,10 @@ export interface Lead {
   confidence: number
   lastActivity: string
   notes: string
+  // Validation status fields
+  hasWebsite: boolean
+  websiteExists: boolean
+  emailValidated: boolean
 }
 
 export interface ScrapingStep {
@@ -56,7 +68,11 @@ export interface SearchHistoryItem {
   id: string
   date: string
   websites: string[]
-  clientType: string
+  clientTypes: string[]
+  locations: string[]
+  requireWebsite: boolean
+  validateEmail: boolean
+  validateWebsite: boolean
   leadsFound: number
   leadsContacted: number
   searchTime: number
@@ -79,4 +95,18 @@ export interface Website {
   enabled: boolean
   scrapeTime: number
   maxLeads: number
+}
+
+export interface Location {
+  id: string
+  name: string
+  region: string
+  country: string
+  enabled: boolean
+}
+
+export interface ValidationOptions {
+  requireWebsite: boolean
+  validateEmail: boolean
+  validateWebsite: boolean
 }

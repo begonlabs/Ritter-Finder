@@ -6,6 +6,8 @@ import { Search } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { WebsiteSelector } from "./WebsiteSelector"
 import { ClientTypeSelector } from "./ClientTypeSelector"
+import { LocationSelector } from "./LocationSelector"
+import { ValidationOptions } from "./ValidationOptions"
 import { ScrapingSimulation } from "./ScrapingSimulation"
 import type { SearchState, SearchActions } from "../types"
 import styles from "../styles/SearchForm.module.css"
@@ -32,15 +34,27 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
           setSelectedWebsites={actions.setSelectedWebsites} 
         />
         <ClientTypeSelector
-          selectedClientType={state.selectedClientType}
-          setSelectedClientType={actions.setSelectedClientType}
+          selectedClientTypes={state.selectedClientTypes}
+          setSelectedClientTypes={actions.setSelectedClientTypes}
+        />
+        <LocationSelector
+          selectedLocations={state.selectedLocations}
+          setSelectedLocations={actions.setSelectedLocations}
+        />
+        <ValidationOptions
+          requireWebsite={state.requireWebsite}
+          validateEmail={state.validateEmail}
+          validateWebsite={state.validateWebsite}
+          setRequireWebsite={actions.setRequireWebsite}
+          setValidateEmail={actions.setValidateEmail}
+          setValidateWebsite={actions.setValidateWebsite}
         />
       </div>
 
       {!canStartSearch && !state.isSearching && (
         <Alert className={styles.alert}>
           <AlertDescription className={styles.alertText}>
-            Selecciona al menos un sitio web y un tipo de cliente para comenzar la búsqueda.
+            Selecciona al menos un sitio web, un tipo de cliente y una ubicación para comenzar la búsqueda.
           </AlertDescription>
         </Alert>
       )}

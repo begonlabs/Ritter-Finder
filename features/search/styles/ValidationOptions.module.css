@@ -1,0 +1,394 @@
+/* ValidationOptions Styles - RitterFinder Search Feature */
+
+/* Main Container */
+.validationOptions {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: white;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.3s ease-out 0.3s both;
+}
+
+.validationOptions:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Header */
+.header {
+  padding-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.titleIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.clearButton {
+  color: #dc2626;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.clearButton:hover {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.clearButtonIcon {
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Options Grid */
+.optionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Option Item */
+.optionItem {
+  padding: 1rem;
+  border: 2px solid #f3f4f6;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: #fafafa;
+}
+
+.optionItem:hover {
+  border-color: #e5e7eb;
+  background: white;
+}
+
+.optionItem:has(.optionCheckbox:checked) {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+/* Option Header */
+.optionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.optionCheckbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #f59e0b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.optionCheckbox:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  flex: 1;
+  transition: color 0.2s ease;
+}
+
+.optionLabel:hover {
+  color: #92400e;
+}
+
+.optionIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.optionItem:has(.optionCheckbox:checked) .optionIcon {
+  color: #f59e0b;
+}
+
+/* Option Description */
+.optionDescription {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin: 0;
+  margin-left: 2rem;
+}
+
+.optionItem:has(.optionCheckbox:checked) .optionDescription {
+  color: #92400e;
+}
+
+/* Option Note */
+.optionNote {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  margin-left: 2rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 6px;
+  animation: slideInNote 0.3s ease-out;
+}
+
+@keyframes slideInNote {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.noteIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.noteText {
+  font-size: 0.8125rem;
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* Validation Summary */
+.validationSummary {
+  padding: 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.summaryTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #166534;
+  margin: 0 0 0.75rem 0;
+}
+
+.summaryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #166534;
+  font-weight: 500;
+}
+
+.summaryIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .title {
+    font-size: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .clearButton {
+    align-self: flex-end;
+    font-size: 0.8125rem;
+  }
+  
+  .optionItem {
+    padding: 0.875rem;
+  }
+  
+  .optionHeader {
+    gap: 0.5rem;
+  }
+  
+  .optionCheckbox {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .optionLabel {
+    font-size: 0.875rem;
+  }
+  
+  .optionDescription {
+    font-size: 0.8125rem;
+    margin-left: 1.5rem;
+  }
+  
+  .optionNote {
+    margin-left: 1.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .noteText {
+    font-size: 0.75rem;
+  }
+  
+  .validationSummary {
+    padding: 0.875rem;
+  }
+  
+  .summaryTitle {
+    font-size: 0.8125rem;
+  }
+  
+  .summaryItem {
+    font-size: 0.75rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .validationOptions {
+    border: 2px solid #000;
+  }
+  
+  .optionItem {
+    border-color: #000;
+  }
+  
+  .optionItem:has(.optionCheckbox:checked) {
+    background: #fff;
+    border-color: #000;
+  }
+  
+  .optionNote {
+    border-color: #000;
+    background: #fff;
+  }
+  
+  .validationSummary {
+    border-color: #000;
+    background: #fff;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .validationOptions,
+  .optionItem,
+  .optionCheckbox,
+  .optionLabel,
+  .optionIcon {
+    transition: none;
+  }
+  
+  .validationOptions,
+  .optionNote,
+  .validationSummary {
+    animation: none;
+  }
+  
+  .validationOptions:hover {
+    transform: none;
+  }
+}
+
+/* Focus States */
+.optionCheckbox:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.optionLabel:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Print Styles */
+@media print {
+  .validationOptions {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .optionNote,
+  .validationSummary {
+    border: 1px solid #000;
+    background: #fff;
+  }
+} 

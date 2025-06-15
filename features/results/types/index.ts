@@ -14,6 +14,10 @@ export interface Lead {
   confidence: number
   lastActivity: string
   notes: string
+  // Validation status fields
+  hasWebsite: boolean
+  websiteExists: boolean
+  emailValidated: boolean
 }
 
 export interface LeadSelection {

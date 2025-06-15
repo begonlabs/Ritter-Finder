@@ -13,7 +13,11 @@ interface ExtendedDashboardLayoutProps extends DashboardLayoutProps {
   showSidebar?: boolean
   sidebarItems?: SidebarItem[]
   className?: string
-  headerProps?: Record<string, unknown>
+  headerProps?: {
+    onProfileClick?: () => void
+    onNotificationClick?: (notification: any) => void
+    [key: string]: unknown
+  }
   navigationProps?: Record<string, unknown>
 }
 
@@ -40,6 +44,8 @@ export function DashboardLayout({
       <DashboardHeader 
         user={user}
         onLogout={onLogout}
+        onProfileClick={headerProps.onProfileClick}
+        onNotificationClick={headerProps.onNotificationClick}
         {...headerProps}
       />
 

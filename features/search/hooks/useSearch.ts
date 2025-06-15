@@ -88,7 +88,11 @@ export function useSearch() {
 
   const rerunSearch = useCallback((searchConfig: SearchConfig) => {
     configActions.setSelectedWebsites(searchConfig.selectedWebsites)
-    configActions.setSelectedClientType(searchConfig.selectedClientType)
+    configActions.setSelectedClientTypes(searchConfig.selectedClientTypes)
+    configActions.setSelectedLocations(searchConfig.selectedLocations)
+    configActions.setRequireWebsite(searchConfig.requireWebsite)
+    configActions.setValidateEmail(searchConfig.validateEmail)
+    configActions.setValidateWebsite(searchConfig.validateWebsite)
     
     setTimeout(() => {
       handleSearch()

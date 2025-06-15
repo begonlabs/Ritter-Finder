@@ -4,34 +4,46 @@ import { SearchForm } from "@/features/search"
 import type { TabComponentProps } from "../types"
 import styles from "../styles/SearchTab.module.css"
 
-interface SearchTabProps extends TabComponentProps {
-  canStartSearch: boolean
-}
-
-export function SearchTab({ state, actions, canStartSearch }: SearchTabProps) {
-  // Convert dashboard state/actions to search format
+export function SearchTab({ state, actions }: TabComponentProps) {
   const searchState = {
     selectedWebsites: state.selectedWebsites,
-    selectedClientType: state.selectedClientType,
+    selectedClientTypes: state.selectedClientTypes,
+    selectedLocations: state.selectedLocations,
+    requireWebsite: state.requireWebsite,
+    validateEmail: state.validateEmail,
+    validateWebsite: state.validateWebsite,
     isSearching: state.isSearching,
     searchComplete: state.searchComplete,
-    searchProgress: 0,
-    currentStep: "",
+    searchProgress: state.searchProgress,
+    currentStep: state.currentStep,
   }
 
   const searchActions = {
     setSelectedWebsites: actions.setSelectedWebsites,
-    setSelectedClientType: actions.setSelectedClientType,
+    setSelectedClientTypes: actions.setSelectedClientTypes,
+    setSelectedLocations: actions.setSelectedLocations,
+    setRequireWebsite: actions.setRequireWebsite,
+    setValidateEmail: actions.setValidateEmail,
+    setValidateWebsite: actions.setValidateWebsite,
     handleSearch: actions.handleSearch,
-    resetSearch: () => {
-      actions.setSelectedWebsites([])
-      actions.setSelectedClientType("")
-    },
-    rerunSearch: (config: { selectedWebsites: string[]; selectedClientType: string }) => {
+    resetSearch: actions.resetSearch,
+    rerunSearch: (config: any) => {
       actions.setSelectedWebsites(config.selectedWebsites)
-      actions.setSelectedClientType(config.selectedClientType)
+      actions.setSelectedClientTypes(config.selectedClientTypes)
+      actions.setSelectedLocations(config.selectedLocations)
+      actions.setRequireWebsite(config.requireWebsite)
+      actions.setValidateEmail(config.validateEmail)
+      actions.setValidateWebsite(config.validateWebsite)
+      actions.handleSearch()
     },
   }
+
+  const canStartSearch = !!(
+    state.selectedWebsites.length > 0 && 
+    state.selectedClientTypes.length > 0 && 
+    state.selectedLocations.length > 0 && 
+    !state.isSearching
+  )
 
   return (
     <div className={styles.searchTab}>

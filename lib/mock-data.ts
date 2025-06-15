@@ -15,6 +15,9 @@ export const mockLeads = [
     confidence: 95,
     lastActivity: "2024-01-26T10:30:00Z",
     notes: "Empresa líder en instalaciones solares residenciales",
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: true,
   },
   {
     id: "2",
@@ -32,6 +35,9 @@ export const mockLeads = [
     confidence: 88,
     lastActivity: "2024-01-25T15:45:00Z",
     notes: "Especializada en proyectos comerciales de gran escala",
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: true,
   },
   {
     id: "3",
@@ -49,6 +55,9 @@ export const mockLeads = [
     confidence: 92,
     lastActivity: "2024-01-24T09:15:00Z",
     notes: "Consultoría especializada en eficiencia energética",
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: true,
   },
   {
     id: "4",
@@ -66,6 +75,9 @@ export const mockLeads = [
     confidence: 90,
     lastActivity: "2024-01-23T14:20:00Z",
     notes: "Sistemas de energía renovable para industria",
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: false,
   },
   {
     id: "5",
@@ -83,6 +95,9 @@ export const mockLeads = [
     confidence: 85,
     lastActivity: "2024-01-22T11:30:00Z",
     notes: "Instalaciones solares para sector residencial",
+    hasWebsite: true,
+    websiteExists: false,
+    emailValidated: true,
   },
   {
     id: "6",
@@ -100,6 +115,9 @@ export const mockLeads = [
     confidence: 87,
     lastActivity: "2024-01-21T16:45:00Z",
     notes: "Consultoría en transición energética",
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: true,
   },
   {
     id: "7",
@@ -117,6 +135,9 @@ export const mockLeads = [
     confidence: 93,
     lastActivity: "2024-01-20T08:30:00Z",
     notes: "Soluciones sostenibles para empresas",
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: true,
   },
   {
     id: "8",
@@ -134,6 +155,9 @@ export const mockLeads = [
     confidence: 89,
     lastActivity: "2024-01-19T13:15:00Z",
     notes: "Consultoría ambiental y certificaciones",
+    hasWebsite: false,
+    websiteExists: false,
+    emailValidated: false,
   },
 ]
 

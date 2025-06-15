@@ -40,6 +40,13 @@
   margin-bottom: 2rem;
 }
 
+@media (max-width: 1024px) {
+  .configGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
 /* Alert Messages */
 .alert {
   background: #fef3c7;
