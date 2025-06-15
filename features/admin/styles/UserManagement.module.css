@@ -429,11 +429,7 @@
   color: var(--color-gray-700, #374151);
 }
 
-.department {
-  font-size: 0.875rem;
-  color: var(--color-gray-700, #374151);
-  font-weight: 500;
-}
+
 
 /* User Actions */
 .userActions {
@@ -663,9 +659,7 @@
     margin-bottom: 0.75rem;
   }
 
-  .department {
-    display: none;
-  }
+
 
   .lastLoginCell {
     font-size: 0.75rem;

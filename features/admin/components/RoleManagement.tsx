@@ -87,7 +87,7 @@ const mockUsers: User[] = [
     lastLogin: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    metadata: { loginCount: 245, department: "IT" }
+    metadata: { loginCount: 245 }
   },
   {
     id: "2",
@@ -109,7 +109,7 @@ const mockUsers: User[] = [
     lastLogin: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    metadata: { loginCount: 89, department: "Ventas" }
+    metadata: { loginCount: 89 }
   },
   {
     id: "3",
@@ -131,7 +131,7 @@ const mockUsers: User[] = [
     lastLogin: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
-    metadata: { loginCount: 34, department: "Marketing" }
+    metadata: { loginCount: 34 }
   }
 ]
 
@@ -310,7 +310,6 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                   </TableHead>
                   <TableHead>Usuario</TableHead>
                   <TableHead>Rol Actual</TableHead>
-                  <TableHead>Departamento</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
@@ -354,11 +353,6 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                           <IconComponent className="h-3 w-3 mr-1" />
                           {user.role.name}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className={styles.department}>
-                          {user.metadata?.department || "-"}
-                        </span>
                       </TableCell>
                       <TableCell>
                         <Badge 

@@ -44,7 +44,6 @@ import {
   UserX,
   Edit2,
   Trash2,
-  Building,
   User,
   AlertCircle,
   X
@@ -59,10 +58,7 @@ const availableRoles = [
   { id: 'comercial', name: 'Comercial', color: '#16a34a' }
 ]
 
-// Departamentos disponibles
-const departments = [
-  'IT', 'Ventas', 'Marketing', 'Recursos Humanos', 'Finanzas', 'Operaciones'
-]
+
 
 // Mock data for development
 const mockUsers: UserType[] = [
@@ -89,7 +85,6 @@ const mockUsers: UserType[] = [
     metadata: {
       loginCount: 245,
       lastIpAddress: "192.168.1.100",
-      department: "IT",
       phone: "+34 600 123 456"
     }
   },
@@ -116,7 +111,6 @@ const mockUsers: UserType[] = [
     metadata: {
       loginCount: 89,
       lastIpAddress: "192.168.1.101",
-      department: "Ventas",
       phone: "+34 600 789 012"
     }
   },
@@ -142,8 +136,7 @@ const mockUsers: UserType[] = [
     updatedAt: new Date(),
     metadata: {
       loginCount: 34,
-      lastIpAddress: "192.168.1.102",
-      department: "Marketing"
+      lastIpAddress: "192.168.1.102"
     }
   }
 ]
@@ -152,7 +145,6 @@ interface CreateUserForm {
   name: string
   email: string
   roleId: SystemRoleType | ''
-  department: string
   phone: string
   sendWelcomeEmail: boolean
 }
@@ -161,7 +153,6 @@ interface CreateUserFormErrors {
   name?: string
   email?: string
   roleId?: string
-  department?: string
   phone?: string
   sendWelcomeEmail?: string
 }
@@ -172,12 +163,14 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  
+  // Debug: Log modal state changes
+  console.log('Modal state:', isCreateModalOpen)
   const [isCreating, setIsCreating] = useState(false)
   const [createForm, setCreateForm] = useState<CreateUserForm>({
     name: '',
     email: '',
     roleId: '',
-    department: '',
     phone: '',
     sendWelcomeEmail: true
   })
@@ -238,7 +231,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         name: '',
         email: '',
         roleId: '',
-        department: '',
         phone: '',
         sendWelcomeEmail: true
       })
@@ -261,13 +253,12 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         name: '',
         email: '',
         roleId: '',
-        department: '',
         phone: '',
         sendWelcomeEmail: true
       })
       setFormErrors({})
-      setIsCreateModalOpen(false)
     }
+    setIsCreateModalOpen(false)
   }
 
   // Get status badge styling
@@ -322,9 +313,15 @@ export function UserManagement({ className = "" }: UserManagementProps) {
           </p>
         </div>
         
-        <Dialog open={isCreateModalOpen} onOpenChange={handleModalClose}>
+        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
-            <Button className={styles.addUserButton}>
+            <Button 
+              className={styles.addUserButton}
+              onClick={() => {
+                console.log('Button clicked, current modal state:', isCreateModalOpen)
+                setIsCreateModalOpen(true)
+              }}
+            >
               <Plus className="h-4 w-4" />
               Nuevo Usuario
             </Button>
@@ -384,66 +381,39 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                 )}
               </div>
 
-              {/* Role and Department Row */}
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <Label htmlFor="role" className={styles.formLabel}>
-                    Rol del sistema *
-                  </Label>
-                  <Select 
-                    value={createForm.roleId} 
-                    onValueChange={(value) => setCreateForm(prev => ({ ...prev, roleId: value as SystemRoleType }))}
-                    disabled={isCreating}
-                  >
-                    <SelectTrigger className={formErrors.roleId ? styles.inputError : ''}>
-                      <SelectValue placeholder="Seleccionar rol" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role.id} value={role.id}>
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: role.color }}
-                            />
-                            {role.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.roleId && (
-                    <div className={styles.errorMessage}>
-                      <AlertCircle className="h-4 w-4" />
-                      {formErrors.roleId}
-                    </div>
-                  )}
-                </div>
-
-                <div className={styles.formGroup}>
-                  <Label htmlFor="department" className={styles.formLabel}>
-                    Departamento
-                  </Label>
-                  <Select 
-                    value={createForm.department} 
-                    onValueChange={(value) => setCreateForm(prev => ({ ...prev, department: value }))}
-                    disabled={isCreating}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar departamento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map((dept) => (
-                        <SelectItem key={dept} value={dept}>
-                          <div className="flex items-center gap-2">
-                            <Building className="h-3 w-3" />
-                            {dept}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* Role Field */}
+              <div className={styles.formGroup}>
+                <Label htmlFor="role" className={styles.formLabel}>
+                  Rol del sistema *
+                </Label>
+                <Select 
+                  value={createForm.roleId} 
+                  onValueChange={(value) => setCreateForm(prev => ({ ...prev, roleId: value as SystemRoleType }))}
+                  disabled={isCreating}
+                >
+                  <SelectTrigger className={formErrors.roleId ? styles.inputError : ''}>
+                    <SelectValue placeholder="Seleccionar rol" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableRoles.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: role.color }}
+                          />
+                          {role.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formErrors.roleId && (
+                  <div className={styles.errorMessage}>
+                    <AlertCircle className="h-4 w-4" />
+                    {formErrors.roleId}
+                  </div>
+                )}
               </div>
 
               {/* Phone Field */}
@@ -586,7 +556,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                   <TableHead>Rol</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Último Acceso</TableHead>
-                  <TableHead>Departamento</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -640,11 +609,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                           {user.metadata.loginCount} accesos
                         </div>
                       )}
-                    </TableCell>
-                    <TableCell>
-                      <span className={styles.department}>
-                        {user.metadata?.department || "-"}
-                      </span>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className={styles.userActions}>

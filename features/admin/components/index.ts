@@ -2,4 +2,5 @@
 export { AdminDashboard } from "./AdminDashboard"
 export { UserManagement } from "./UserManagement"
 export { RoleManagement } from "./RoleManagement"
-export { PermissionManagement } from "./PermissionManagement" 
+export { PermissionManagement } from "./PermissionManagement"
+export { SystemSettings } from "./SystemSettings" 

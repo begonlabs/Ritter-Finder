@@ -14,7 +14,6 @@ export interface User {
   metadata?: {
     loginCount: number
     lastIpAddress?: string
-    department?: string
     phone?: string
   }
 }
@@ -37,7 +36,7 @@ export interface Permission {
   description: string
   resource: string
   action: string
-  scope: 'global' | 'department' | 'personal'
+  scope: 'global' | 'personal'
   category: PermissionCategory
   isSystem: boolean
 }
@@ -211,7 +210,6 @@ export interface CreateUserInput {
   name: string
   email: string
   roleId: string
-  department?: string
   phone?: string
   sendWelcomeEmail?: boolean
 }
@@ -221,7 +219,6 @@ export interface UpdateUserInput {
   email?: string
   roleId?: string
   status?: User['status']
-  department?: string
   phone?: string
 }
 
@@ -259,7 +256,6 @@ export interface UserFilters {
   search: string
   status: User['status'] | 'all'
   roleId: string | 'all'
-  department: string | 'all'
   sortBy: 'name' | 'email' | 'lastLogin' | 'createdAt'
   sortOrder: 'asc' | 'desc'
 }
@@ -291,5 +287,9 @@ export interface PermissionManagementProps {
 }
 
 export interface TemplateManagementProps {
+  className?: string
+}
+
+export interface SystemSettingsProps {
   className?: string
 } 

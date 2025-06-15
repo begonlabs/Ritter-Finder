@@ -26,6 +26,7 @@ import { UserManagement } from "./UserManagement"
 import { RoleManagement } from "./RoleManagement"
 import { PermissionManagement } from "./PermissionManagement"
 import { TemplateManagement } from "./TemplateManagement"
+import { SystemSettings } from "./SystemSettings"
 
 export function AdminDashboard({ className = "" }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState("overview")
@@ -84,9 +85,9 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
       id: "settings",
       label: "Configuración",
       icon: Settings,
-      component: () => <AdminSettings />,
+      component: SystemSettings,
       permissions: ["admin.settings"],
-      disabled: true, // Will be enabled later
+      disabled: false, // Now enabled!
     },
   ]
 
@@ -213,17 +214,7 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
     )
   }
 
-  // Placeholder for settings
-  function AdminSettings() {
-    return (
-      <div className="flex items-center justify-center h-64 text-muted-foreground">
-        <div className="text-center">
-          <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>Configuración del sistema próximamente</p>
-        </div>
-      </div>
-    )
-  }
+
 
   const activeTabData = adminTabs.find(tab => tab.id === activeTab)
   const ActiveComponent = activeTabData?.component || AdminOverview
