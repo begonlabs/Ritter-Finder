@@ -244,7 +244,7 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
               <Label htmlFor="campaignName" className={styles.formLabel}>
                 Nombre de la Campaña <span style={{ color: '#ef4444' }}>*</span>
               </Label>
-              <Input
+              <Input 
                 id="campaignName"
                 type="text"
                 className={styles.formInput}
@@ -295,14 +295,14 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
               <Label htmlFor="senderEmail" className={styles.formLabel}>
                 Email del Remitente <span style={{ color: '#ef4444' }}>*</span>
               </Label>
-              <Input
+            <Input
                 id="senderEmail"
                 type="email"
-                className={styles.formInput}
+              className={styles.formInput}
                 placeholder="no-reply@ritterfinder.com"
                 value={data.senderEmail}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('senderEmail', e.target.value)}
-              />
+            />
             </div>
           </div>
 

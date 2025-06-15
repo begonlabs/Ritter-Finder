@@ -55,23 +55,23 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
           {/* Preview Controls */}
           <div className={`${styles.previewControls} flex items-center justify-between`}>
             <div className="flex items-center gap-2">
-              <Label className={styles.controlLabel}>Vista previa para:</Label>
-              <select
-                className={`${styles.leadSelector} border rounded px-2 py-1`}
-                value={previewLead.id}
-                onChange={(e) => {
-                  const lead = selectedLeads.find((l) => l.id === e.target.value)
-                  composer.setPreviewLead(lead || selectedLeads[0])
-                }}
-              >
-                {selectedLeads.map((lead) => (
-                  <option key={lead.id} value={lead.id}>
-                    {lead.name} ({lead.company})
-                  </option>
-                ))}
-              </select>
-            </div>
-            
+            <Label className={styles.controlLabel}>Vista previa para:</Label>
+            <select
+              className={`${styles.leadSelector} border rounded px-2 py-1`}
+              value={previewLead.id}
+              onChange={(e) => {
+                const lead = selectedLeads.find((l) => l.id === e.target.value)
+                composer.setPreviewLead(lead || selectedLeads[0])
+              }}
+            >
+              {selectedLeads.map((lead) => (
+                <option key={lead.id} value={lead.id}>
+                  {lead.name} ({lead.company})
+                </option>
+              ))}
+            </select>
+          </div>
+
             <div className={styles.previewMeta}>
               <Badge variant="outline" className={styles.modeBadge}>
                 {composer.data.contentMode === 'html' ? (

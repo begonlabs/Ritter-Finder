@@ -52,6 +52,57 @@ export type PermissionCategory =
   | 'system'
   | 'templates'
 
+// Sistema de roles fijos
+export type SystemRoleType = 'admin' | 'supervisor' | 'comercial'
+
+export interface SystemRole {
+  id: SystemRoleType
+  name: string
+  description: string
+  color: string
+  icon: string
+  userCount: number
+  permissions: PermissionMatrix
+}
+
+// Matriz de permisos
+export interface PermissionMatrix {
+  [key: string]: boolean
+}
+
+export interface PermissionGroup {
+  id: string
+  name: string
+  description: string
+  permissions: PermissionItem[]
+}
+
+export interface PermissionItem {
+  id: string
+  name: string
+  description: string
+  category: PermissionCategory
+}
+
+// Asignación de usuarios a roles
+export interface UserRoleAssignment {
+  userId: string
+  roleId: SystemRoleType
+  assignedAt: Date
+  assignedBy: string
+}
+
+export interface RoleAssignmentHistory {
+  id: string
+  userId: string
+  userName: string
+  previousRole?: SystemRoleType
+  newRole: SystemRoleType
+  assignedBy: string
+  assignedAt: Date
+  reason?: string
+}
+
 export interface AdminStats {
   totalUsers: number
   activeUsers: number
@@ -129,6 +180,30 @@ export interface UsePermissionsReturn {
   createPermission: (permissionData: CreatePermissionInput) => Promise<Permission>
   updatePermission: (id: string, permissionData: UpdatePermissionInput) => Promise<Permission>
   deletePermission: (id: string) => Promise<void>
+}
+
+// Hook para gestión de roles del sistema
+export interface UseSystemRolesReturn {
+  systemRoles: SystemRole[]
+  users: User[]
+  isLoading: boolean
+  error: string | null
+  // Actions
+  assignUserToRole: (userId: string, roleId: SystemRoleType) => Promise<void>
+  bulkAssignRole: (userIds: string[], roleId: SystemRoleType) => Promise<void>
+  getAssignmentHistory: (userId: string) => Promise<RoleAssignmentHistory[]>
+}
+
+// Hook para gestión de permisos del sistema
+export interface UsePermissionMatrixReturn {
+  permissionGroups: PermissionGroup[]
+  systemRoles: SystemRole[]
+  permissionMatrix: Record<SystemRoleType, PermissionMatrix>
+  isLoading: boolean
+  error: string | null
+  // Actions (solo lectura - los permisos son fijos)
+  refreshPermissions: () => Promise<void>
+  exportPermissionMatrix: () => void
 }
 
 // Input types

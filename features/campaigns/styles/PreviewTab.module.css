@@ -358,7 +358,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-  }
+}
   to {
     opacity: 1;
   }
@@ -542,5 +542,5 @@
       .emailPreview {
       border: none !important;
       box-shadow: none !important;
-    }
-  } 
+  }
+} 

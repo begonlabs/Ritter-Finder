@@ -474,19 +474,19 @@
   .footer {
     padding: 1rem 1.5rem;
   }
-  
+
   .templateControls {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
   }
-  
+
   .templateSection,
   .contentModeSection,
   .variablesSection {
     padding: 1rem;
   }
-  
+
   .sendButton {
     width: 100%;
   }
@@ -528,5 +528,5 @@
 
      .loadingSpinner {
      animation: none;
-   }
- } 
+  }
+} 

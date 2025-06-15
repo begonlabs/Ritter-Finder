@@ -199,13 +199,13 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         <CardContent className="pt-6">
           <div className={`${styles.filtersGrid} grid gap-4 md:grid-cols-4`}>
             <div className={`${styles.searchContainer} md:col-span-2`}>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <div className={styles.searchInputWrapper}>
+                <Search className={styles.searchIcon} />
                 <Input
                   placeholder="Buscar usuarios por nombre o email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className={styles.searchInput}
                 />
               </div>
             </div>

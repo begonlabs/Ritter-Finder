@@ -1,7 +1,7 @@
 "use client"
 
 import { DashboardLayout } from "@/features/layout"
-import { Onboarding } from "@/components/onboarding"
+// import { OnboardingModal } from "@/features/onboarding" // Temporalmente desactivado
 import { AdminDashboard } from "@/features/admin"
 import { useDashboard } from "../hooks/useDashboard"
 import { DashboardOverview } from "../components/DashboardOverview"
@@ -47,7 +47,8 @@ export function DashboardPage() {
       selectedLeadsCount={state.selectedLeads.length}
     >
       <div className={styles.dashboardPage}>
-        <Onboarding />
+        {/* Onboarding Modal - Temporalmente desactivado hasta decisión del cliente */}
+        {/* <OnboardingModal /> */}
         <div className={styles.tabContent}>
           {renderActiveTab()}
         </div>
