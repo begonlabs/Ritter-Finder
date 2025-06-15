@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { 
   Select,
   SelectContent,
@@ -12,6 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -32,20 +43,36 @@ import {
   UserCheck,
   UserX,
   Edit2,
-  Trash2
+  Trash2,
+  Building,
+  User,
+  AlertCircle,
+  X
 } from "lucide-react"
-import type { UserManagementProps, User } from "../types"
+import type { UserManagementProps, User as UserType, SystemRoleType } from "../types"
 import styles from "../styles/UserManagement.module.css"
 
+// Roles disponibles
+const availableRoles = [
+  { id: 'admin', name: 'Administrador', color: '#dc2626' },
+  { id: 'supervisor', name: 'Supervisor', color: '#2563eb' },
+  { id: 'comercial', name: 'Comercial', color: '#16a34a' }
+]
+
+// Departamentos disponibles
+const departments = [
+  'IT', 'Ventas', 'Marketing', 'Recursos Humanos', 'Finanzas', 'Operaciones'
+]
+
 // Mock data for development
-const mockUsers: User[] = [
+const mockUsers: UserType[] = [
   {
     id: "1",
     name: "María González",
     email: "maria.gonzalez@ritterfinder.com",
     status: "active",
     role: {
-      id: "1",
+      id: "admin",
       name: "Administrador",
       description: "Acceso completo al sistema",
       color: "#dc2626",
@@ -72,8 +99,8 @@ const mockUsers: User[] = [
     email: "carlos.ruiz@ritterfinder.com",
     status: "active",
     role: {
-      id: "2",
-      name: "Manager",
+      id: "supervisor",
+      name: "Supervisor",
       description: "Gestión de equipos",
       color: "#2563eb",
       permissions: [],
@@ -99,8 +126,8 @@ const mockUsers: User[] = [
     email: "ana.martinez@ritterfinder.com",
     status: "inactive",
     role: {
-      id: "3",
-      name: "Usuario",
+      id: "comercial",
+      name: "Comercial",
       description: "Acceso básico",
       color: "#16a34a",
       permissions: [],
@@ -121,11 +148,40 @@ const mockUsers: User[] = [
   }
 ]
 
+interface CreateUserForm {
+  name: string
+  email: string
+  roleId: SystemRoleType | ''
+  department: string
+  phone: string
+  sendWelcomeEmail: boolean
+}
+
+interface CreateUserFormErrors {
+  name?: string
+  email?: string
+  roleId?: string
+  department?: string
+  phone?: string
+  sendWelcomeEmail?: string
+}
+
 export function UserManagement({ className = "" }: UserManagementProps) {
-  const [users] = useState<User[]>(mockUsers)
+  const [users] = useState<UserType[]>(mockUsers)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [roleFilter, setRoleFilter] = useState<string>("all")
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [createForm, setCreateForm] = useState<CreateUserForm>({
+    name: '',
+    email: '',
+    roleId: '',
+    department: '',
+    phone: '',
+    sendWelcomeEmail: true
+  })
+  const [formErrors, setFormErrors] = useState<CreateUserFormErrors>({})
 
   // Filter users based on search and filters
   const filteredUsers = users.filter(user => {
@@ -137,8 +193,85 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     return matchesSearch && matchesStatus && matchesRole
   })
 
+  // Validate form
+  const validateForm = (): boolean => {
+    const errors: CreateUserFormErrors = {}
+    
+    if (!createForm.name.trim()) {
+      errors.name = 'El nombre es requerido'
+    }
+    
+    if (!createForm.email.trim()) {
+      errors.email = 'El email es requerido'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(createForm.email)) {
+      errors.email = 'Email inválido'
+    } else if (users.some(u => u.email.toLowerCase() === createForm.email.toLowerCase())) {
+      errors.email = 'Este email ya está registrado'
+    }
+    
+    if (!createForm.roleId) {
+      errors.roleId = 'Selecciona un rol'
+    }
+    
+    if (createForm.phone && !/^[\+]?[0-9\s\-\(\)]+$/.test(createForm.phone)) {
+      errors.phone = 'Formato de teléfono inválido'
+    }
+    
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  // Handle form submission
+  const handleCreateUser = async () => {
+    if (!validateForm()) return
+    
+    setIsCreating(true)
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      console.log('Creating user:', createForm)
+      
+      // Reset form and close modal
+      setCreateForm({
+        name: '',
+        email: '',
+        roleId: '',
+        department: '',
+        phone: '',
+        sendWelcomeEmail: true
+      })
+            setFormErrors({})
+      setIsCreateModalOpen(false)
+      
+      // Here you would typically refresh the users list
+      
+    } catch (error) {
+      console.error('Error creating user:', error)
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
+  // Reset form when modal closes
+  const handleModalClose = () => {
+    if (!isCreating) {
+      setCreateForm({
+        name: '',
+        email: '',
+        roleId: '',
+        department: '',
+        phone: '',
+        sendWelcomeEmail: true
+      })
+      setFormErrors({})
+      setIsCreateModalOpen(false)
+    }
+  }
+
   // Get status badge styling
-  const getStatusBadge = (status: User['status']) => {
+  const getStatusBadge = (status: UserType['status']) => {
     const styles = {
       active: "bg-green-100 text-green-800 border-green-200",
       inactive: "bg-gray-100 text-gray-800 border-gray-200",
@@ -178,27 +311,215 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   return (
     <div className={`${styles.userManagement} ${className} space-y-6`}>
       {/* Header */}
-      <div className={`${styles.userHeader} flex items-center justify-between`}>
+      <div className={styles.userHeader}>
         <div>
-          <h2 className={`${styles.userTitle} text-2xl font-bold text-gray-900 flex items-center gap-2`}>
+          <h2 className={styles.userTitle}>
             <Users className="h-6 w-6 text-ritter-gold" />
             Gestión de Usuarios
           </h2>
-          <p className={`${styles.userDescription} text-gray-600`}>
+          <p className={styles.userDescription}>
             Administra usuarios, roles y permisos del sistema
           </p>
         </div>
-        <Button className={`${styles.addUserButton} flex items-center gap-2`}>
-          <Plus className="h-4 w-4" />
-          Nuevo Usuario
-        </Button>
+        
+        <Dialog open={isCreateModalOpen} onOpenChange={handleModalClose}>
+          <DialogTrigger asChild>
+            <Button className={styles.addUserButton}>
+              <Plus className="h-4 w-4" />
+              Nuevo Usuario
+            </Button>
+          </DialogTrigger>
+          <DialogContent className={styles.createUserModal}>
+            <DialogHeader>
+              <DialogTitle className={styles.modalTitle}>
+                <User className="h-5 w-5 text-ritter-gold" />
+                Crear Nuevo Usuario
+              </DialogTitle>
+              <DialogDescription className={styles.modalDescription}>
+                Completa la información para crear un nuevo usuario en el sistema.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className={styles.modalForm}>
+              {/* Name Field */}
+              <div className={styles.formGroup}>
+                <Label htmlFor="name" className={styles.formLabel}>
+                  Nombre completo *
+                </Label>
+                <Input
+                  id="name"
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Ej: María González"
+                  className={formErrors.name ? styles.inputError : ''}
+                  disabled={isCreating}
+                />
+                {formErrors.name && (
+                  <div className={styles.errorMessage}>
+                    <AlertCircle className="h-4 w-4" />
+                    {formErrors.name}
+                  </div>
+                )}
+              </div>
+
+              {/* Email Field */}
+              <div className={styles.formGroup}>
+                <Label htmlFor="email" className={styles.formLabel}>
+                  Email corporativo *
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="usuario@ritterfinder.com"
+                  className={formErrors.email ? styles.inputError : ''}
+                  disabled={isCreating}
+                />
+                {formErrors.email && (
+                  <div className={styles.errorMessage}>
+                    <AlertCircle className="h-4 w-4" />
+                    {formErrors.email}
+                  </div>
+                )}
+              </div>
+
+              {/* Role and Department Row */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <Label htmlFor="role" className={styles.formLabel}>
+                    Rol del sistema *
+                  </Label>
+                  <Select 
+                    value={createForm.roleId} 
+                    onValueChange={(value) => setCreateForm(prev => ({ ...prev, roleId: value as SystemRoleType }))}
+                    disabled={isCreating}
+                  >
+                    <SelectTrigger className={formErrors.roleId ? styles.inputError : ''}>
+                      <SelectValue placeholder="Seleccionar rol" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableRoles.map((role) => (
+                        <SelectItem key={role.id} value={role.id}>
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: role.color }}
+                            />
+                            {role.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formErrors.roleId && (
+                    <div className={styles.errorMessage}>
+                      <AlertCircle className="h-4 w-4" />
+                      {formErrors.roleId}
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.formGroup}>
+                  <Label htmlFor="department" className={styles.formLabel}>
+                    Departamento
+                  </Label>
+                  <Select 
+                    value={createForm.department} 
+                    onValueChange={(value) => setCreateForm(prev => ({ ...prev, department: value }))}
+                    disabled={isCreating}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar departamento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map((dept) => (
+                        <SelectItem key={dept} value={dept}>
+                          <div className="flex items-center gap-2">
+                            <Building className="h-3 w-3" />
+                            {dept}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Phone Field */}
+              <div className={styles.formGroup}>
+                <Label htmlFor="phone" className={styles.formLabel}>
+                  Teléfono
+                </Label>
+                <Input
+                  id="phone"
+                  value={createForm.phone}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+34 600 123 456"
+                  className={formErrors.phone ? styles.inputError : ''}
+                  disabled={isCreating}
+                />
+                {formErrors.phone && (
+                  <div className={styles.errorMessage}>
+                    <AlertCircle className="h-4 w-4" />
+                    {formErrors.phone}
+                  </div>
+                )}
+              </div>
+
+              {/* Welcome Email Checkbox */}
+              <div className={styles.checkboxGroup}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={createForm.sendWelcomeEmail}
+                    onChange={(e) => setCreateForm(prev => ({ ...prev, sendWelcomeEmail: e.target.checked }))}
+                    className={styles.checkbox}
+                    disabled={isCreating}
+                  />
+                  <span className={styles.checkboxText}>
+                    Enviar email de bienvenida con credenciales de acceso
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <DialogFooter className={styles.modalFooter}>
+              <Button 
+                variant="outline" 
+                onClick={handleModalClose}
+                disabled={isCreating}
+                className={styles.cancelButton}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleCreateUser}
+                disabled={isCreating}
+                className={styles.createButton}
+              >
+                {isCreating ? (
+                  <>
+                    <div className={styles.spinner} />
+                    Creando...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4" />
+                    Crear Usuario
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Filters */}
-      <Card className={`${styles.filtersCard} border-0 shadow-sm`}>
+      <Card className={styles.filtersCard}>
         <CardContent className="pt-6">
-          <div className={`${styles.filtersGrid} grid gap-4 md:grid-cols-4`}>
-            <div className={`${styles.searchContainer} md:col-span-2`}>
+          <div className={styles.filtersGrid}>
+            <div className={styles.searchContainer}>
               <div className={styles.searchInputWrapper}>
                 <Search className={styles.searchIcon} />
                 <Input
@@ -228,9 +549,17 @@ export function UserManagement({ className = "" }: UserManagementProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los roles</SelectItem>
-                <SelectItem value="1">Administrador</SelectItem>
-                <SelectItem value="2">Manager</SelectItem>
-                <SelectItem value="3">Usuario</SelectItem>
+                {availableRoles.map((role) => (
+                  <SelectItem key={role.id} value={role.id}>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: role.color }}
+                      />
+                      {role.name}
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -238,7 +567,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       </Card>
 
       {/* Users Table */}
-      <Card className={`${styles.usersTableCard} border-0 shadow-sm`}>
+      <Card className={styles.usersTableCard}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Usuarios ({filteredUsers.length})</span>
@@ -249,7 +578,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className={`${styles.tableContainer} border rounded-lg`}>
+          <div className={styles.tableContainer}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -265,22 +594,22 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                 {filteredUsers.map((user) => (
                   <TableRow key={user.id} className={styles.userRow}>
                     <TableCell>
-                      <div className={`${styles.userCell} flex items-center gap-3`}>
-                        <div className={`${styles.userAvatar} w-8 h-8 rounded-full bg-ritter-gold/10 flex items-center justify-center`}>
+                      <div className={styles.userCell}>
+                        <div className={styles.userAvatar}>
                           <span className="text-sm font-medium text-ritter-gold">
                             {user.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div>
-                          <div className={`${styles.userName} font-medium`}>
+                          <div className={styles.userName}>
                             {user.name}
                           </div>
-                          <div className={`${styles.userEmail} text-sm text-muted-foreground flex items-center gap-1`}>
+                          <div className={styles.userEmail}>
                             <Mail className="h-3 w-3" />
                             {user.email}
                           </div>
                           {user.metadata?.phone && (
-                            <div className={`${styles.userPhone} text-xs text-muted-foreground flex items-center gap-1`}>
+                            <div className={styles.userPhone}>
                               <Phone className="h-3 w-3" />
                               {user.metadata.phone}
                             </div>
@@ -302,7 +631,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                       {getStatusBadge(user.status)}
                     </TableCell>
                     <TableCell>
-                      <div className={`${styles.lastLoginCell} flex items-center gap-1 text-sm`}>
+                      <div className={styles.lastLoginCell}>
                         <Calendar className="h-3 w-3 text-muted-foreground" />
                         {formatLastLogin(user.lastLogin)}
                       </div>
@@ -313,12 +642,12 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className={`${styles.department} text-sm`}>
+                      <span className={styles.department}>
                         {user.metadata?.department || "-"}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className={`${styles.userActions} flex items-center justify-end gap-2`}>
+                      <div className={styles.userActions}>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Edit2 className="h-4 w-4" />
                         </Button>
@@ -348,7 +677,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
           </div>
           
           {filteredUsers.length === 0 && (
-            <div className={`${styles.emptyState} text-center py-12 text-muted-foreground`}>
+            <div className={styles.emptyState}>
               <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No se encontraron usuarios</p>
               <p className="text-sm">Prueba ajustando los filtros de búsqueda</p>

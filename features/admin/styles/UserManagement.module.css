@@ -18,7 +18,10 @@
 
 /* Header */
 .userHeader {
-  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
   animation: slideInDown 0.4s ease-out;
 }
 
@@ -40,7 +43,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .userDescription {
@@ -51,7 +54,7 @@
 
 .addUserButton {
   background: var(--color-ritter-gold, #f59e0b);
-  color: var(--color-ritter-gold-dark, #92400e);
+  color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -60,12 +63,182 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .addUserButton:hover {
-  background: var(--color-ritter-gold-hover, #d97706);
-  transform: scale(1.02);
+  background: var(--color-ritter-gold-dark, #d97706);
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Create User Modal */
+.createUserModal {
+  max-width: 600px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  background: white;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-900, #1f2937);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.modalDescription {
+  color: var(--color-gray-600, #6b7280);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Modal Form */
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700, #374151);
+  margin-bottom: 0.25rem;
+}
+
+.formLabel::after {
+  content: "";
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.errorMessage svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+/* Checkbox Group */
+.checkboxGroup {
+  padding: 1rem;
+  background: var(--color-gray-50, #f9fafb);
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-ritter-gold, #f59e0b);
+  cursor: pointer;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.checkboxText {
+  color: var(--color-gray-700, #374151);
+  font-weight: 500;
+}
+
+/* Modal Footer */
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.cancelButton {
+  color: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-300, #d1d5db);
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: var(--color-gray-50, #f9fafb);
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+.createButton {
+  background: var(--color-ritter-gold, #f59e0b);
+  color: white;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.createButton:hover:not(:disabled) {
+  background: var(--color-ritter-gold-dark, #d97706);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.createButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Spinner */
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Filters Card */
@@ -145,13 +318,8 @@
 .filtersGrid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-@media (min-width: 768px) {
-  .filtersGrid {
-    grid-template-columns: 2fr 1fr 1fr;
-  }
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
 }
 
 /* Users Table Card */
@@ -177,7 +345,6 @@
 
 .userRow:hover {
   background: var(--color-gray-50, #f9fafb);
-  transform: scale(1.01);
 }
 
 .userRow:last-child {
@@ -368,6 +535,17 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .filtersGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .searchContainer {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 768px) {
   .userHeader {
     flex-direction: column;
@@ -380,6 +558,28 @@
   }
 
   .addUserButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .createUserModal {
+    width: 95vw;
+    max-height: 95vh;
+    margin: 0;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modalFooter {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .cancelButton,
+  .createButton {
     width: 100%;
     justify-content: center;
   }
@@ -476,12 +676,28 @@
     justify-content: flex-start;
     margin-top: 0.5rem;
   }
+
+  .createUserModal {
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+  }
+
+  .modalForm {
+    gap: 1.25rem;
+  }
+
+  .checkboxGroup {
+    padding: 0.75rem;
+  }
 }
 
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   .usersTableCard,
-  .filtersCard {
+  .filtersCard,
+  .createUserModal {
     border: 2px solid var(--color-gray-300, #d1d5db);
   }
 
@@ -501,6 +717,14 @@
   .userActions button {
     border: 1px solid var(--color-gray-300, #d1d5db);
   }
+
+  .inputError {
+    border-width: 2px !important;
+  }
+
+  .checkbox {
+    outline: 2px solid var(--color-gray-600, #4b5563);
+  }
 }
 
 /* Reduced Motion */
@@ -517,6 +741,7 @@
   .roleBadge:hover,
   .statusBadge:hover,
   .addUserButton:hover,
+  .createButton:hover,
   .userActions button:hover {
     transform: none;
   }
@@ -524,5 +749,55 @@
   .loadingRow {
     animation: none;
     background: #f3f4f6;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}
+
+/* Focus States */
+.addUserButton:focus,
+.createButton:focus,
+.cancelButton:focus {
+  outline: 2px solid var(--color-ritter-gold, #f59e0b);
+  outline-offset: 2px;
+}
+
+.checkbox:focus {
+  outline: 2px solid var(--color-ritter-gold, #f59e0b);
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .userHeader {
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  .addUserButton {
+    display: none;
+  }
+
+  .filtersCard {
+    display: none;
+  }
+
+  .userActions {
+    display: none;
+  }
+
+  .createUserModal {
+    display: none;
+  }
+
+  .tableContainer {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+
+  .userRow {
+    page-break-inside: avoid;
   }
 } 
