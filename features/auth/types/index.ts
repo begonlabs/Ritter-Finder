@@ -34,4 +34,28 @@ export interface FeatureItem {
   icon: string
   text: string
   id: string
+}
+
+export interface SetupPasswordCredentials {
+  password: string
+  confirmPassword: string
+}
+
+export interface SetupPasswordFormState {
+  password: string
+  confirmPassword: string
+  error: string
+  isLoading: boolean
+  token?: string
+}
+
+export interface SetupPasswordProps {
+  token: string
+  email?: string
+}
+
+export interface SetupPasswordResponse {
+  success: boolean
+  error?: string
+  redirectUrl?: string
 } 

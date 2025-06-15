@@ -137,11 +137,9 @@ export function DashboardHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{state.user?.name || 'Usuario Demo'}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onProfileClick}>
                 {t("nav.profile")}
               </DropdownMenuItem>
-              <DropdownMenuItem>{t("nav.settings")}</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/" onClick={onLogout}>{t("nav.logout")}</Link>
