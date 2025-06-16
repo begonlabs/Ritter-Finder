@@ -36,26 +36,34 @@ export interface FeatureItem {
   id: string
 }
 
-export interface SetupPasswordCredentials {
+// Set Password Types
+export interface SetPasswordCredentials {
+  token: string
   password: string
   confirmPassword: string
 }
 
-export interface SetupPasswordFormState {
+export interface SetPasswordFormState {
   password: string
   confirmPassword: string
+  token: string
   error: string
   isLoading: boolean
-  token?: string
+  success: boolean
 }
 
-export interface SetupPasswordProps {
-  token: string
-  email?: string
-}
-
-export interface SetupPasswordResponse {
+export interface SetPasswordResponse {
   success: boolean
   error?: string
   redirectUrl?: string
+}
+
+// Component Props
+export interface SetPasswordFormProps {
+  token?: string
+  className?: string
+}
+
+export interface SetPasswordPageProps {
+  token?: string
 } 

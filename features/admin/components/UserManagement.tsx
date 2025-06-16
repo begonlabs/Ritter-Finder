@@ -322,9 +322,9 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                 setIsCreateModalOpen(true)
               }}
             >
-              <Plus className="h-4 w-4" />
-              Nuevo Usuario
-            </Button>
+          <Plus className="h-4 w-4" />
+          Nuevo Usuario
+        </Button>
           </DialogTrigger>
           <DialogContent className={styles.createUserModal}>
             <DialogHeader>

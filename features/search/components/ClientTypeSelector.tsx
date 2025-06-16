@@ -78,7 +78,7 @@ export function ClientTypeSelector({ selectedClientTypes, setSelectedClientTypes
                 <CommandEmpty>No se encontraron tipos de cliente.</CommandEmpty>
                 <CommandGroup>
                   {clientTypes.map((clientType) => (
-                    <CommandItem
+                    <CommandItem 
                       key={clientType.value}
                       value={clientType.value}
                       onSelect={() => handleSelect(clientType.value)}
@@ -90,12 +90,12 @@ export function ClientTypeSelector({ selectedClientTypes, setSelectedClientTypes
                             {clientType.label}
                           </span>
                           <Check
-                            className={cn(
-                              styles.commandItemCheckbox,
+                          className={cn(
+                            styles.commandItemCheckbox,
                               selectedClientTypes.includes(clientType.value) 
                                 ? styles.commandItemCheckboxChecked 
                                 : styles.commandItemCheckboxUnchecked
-                            )}
+                          )}
                           />
                         </div>
                         <span className={styles.commandItemDescription}>

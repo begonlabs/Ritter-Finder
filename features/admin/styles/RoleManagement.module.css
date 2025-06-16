@@ -431,15 +431,15 @@
     padding: 1rem;
     border-bottom: 1px solid #e5e7eb;
   }
-
+  
   .userRow:hover {
     transform: none;
   }
-
+  
   .userCell {
     margin-bottom: 0.75rem;
   }
-
+  
 
 
   .userActions {
@@ -458,7 +458,7 @@
   .userRow {
     border-bottom-color: var(--color-gray-400, #9ca3af);
   }
-
+  
   .userAvatar {
     border: 2px solid var(--color-gray-700, #374151);
   }

@@ -92,6 +92,13 @@
   line-height: 1.4;
 }
 
+/* Password Wrapper */
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .fieldInput {
   padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
@@ -100,6 +107,11 @@
   transition: all 0.2s ease;
   background: #fafafa;
   color: #1f2937;
+}
+
+/* Password input needs more right padding for the toggle button */
+.passwordWrapper .fieldInput {
+  padding-right: 3rem;
 }
 
 .fieldInput::placeholder {
@@ -117,6 +129,38 @@
   opacity: 0.6;
   cursor: not-allowed;
   background: #f3f4f6;
+}
+
+/* Password Toggle Button */
+.passwordToggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passwordToggle:hover {
+  color: #F2B705;
+  background: rgba(242, 183, 5, 0.1);
+}
+
+.passwordToggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.passwordToggle:focus {
+  outline: 2px solid #F2B705;
+  outline-offset: 2px;
 }
 
 /* Error Message */
@@ -250,6 +294,14 @@
   .fieldInput {
     padding: 0.625rem 0.875rem;
     font-size: 0.875rem;
+  }
+
+  .passwordWrapper .fieldInput {
+    padding-right: 2.5rem;
+  }
+
+  .passwordToggle {
+    right: 0.625rem;
   }
 
   .submitButton {

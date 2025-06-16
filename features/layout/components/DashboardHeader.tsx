@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, Menu, User } from "lucide-react"
+import { Bell, Menu, User, UserCircle, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
@@ -135,14 +135,33 @@ export function DashboardHeader({
                 <User className={styles.actionIcon} />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{state.user?.name || 'Usuario Demo'}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={onProfileClick}>
-                {t("nav.profile")}
-              </DropdownMenuItem>
+            <DropdownMenuContent align="end" className={styles.userDropdownContent}>
+              {/* User Info Header */}
+              <div className={styles.userInfoHeader}>
+                <div className={styles.userAvatar}>
+                  <User className={styles.avatarIcon} />
+                </div>
+                <div className={styles.userDetails}>
+                  <p className={styles.userName}>{state.user?.name || 'Usuario Demo'}</p>
+                  <p className={styles.userEmail}>{state.user?.email || 'demo@ritterfinder.com'}</p>
+                </div>
+              </div>
               <DropdownMenuSeparator />
+              
+              {/* Profile Menu Item */}
+              <DropdownMenuItem onClick={onProfileClick} className={styles.userMenuItem}>
+                <UserCircle className={styles.menuItemIcon} />
+                <span>{t("nav.profile")}</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator />
+              
+              {/* Logout Menu Item */}
               <DropdownMenuItem asChild>
-                <Link href="/" onClick={onLogout}>{t("nav.logout")}</Link>
+                <Link href="/" onClick={onLogout} className={styles.userMenuItemLogout}>
+                  <LogOut className={styles.menuItemIcon} />
+                  <span>{t("nav.logout")}</span>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

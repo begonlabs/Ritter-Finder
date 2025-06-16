@@ -4,15 +4,18 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Eye, EyeOff } from "lucide-react"
 import Image from "next/image"
 import { LanguageSelector } from "@/components/language-selector"
 import { useLanguage } from "@/lib/language-context"
 import { useLogin } from "../hooks/useLogin"
+import { useState } from "react"
 import styles from "../styles/LoginForm.module.css"
 
 export function LoginForm() {
   const { t } = useLanguage()
   const { formState, updateField, handleSubmit } = useLogin()
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <Card className={`${styles.loginForm} w-full max-w-md shadow-lg border-0`}>
@@ -57,16 +60,27 @@ export function LoginForm() {
               <Label htmlFor="password" className={styles.fieldLabel}>
                 {t("login.password")}
               </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t("login.password.placeholder")}
-                value={formState.password}
-                onChange={(e) => updateField("password", e.target.value)}
-                required
-                className={`${styles.fieldInput} border-gray-300`}
-                disabled={formState.isLoading}
-              />
+              <div className={styles.passwordWrapper}>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("login.password.placeholder")}
+                  value={formState.password}
+                  onChange={(e) => updateField("password", e.target.value)}
+                  required
+                  className={`${styles.fieldInput} border-gray-300`}
+                  disabled={formState.isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={styles.passwordToggle}
+                  disabled={formState.isLoading}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             {formState.error && (
               <p className={`${styles.errorMessage} text-red-500 text-sm`}>

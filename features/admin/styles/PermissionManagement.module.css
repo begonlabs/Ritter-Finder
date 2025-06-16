@@ -347,8 +347,8 @@
   justify-content: center;
   color: #22c55e;
   transition: all 0.2s ease;
-}
-
+  }
+  
 .permissionGranted:hover {
   transform: scale(1.1);
   background: rgba(34, 197, 94, 0.2);
@@ -410,8 +410,8 @@
   width: 1.5rem;
   height: 1.5rem;
   border-width: 1px;
-}
-
+  }
+  
 /* Responsive Design */
 @media (max-width: 1024px) {
   .rolesGrid {
@@ -438,7 +438,7 @@
   .permissionTitle {
     font-size: 1.25rem;
   }
-
+  
   .rolesGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -570,7 +570,7 @@
   .permissionRow {
     border-bottom-color: var(--color-gray-400, #9ca3af);
   }
-
+  
   .permissionGranted {
     border-width: 3px;
     background: #22c55e;
