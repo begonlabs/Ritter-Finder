@@ -5,17 +5,12 @@ import type { SearchConfig, SearchActions } from "../types"
 
 export function useSearchConfig() {
   const [config, setConfig] = useState<SearchConfig>({
-    selectedWebsites: [],
     selectedClientTypes: [],
     selectedLocations: [],
     requireWebsite: false,
     validateEmail: false,
     validateWebsite: false,
   })
-
-  const setSelectedWebsites = (websites: string[]) => {
-    setConfig(prev => ({ ...prev, selectedWebsites: websites }))
-  }
 
   const setSelectedClientTypes = (clientTypes: string[]) => {
     setConfig(prev => ({ ...prev, selectedClientTypes: clientTypes }))
@@ -39,7 +34,6 @@ export function useSearchConfig() {
 
   const resetConfig = () => {
     setConfig({
-      selectedWebsites: [],
       selectedClientTypes: [],
       selectedLocations: [],
       requireWebsite: false,
@@ -49,13 +43,11 @@ export function useSearchConfig() {
   }
 
   const isValidConfig = (): boolean => {
-    return config.selectedWebsites.length > 0 && 
-           config.selectedClientTypes.length > 0 &&
+    return config.selectedClientTypes.length > 0 &&
            config.selectedLocations.length > 0
   }
 
   const actions: Omit<SearchActions, 'handleSearch' | 'rerunSearch'> = {
-    setSelectedWebsites,
     setSelectedClientTypes,
     setSelectedLocations,
     setRequireWebsite,

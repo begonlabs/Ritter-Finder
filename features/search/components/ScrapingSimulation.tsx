@@ -7,13 +7,12 @@ import { useLanguage, formatMessage } from "@/lib/language-context"
 import styles from "../styles/ScrapingSimulation.module.css"
 
 interface ScrapingSimulationProps {
-  websites: string[]
+  // No props needed now
 }
 
-export function ScrapingSimulation({ websites }: ScrapingSimulationProps) {
+export function ScrapingSimulation({}: ScrapingSimulationProps = {}) {
   const { t } = useLanguage()
   const [progress, setProgress] = useState(0)
-  const [currentWebsite, setCurrentWebsite] = useState("")
   const [message, setMessage] = useState("")
 
   useEffect(() => {
@@ -29,7 +28,6 @@ export function ScrapingSimulation({ websites }: ScrapingSimulationProps) {
     ]
 
     let currentMessageIndex = 0
-    let currentWebsiteIndex = 0
 
     const interval = setInterval(() => {
       // Update progress
@@ -46,16 +44,10 @@ export function ScrapingSimulation({ websites }: ScrapingSimulationProps) {
         setMessage(messages[currentMessageIndex])
         currentMessageIndex++
       }
-
-      // Cycle through websites
-      if (progress % 25 === 0 && websites.length > 0) {
-        setCurrentWebsite(websites[currentWebsiteIndex % websites.length])
-        currentWebsiteIndex++
-      }
     }, 100)
 
     return () => clearInterval(interval)
-  }, [websites, progress, t])
+  }, [progress, t])
 
   return (
     <Card className={styles.scrapingSimulation}>
@@ -70,12 +62,6 @@ export function ScrapingSimulation({ websites }: ScrapingSimulationProps) {
         </div>
 
         <div className={styles.messagesContainer}>
-          {currentWebsite && (
-            <p className={styles.currentWebsite}>
-              {formatMessage(t("search.analyzing"), { website: currentWebsite })}
-            </p>
-          )}
-
           {message && <p className={styles.stepMessage}>{message}</p>}
         </div>
       </CardContent>

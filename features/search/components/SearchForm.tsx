@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Search } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
-import { WebsiteSelector } from "./WebsiteSelector"
 import { ClientTypeSelector } from "./ClientTypeSelector"
 import { LocationSelector } from "./LocationSelector"
 import { ValidationOptions } from "./ValidationOptions"
@@ -29,10 +28,6 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
       </div>
 
       <div className={styles.configGrid}>
-        <WebsiteSelector 
-          selectedWebsites={state.selectedWebsites} 
-          setSelectedWebsites={actions.setSelectedWebsites} 
-        />
         <ClientTypeSelector
           selectedClientTypes={state.selectedClientTypes}
           setSelectedClientTypes={actions.setSelectedClientTypes}
@@ -54,7 +49,7 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
       {!canStartSearch && !state.isSearching && (
         <Alert className={styles.alert}>
           <AlertDescription className={styles.alertText}>
-            Selecciona al menos un sitio web, un tipo de cliente y una ubicación para comenzar la búsqueda.
+            Selecciona al menos un tipo de cliente y una ubicación para comenzar la búsqueda.
           </AlertDescription>
         </Alert>
       )}
@@ -80,7 +75,7 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
         </Button>
       </div>
 
-      {state.isSearching && <ScrapingSimulation websites={state.selectedWebsites} />}
+      {state.isSearching && <ScrapingSimulation />}
     </div>
   )
 }

@@ -1,5 +1,4 @@
 export interface SearchConfig {
-  selectedWebsites: string[]
   selectedClientTypes: string[]
   selectedLocations: string[]
   requireWebsite: boolean
@@ -15,7 +14,6 @@ export interface SearchState extends SearchConfig {
 }
 
 export interface SearchActions {
-  setSelectedWebsites: (websites: string[]) => void
   setSelectedClientTypes: (clientTypes: string[]) => void
   setSelectedLocations: (locations: string[]) => void
   setRequireWebsite: (require: boolean) => void
@@ -67,7 +65,6 @@ export interface ScrapingStep {
 export interface SearchHistoryItem {
   id: string
   date: string
-  websites: string[]
   clientTypes: string[]
   locations: string[]
   requireWebsite: boolean

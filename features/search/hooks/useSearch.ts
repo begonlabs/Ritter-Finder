@@ -33,7 +33,7 @@ export function useSearch() {
 
     // Simulate search process with progress updates
     const steps = [
-      "Conectando a sitios web...",
+      "Conectando a fuentes de datos...",
       "Analizando contenido...",
       "Extrayendo información de contacto...",
       "Validando datos...",
@@ -87,7 +87,6 @@ export function useSearch() {
   }, [configActions])
 
   const rerunSearch = useCallback((searchConfig: SearchConfig) => {
-    configActions.setSelectedWebsites(searchConfig.selectedWebsites)
     configActions.setSelectedClientTypes(searchConfig.selectedClientTypes)
     configActions.setSelectedLocations(searchConfig.selectedLocations)
     configActions.setRequireWebsite(searchConfig.requireWebsite)

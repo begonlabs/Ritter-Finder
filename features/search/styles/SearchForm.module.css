@@ -40,10 +40,26 @@
   margin-bottom: 2rem;
 }
 
+/* First row: ClientTypeSelector and LocationSelector */
+.configGrid > :nth-child(1),
+.configGrid > :nth-child(2) {
+  grid-row: 1;
+}
+
+/* Second row: ValidationOptions spans both columns */
+.configGrid > :nth-child(3) {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 1024px) {
   .configGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+  
+  /* Reset grid positioning for mobile */
+  .configGrid > :nth-child(3) {
+    grid-column: auto;
   }
 }
 
