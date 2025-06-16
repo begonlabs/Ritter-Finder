@@ -40,9 +40,45 @@ export function RecipientsTab({ selectedLeads }: RecipientsTabProps) {
                     {lead.position} en {lead.company}
                   </p>
                   <p className={`${styles.recipientEmail} text-sm text-blue-600`}>{lead.email}</p>
+                  {lead.location && (
+                    <p className={`${styles.recipientLocation} text-xs text-gray-500`}>
+                      📍 {lead.location}
+                    </p>
+                  )}
+                  {lead.confidence && (
+                    <p className={`${styles.recipientConfidence} text-xs`}>
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${
+                        lead.confidence > 0.7 ? 'bg-green-100 text-green-800' :
+                        lead.confidence > 0.4 ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {Math.round(lead.confidence * 100)}% confianza
+                      </span>
+                    </p>
+                  )}
                 </div>
               </div>
-              <Badge variant="outline" className={styles.recipientBadge}>{lead.industry}</Badge>
+              <div className={`${styles.recipientRight} flex flex-col items-end gap-1`}>
+                <Badge variant="outline" className={styles.recipientBadge}>{lead.industry}</Badge>
+                {lead.source && (
+                  <Badge variant="secondary" className={`${styles.sourceBadge} text-xs`}>
+                    {lead.source === 'paginas_amarillas' ? 'P. Amarillas' : 
+                     lead.source === 'axesor' ? 'Axesor' : 
+                     lead.source}
+                  </Badge>
+                )}
+                <div className={`${styles.validationIcons} flex gap-1 mt-1`}>
+                  {lead.emailValidated && (
+                    <span className="text-green-600 text-xs" title="Email validado">📧✓</span>
+                  )}
+                  {lead.websiteExists && (
+                    <span className="text-blue-600 text-xs" title="Web validada">🌐✓</span>
+                  )}
+                  {lead.phoneValidated && (
+                    <span className="text-purple-600 text-xs" title="Teléfono validado">📞✓</span>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
           

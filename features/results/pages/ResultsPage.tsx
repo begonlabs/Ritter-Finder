@@ -21,7 +21,10 @@ const sampleLeads: Lead[] = [
     revenue: '€5M-10M',
     notes: 'High potential lead interested in energy efficiency solutions',
     lastActivity: '2024-01-15',
-    source: 'LinkedIn'
+    source: 'LinkedIn',
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: true
   },
   {
     id: '2',
@@ -38,7 +41,10 @@ const sampleLeads: Lead[] = [
     revenue: '€2M-5M',
     notes: 'Interested in sustainable technology solutions',
     lastActivity: '2024-01-14',
-    source: 'Website'
+    source: 'Website',
+    hasWebsite: true,
+    websiteExists: true,
+    emailValidated: false
   },
   {
     id: '3',
@@ -55,7 +61,10 @@ const sampleLeads: Lead[] = [
     revenue: '€10M+',
     notes: 'Looking for energy optimization tools for data centers',
     lastActivity: '2024-01-16',
-    source: 'Email Campaign'
+    source: 'Email Campaign',
+    hasWebsite: true,
+    websiteExists: false,
+    emailValidated: true
   }
 ]
 

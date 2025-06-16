@@ -301,6 +301,7 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
 
     // Replace standard lead variables - ensure all values are strings
     const leadVariables: Record<string, string> = {
+      // Variables básicas
       'contact_name': String(lead.name || ''),
       'company_name': String(lead.company || ''),
       'contact_email': String(lead.email || ''),
@@ -310,7 +311,25 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
       'full_name': String(lead.name || ''),
       'lead_id': String(lead.id || ''),
       'position': String(lead.position || ''),
-      'industry': String(lead.industry || '')
+      'industry': String(lead.industry || ''),
+      
+      // Variables de datos normalizados
+      'location': String(lead.location || ''),
+      'confidence_score': String(Math.round((lead.confidence || 0) * 100)),
+      'source_type': String(lead.source || ''),
+      'website': String(lead.website || ''),
+      'cif_nif': String(lead.cif || ''),
+      'legal_form': String(lead.legalForm || ''),
+      'cnae_code': String(lead.cnaeCode || ''),
+      'employees': String(lead.employees || ''),
+      'revenue': String(lead.revenue || ''),
+      
+      // Variables calculadas
+      'has_website': lead.hasWebsite ? 'Sí' : 'No',
+      'website_validated': lead.websiteExists ? 'Validada' : 'No validada',
+      'email_validated': lead.emailValidated ? 'Validado' : 'No validado',
+      'phone_validated': lead.phoneValidated ? 'Validado' : 'No validado',
+      'confidence_level': (lead.confidence || 0) > 0.7 ? 'Alta' : (lead.confidence || 0) > 0.4 ? 'Media' : 'Baja'
     };
 
     // Apply lead variables

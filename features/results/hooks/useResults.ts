@@ -1,17 +1,49 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { useLeadSelection } from "./useLeadSelection"
 import { useResultsFiltering } from "./useResultsFiltering"
-import type { Lead, ResultsState, ResultsActions, LeadSummary, ConfidenceLevel } from "../types"
+import { useLeadsApi } from "./useLeadsApi"
+import { useLeadsAdapter } from "./useLeadsAdapter"
+import type { Lead, ResultsState, ResultsActions, LeadSummary, ConfidenceLevel, LeadsSearchParams } from "../types"
 
-export function useResults(leads: Lead[]) {
+interface UseResultsOptions {
+  initialSearchParams?: LeadsSearchParams
+  autoFetch?: boolean
+}
+
+export function useResults(options: UseResultsOptions = {}) {
+  const { initialSearchParams, autoFetch = true } = options
+
+  // API layer - fetch normalized leads from backend
+  const {
+    normalizedLeads,
+    isLoading,
+    error,
+    total,
+    hasMore,
+    currentPage,
+    fetchLeads,
+    refreshLeads,
+    clearLeads,
+  } = useLeadsApi(autoFetch ? initialSearchParams : undefined)
+
+  // Adapter layer - convert normalized leads to frontend format
+  const { adaptNormalizedLeads, createSearchParams } = useLeadsAdapter()
+
+  // Convert normalized leads to frontend Lead format
+  const leads = useMemo(() => {
+    return adaptNormalizedLeads(normalizedLeads)
+  }, [normalizedLeads, adaptNormalizedLeads])
+
+  // Selection logic
   const {
     selection,
     selectedLeadsData,
     actions: selectionActions
   } = useLeadSelection(leads)
 
+  // Filtering and sorting (client-side for now)
   const {
     filters,
     sorting,
@@ -63,13 +95,50 @@ export function useResults(leads: Lead[]) {
     }
   }, [filteredLeads, selection.selectedLeads.length, summary.byIndustry])
 
+  // Enhanced search function that calls the API
+  const searchLeads = async (searchParams: LeadsSearchParams) => {
+    await fetchLeads(searchParams)
+  }
+
+  // Search with current filters
+  const searchWithFilters = async () => {
+    const searchParams = createSearchParams({
+      searchTerm: filters.searchTerm,
+      industryFilter: filters.industryFilter,
+      locationFilter: filters.locationFilter,
+      confidenceRange: filters.confidenceRange,
+    }, {
+      page: 1,
+      limit: 50
+    })
+
+    await fetchLeads(searchParams)
+  }
+
+  // Load more results (pagination)
+  const loadMore = async () => {
+    if (hasMore && !isLoading) {
+      const searchParams = createSearchParams({
+        searchTerm: filters.searchTerm,
+        industryFilter: filters.industryFilter,
+        locationFilter: filters.locationFilter,
+        confidenceRange: filters.confidenceRange,
+      }, {
+        page: currentPage + 1,
+        limit: 50
+      })
+
+      await fetchLeads(searchParams)
+    }
+  }
+
   const state: ResultsState = {
     leads,
     filteredLeads,
     selection,
     filters,
     sorting,
-    isLoading: false,
+    isLoading,
   }
 
   const actions: ResultsActions = {
@@ -131,5 +200,16 @@ export function useResults(leads: Lead[]) {
     filterOptions,
     getConfidenceColor,
     exportSelectedLeads,
+    // API functions
+    searchLeads,
+    searchWithFilters,
+    loadMore,
+    refreshLeads,
+    clearLeads,
+    // API state
+    error,
+    total,
+    hasMore,
+    currentPage,
   }
 }

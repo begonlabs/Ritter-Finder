@@ -395,6 +395,114 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
   },
   {
     id: 'tpl_005',
+    name: 'Energías Renovables - Consultoría',
+    description: 'Template especializado para empresas del sector de energías renovables',
+    subject: 'Soluciones en Energías Renovables para {{company_name}} - RitterFinder',
+    htmlContent: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background: #10b981; color: white; padding: 20px; text-align: center; }
+        .content { padding: 30px; }
+        .highlight { background: #d1fae5; padding: 15px; border-left: 4px solid #10b981; margin: 20px 0; }
+        .benefits { background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌱 RitterFinder</h1>
+        <p>Consultoría en Energías Renovables</p>
+    </div>
+    
+    <div class="content">
+        <h2>Estimado/a {{contact_name}},</h2>
+        
+        <p>Hemos identificado a <strong>{{company_name}}</strong> como una empresa líder en {{industry}} ubicada en {{location}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.</p>
+        
+        <div class="highlight">
+            <h3>🔋 {{service_type}} para su empresa</h3>
+            <p><strong>Ahorro estimado:</strong> {{estimated_savings}}</p>
+            <p><strong>Retorno de inversión:</strong> {{roi_period}}</p>
+            <p><strong>Reducción de CO₂:</strong> {{co2_reduction}}</p>
+        </div>
+        
+        <div class="benefits">
+            <h3>Beneficios específicos para {{industry}}:</h3>
+            <ul>
+                <li>✅ Reducción de costes energéticos hasta un 70%</li>
+                <li>✅ Independencia energética y sostenibilidad</li>
+                <li>✅ Cumplimiento de normativas medioambientales</li>
+                <li>✅ Mejora de la imagen corporativa</li>
+                <li>✅ Subvenciones y incentivos fiscales disponibles</li>
+            </ul>
+        </div>
+        
+        <p>Con una confianza del {{confidence_score}}% en nuestros datos sobre su empresa y conociendo sus necesidades específicas, podemos ofrecerle una consultoría personalizada <strong>sin compromiso</strong>.</p>
+        
+        <p>¿Le interesaría conocer más detalles sobre cómo las energías renovables pueden transformar el consumo energético de {{company_name}}?</p>
+        
+        <p>Cordialmente,<br><strong>{{consultant_name}}</strong><br>{{consultant_title}}<br>RitterFinder - Consultoría Energética</p>
+    </div>
+    
+    <div class="footer">
+        <p>🌍 © 2025 RitterFinder. Especialistas en transición energética.</p>
+        <p>Este email fue enviado a {{contact_email}} | {{source_type}} verificado</p>
+    </div>
+</body>
+</html>`,
+    plainTextContent: `
+🌱 RITTERFINDER - CONSULTORÍA EN ENERGÍAS RENOVABLES
+
+Estimado/a {{contact_name}},
+
+Hemos identificado a {{company_name}} como una empresa líder en {{industry}} ubicada en {{location}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.
+
+🔋 {{service_type}} para su empresa:
+- Ahorro estimado: {{estimated_savings}}
+- Retorno de inversión: {{roi_period}}  
+- Reducción de CO₂: {{co2_reduction}}
+
+BENEFICIOS ESPECÍFICOS PARA {{industry}}:
+✅ Reducción de costes energéticos hasta un 70%
+✅ Independencia energética y sostenibilidad
+✅ Cumplimiento de normativas medioambientales
+✅ Mejora de la imagen corporativa
+✅ Subvenciones y incentivos fiscales disponibles
+
+Con una confianza del {{confidence_score}}% en nuestros datos sobre su empresa y conociendo sus necesidades específicas, podemos ofrecerle una consultoría personalizada sin compromiso.
+
+¿Le interesaría conocer más detalles sobre cómo las energías renovables pueden transformar el consumo energético de {{company_name}}?
+
+Cordialmente,
+{{consultant_name}}
+{{consultant_title}}
+RitterFinder - Consultoría Energética
+
+🌍 © 2025 RitterFinder. Especialistas en transición energética.
+Este email fue enviado a {{contact_email}} | {{source_type}} verificado
+`,
+    category: 'sales',
+    isActive: true,
+    variables: [
+      // Variables automáticas (se cargan desde leads): contact_name, company_name, industry, location, confidence_score, contact_email, source_type
+      { key: 'service_type', label: 'Tipo de servicio energético', description: 'Instalación Solar, Aerotermia, etc.', required: true, defaultValue: 'Instalación Solar Fotovoltaica', type: 'text' },
+      { key: 'estimated_savings', label: 'Ahorro estimado', description: 'Porcentaje o cantidad de ahorro', required: true, defaultValue: '40-60%', type: 'text' },
+      { key: 'roi_period', label: 'Período de retorno de inversión', description: 'Tiempo para recuperar la inversión', required: true, defaultValue: '5-7 años', type: 'text' },
+      { key: 'co2_reduction', label: 'Reducción de CO₂', description: 'Reducción de emisiones anuales', required: true, defaultValue: '3-5 toneladas/año', type: 'text' },
+      { key: 'consultant_name', label: 'Nombre del consultor', description: 'Nombre del especialista en energías renovables', required: true, defaultValue: '', type: 'text' },
+      { key: 'consultant_title', label: 'Cargo del consultor', description: 'Título del especialista', required: false, defaultValue: 'Especialista en Energías Renovables', type: 'text' }
+    ],
+    usageCount: 15,
+    createdBy: 'admin',
+    createdAt: new Date('2024-12-20'),
+    updatedAt: new Date('2025-01-01')
+  },
+  {
+    id: 'tpl_006',
     name: 'Template Personalizado Simple',
     description: 'Template básico personalizable para cualquier propósito',
     subject: '{{custom_subject}}',
@@ -416,7 +524,7 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
             <h1>{{header_title}}</h1>
         </div>
         
-        <p>{{greeting}} {{recipient_name}},</p>
+        <p>{{greeting}} {{contact_name}},</p>
         
         <p>{{main_message}}</p>
         
@@ -433,7 +541,7 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
     plainTextContent: `
 {{header_title}}
 
-{{greeting}} {{recipient_name}},
+{{greeting}} {{contact_name}},
 
 {{main_message}}
 
@@ -447,20 +555,20 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
     category: 'custom',
     isActive: true,
     variables: [
+      // Variables automáticas: contact_name se carga automáticamente
       { key: 'custom_subject', label: 'Asunto personalizado', description: 'Asunto personalizado', required: true, defaultValue: '', type: 'text' },
       { key: 'header_title', label: 'Título del encabezado', description: 'Título del encabezado', required: true, defaultValue: '', type: 'text' },
       { key: 'greeting', label: 'Saludo (Estimado/a, Hola, etc.)', description: 'Saludo (Estimado/a, Hola, etc.)', required: false, defaultValue: 'Estimado/a', type: 'text' },
-      { key: 'recipient_name', label: 'Nombre del destinatario', description: 'Nombre del destinatario', required: true, defaultValue: '', type: 'text' },
       { key: 'main_message', label: 'Mensaje principal', description: 'Mensaje principal', required: true, defaultValue: '', type: 'text' },
       { key: 'closing_message', label: 'Mensaje de cierre', description: 'Mensaje de cierre', required: false, defaultValue: 'Gracias por su tiempo.', type: 'text' },
       { key: 'signature_name', label: 'Nombre en la firma', description: 'Nombre en la firma', required: true, defaultValue: '', type: 'text' },
       { key: 'signature_title', label: 'Cargo en la firma', description: 'Cargo en la firma', required: false, defaultValue: '', type: 'text' },
       { key: 'footer_text', label: 'Texto del pie de página', description: 'Texto del pie de página', required: false, defaultValue: '© 2025 RitterFinder. Todos los derechos reservados.', type: 'text' }
     ],
-    usageCount: 8,
+    usageCount: 3,
     createdBy: 'admin',
-    createdAt: new Date('2024-12-20'),
-    updatedAt: new Date('2024-12-20')
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01')
   }
 ];
 

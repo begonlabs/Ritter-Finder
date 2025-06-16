@@ -13,6 +13,63 @@ export interface Lead {
   score?: number
   lastContact?: Date
   status?: 'new' | 'contacted' | 'qualified' | 'converted'
+  // Nuevos campos para datos normalizados
+  location?: string
+  confidence?: number
+  source?: 'paginas_amarillas' | 'axesor' | 'manual'
+  sourceUrl?: string
+  hasWebsite?: boolean
+  websiteExists?: boolean
+  emailValidated?: boolean
+  phoneValidated?: boolean
+  employees?: string
+  revenue?: string
+  cif?: string
+  legalForm?: string
+  cnaeCode?: string
+}
+
+// Interfaz para los datos normalizados de la API
+export interface NormalizedLead {
+  id: string
+  name: string
+  description?: string
+  address: string
+  phone?: string
+  website?: string
+  cif_nif?: string
+  legal_form?: string
+  constitution_date?: string
+  business_object?: string
+  cnae_code?: string
+  sic_code?: string
+  industry: string
+  activities?: string
+  source_url: string
+  source_type: 'paginas_amarillas' | 'axesor'
+  confidence_score: number
+  location_normalized: string
+  city: string
+  province: string
+  postal_code?: string
+  email_found?: string
+  email_validated: boolean
+  website_validated: boolean
+  phone_validated: boolean
+  estimated_employees: string
+  estimated_revenue: string
+  scraped_at: string
+  processed_at?: string
+  last_updated: string
+}
+
+// Funciones de adaptación
+export interface LeadAdapter {
+  fromNormalized: (normalized: NormalizedLead) => Lead
+  toNormalized: (lead: Lead) => Partial<NormalizedLead>
+  inferPosition: (legalForm?: string, industry?: string) => string
+  createCompanyName: (name: string, legalForm?: string) => string
+  formatNotes: (normalized: NormalizedLead) => string
 }
 
 export interface EmailTemplate {
@@ -108,7 +165,9 @@ export type Language = 'es' | 'en'
 // Variables que se cargan automáticamente desde la base de datos
 export const AUTO_VARIABLES = [
   'contact_name', 'company_name', 'contact_email', 'contact_phone',
-  'first_name', 'last_name', 'full_name', 'lead_id', 'position', 'industry'
+  'first_name', 'last_name', 'full_name', 'lead_id', 'position', 'industry',
+  'location', 'confidence_score', 'source_type', 'website', 'cif_nif',
+  'legal_form', 'cnae_code', 'employees', 'revenue'
 ];
 
 export interface TemplateData {

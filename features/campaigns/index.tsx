@@ -5,6 +5,7 @@ export { CampaignPage } from './pages/CampaignPage'
 export { EmailComposer } from './components/EmailComposer'
 export { EmailHistory } from './components/EmailHistory'
 export { CampaignSuccess } from './components/CampaignSuccess'
+export { CampaignIntegration } from './components/CampaignIntegration'
 
 // Sub-components
 export { ComposeTab } from './components/ComposeTab'
@@ -15,6 +16,7 @@ export { PreviewTab } from './components/PreviewTab'
 export { useEmailComposer } from './hooks/useEmailComposer'
 export { useEmailTemplates } from './hooks/useEmailTemplates'
 export { useCampaignHistory } from './hooks/useCampaignHistory'
+export { useLeadAdapter } from './hooks/useLeadAdapter'
 
 // Styles
 export { default as campaignPageStyles } from './styles/CampaignPage.module.css'
@@ -24,10 +26,12 @@ export { default as recipientsTabStyles } from './styles/RecipientsTab.module.cs
 export { default as previewTabStyles } from './styles/PreviewTab.module.css'
 export { default as emailHistoryStyles } from './styles/EmailHistory.module.css'
 export { default as campaignSuccessStyles } from './styles/CampaignSuccess.module.css'
+export { default as campaignIntegrationStyles } from './styles/CampaignIntegration.module.css'
 
 // Types
 export type {
   Lead,
+  NormalizedLead,
   EmailTemplate,
   TemplateVariable,
   Campaign,
@@ -39,7 +43,8 @@ export type {
   TemplateData,
   CampaignTabProps,
   TemplateFilters,
-  UseTemplatesReturn
+  UseTemplatesReturn,
+  LeadAdapter
 } from './types'
 
 // Hook Types
