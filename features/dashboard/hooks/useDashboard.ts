@@ -113,7 +113,7 @@ export function useDashboard() {
 
   // Search action
   const handleSearch = useCallback(() => {
-    if (state.selectedWebsites.length === 0 || state.selectedClientTypes.length === 0 || state.selectedLocations.length === 0) {
+    if (state.selectedClientTypes.length === 0 || state.selectedLocations.length === 0) {
       return
     }
 
@@ -140,7 +140,7 @@ export function useDashboard() {
         activeTab: "results" as TabType,
       }))
     }, 5000)
-  }, [state.selectedWebsites, state.selectedClientTypes, state.selectedLocations])
+  }, [state.selectedClientTypes, state.selectedLocations])
 
   // Campaign actions
   const handleSendCampaign = useCallback((campaignData: CampaignData) => {

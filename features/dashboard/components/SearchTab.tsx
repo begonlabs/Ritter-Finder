@@ -6,7 +6,6 @@ import styles from "../styles/SearchTab.module.css"
 
 export function SearchTab({ state, actions }: TabComponentProps) {
   const searchState = {
-    selectedWebsites: state.selectedWebsites,
     selectedClientTypes: state.selectedClientTypes,
     selectedLocations: state.selectedLocations,
     requireWebsite: state.requireWebsite,
@@ -19,7 +18,6 @@ export function SearchTab({ state, actions }: TabComponentProps) {
   }
 
   const searchActions = {
-    setSelectedWebsites: actions.setSelectedWebsites,
     setSelectedClientTypes: actions.setSelectedClientTypes,
     setSelectedLocations: actions.setSelectedLocations,
     setRequireWebsite: actions.setRequireWebsite,
@@ -28,7 +26,6 @@ export function SearchTab({ state, actions }: TabComponentProps) {
     handleSearch: actions.handleSearch,
     resetSearch: actions.resetSearch,
     rerunSearch: (config: any) => {
-      actions.setSelectedWebsites(config.selectedWebsites)
       actions.setSelectedClientTypes(config.selectedClientTypes)
       actions.setSelectedLocations(config.selectedLocations)
       actions.setRequireWebsite(config.requireWebsite)
@@ -39,7 +36,6 @@ export function SearchTab({ state, actions }: TabComponentProps) {
   }
 
   const canStartSearch = !!(
-    state.selectedWebsites.length > 0 && 
     state.selectedClientTypes.length > 0 && 
     state.selectedLocations.length > 0 && 
     !state.isSearching

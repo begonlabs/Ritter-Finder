@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { mockLeads } from "@/lib/mock-data"
 import { useSearchConfig } from "./useSearchConfig"
 import type { SearchState, SearchResults, SearchConfig, SearchActions } from "../types"
@@ -110,7 +110,14 @@ export function useSearch() {
     ...searchState,
   }
 
-  const canStartSearch = isValidConfig() && !searchState.isSearching
+  const canStartSearch = useMemo(() => {
+    // Use fullState instead of internal config to ensure consistency
+    const hasClientTypes = fullState.selectedClientTypes.length > 0
+    const hasLocations = fullState.selectedLocations.length > 0
+    const result = hasClientTypes && hasLocations && !searchState.isSearching
+    
+    return result
+  }, [fullState.selectedClientTypes, fullState.selectedLocations, searchState.isSearching])
 
   return {
     state: fullState,
