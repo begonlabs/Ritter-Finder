@@ -22,6 +22,7 @@ import {
   Mail,
   CheckCircle,
   XCircle,
+  Phone,
 } from "lucide-react"
 import { useLanguage, formatMessage } from "@/lib/language-context"
 import { LeadDetailsModal } from "./LeadDetailsModal"
@@ -69,8 +70,8 @@ export function ResultsTableAdapter({
     <div className={styles.validationIndicators}>
       <div className={styles.validationItem}>
         <Globe className={styles.validationIcon} />
-        {lead.hasWebsite ? (
-          lead.websiteExists ? (
+        {lead.website ? (
+          lead.verified_website ? (
             <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
           ) : (
             <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
@@ -81,8 +82,20 @@ export function ResultsTableAdapter({
       </div>
       <div className={styles.validationItem}>
         <Mail className={styles.validationIcon} />
-        {lead.emailValidated ? (
+        {lead.verified_email ? (
           <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
+        ) : (
+          <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
+        )}
+      </div>
+      <div className={styles.validationItem}>
+        <Phone className={styles.validationIcon} />
+        {lead.phone ? (
+          lead.verified_phone ? (
+            <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
+          ) : (
+            <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
+          )
         ) : (
           <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
         )}

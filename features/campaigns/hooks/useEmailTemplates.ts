@@ -105,14 +105,12 @@ Este email fue enviado a {{contact_email}}
     category: 'sales',
     isActive: true,
     variables: [
-      { key: 'contact_name', label: 'Nombre del contacto', description: 'Nombre del contacto', required: true, defaultValue: '', type: 'text' },
-      { key: 'company_name', label: 'Nombre de la empresa cliente', description: 'Nombre de la empresa cliente', required: true, defaultValue: '', type: 'text' },
+      // Variables automáticas: contact_name, company_name, contact_email se cargan automáticamente
       { key: 'service_name', label: 'Nombre del servicio propuesto', description: 'Nombre del servicio propuesto', required: true, defaultValue: '', type: 'text' },
       { key: 'service_price', label: 'Precio del servicio', description: 'Precio del servicio', required: true, defaultValue: '', type: 'text' },
       { key: 'implementation_time', label: 'Tiempo de implementación', description: 'Tiempo de implementación', required: false, defaultValue: '2-4 semanas', type: 'text' },
       { key: 'sender_name', label: 'Nombre del remitente', description: 'Nombre del remitente', required: true, defaultValue: '', type: 'text' },
-      { key: 'sender_position', label: 'Cargo del remitente', description: 'Cargo del remitente', required: false, defaultValue: 'Consultor Comercial', type: 'text' },
-      { key: 'contact_email', label: 'Email del contacto', description: 'Email del contacto', required: true, defaultValue: '', type: 'email' }
+      { key: 'sender_position', label: 'Cargo del remitente', description: 'Cargo del remitente', required: false, defaultValue: 'Consultor Comercial', type: 'text' }
     ],
     usageCount: 45,
     createdBy: 'admin',
@@ -421,7 +419,7 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
     <div class="content">
         <h2>Estimado/a {{contact_name}},</h2>
         
-        <p>Hemos identificado a <strong>{{company_name}}</strong> como una empresa líder en {{industry}} ubicada en {{location}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.</p>
+        <p>Hemos identificado a <strong>{{company_name}}</strong> como una empresa dedicada a {{activity}} ubicada en {{state}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.</p>
         
         <div class="highlight">
             <h3>🔋 {{service_type}} para su empresa</h3>
@@ -430,8 +428,8 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
             <p><strong>Reducción de CO₂:</strong> {{co2_reduction}}</p>
         </div>
         
-        <div class="benefits">
-            <h3>Beneficios específicos para {{industry}}:</h3>
+                  <div class="benefits">
+            <h3>Beneficios específicos para {{category}}:</h3>
             <ul>
                 <li>✅ Reducción de costes energéticos hasta un 70%</li>
                 <li>✅ Independencia energética y sostenibilidad</li>
@@ -441,7 +439,7 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
             </ul>
         </div>
         
-        <p>Con una confianza del {{confidence_score}}% en nuestros datos sobre su empresa y conociendo sus necesidades específicas, podemos ofrecerle una consultoría personalizada <strong>sin compromiso</strong>.</p>
+        <p>Conociendo las necesidades específicas de su empresa, podemos ofrecerle una consultoría personalizada <strong>sin compromiso</strong>.</p>
         
         <p>¿Le interesaría conocer más detalles sobre cómo las energías renovables pueden transformar el consumo energético de {{company_name}}?</p>
         
@@ -449,8 +447,8 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
     </div>
     
     <div class="footer">
-        <p>🌍 © 2025 RitterFinder. Especialistas en transición energética.</p>
-        <p>Este email fue enviado a {{contact_email}} | {{source_type}} verificado</p>
+              <p>🌍 © 2025 RitterFinder. Especialistas en transición energética.</p>
+      <p>Este email fue enviado a {{contact_email}}</p>
     </div>
 </body>
 </html>`,
@@ -459,21 +457,21 @@ Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte
 
 Estimado/a {{contact_name}},
 
-Hemos identificado a {{company_name}} como una empresa líder en {{industry}} ubicada en {{location}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.
+Hemos identificado a {{company_name}} como una empresa dedicada a {{activity}} ubicada en {{state}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.
 
 🔋 {{service_type}} para su empresa:
 - Ahorro estimado: {{estimated_savings}}
 - Retorno de inversión: {{roi_period}}  
 - Reducción de CO₂: {{co2_reduction}}
 
-BENEFICIOS ESPECÍFICOS PARA {{industry}}:
+BENEFICIOS ESPECÍFICOS PARA {{category}}:
 ✅ Reducción de costes energéticos hasta un 70%
 ✅ Independencia energética y sostenibilidad
 ✅ Cumplimiento de normativas medioambientales
 ✅ Mejora de la imagen corporativa
 ✅ Subvenciones y incentivos fiscales disponibles
 
-Con una confianza del {{confidence_score}}% en nuestros datos sobre su empresa y conociendo sus necesidades específicas, podemos ofrecerle una consultoría personalizada sin compromiso.
+Conociendo las necesidades específicas de su empresa, podemos ofrecerle una consultoría personalizada sin compromiso.
 
 ¿Le interesaría conocer más detalles sobre cómo las energías renovables pueden transformar el consumo energético de {{company_name}}?
 
@@ -483,12 +481,12 @@ Cordialmente,
 RitterFinder - Consultoría Energética
 
 🌍 © 2025 RitterFinder. Especialistas en transición energética.
-Este email fue enviado a {{contact_email}} | {{source_type}} verificado
+Este email fue enviado a {{contact_email}}
 `,
     category: 'sales',
     isActive: true,
     variables: [
-      // Variables automáticas (se cargan desde leads): contact_name, company_name, industry, location, confidence_score, contact_email, source_type
+      // Variables automáticas: contact_name, company_name, activity, state, category, contact_email
       { key: 'service_type', label: 'Tipo de servicio energético', description: 'Instalación Solar, Aerotermia, etc.', required: true, defaultValue: 'Instalación Solar Fotovoltaica', type: 'text' },
       { key: 'estimated_savings', label: 'Ahorro estimado', description: 'Porcentaje o cantidad de ahorro', required: true, defaultValue: '40-60%', type: 'text' },
       { key: 'roi_period', label: 'Período de retorno de inversión', description: 'Tiempo para recuperar la inversión', required: true, defaultValue: '5-7 años', type: 'text' },
@@ -555,7 +553,7 @@ Este email fue enviado a {{contact_email}} | {{source_type}} verificado
     category: 'custom',
     isActive: true,
     variables: [
-      // Variables automáticas: contact_name se carga automáticamente
+      // Variables automáticas: contact_name, company_name, activity, category se cargan automáticamente
       { key: 'custom_subject', label: 'Asunto personalizado', description: 'Asunto personalizado', required: true, defaultValue: '', type: 'text' },
       { key: 'header_title', label: 'Título del encabezado', description: 'Título del encabezado', required: true, defaultValue: '', type: 'text' },
       { key: 'greeting', label: 'Saludo (Estimado/a, Hola, etc.)', description: 'Saludo (Estimado/a, Hola, etc.)', required: false, defaultValue: 'Estimado/a', type: 'text' },

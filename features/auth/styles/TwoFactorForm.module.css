@@ -1,0 +1,386 @@
+ /* TwoFactorForm Component Styles - RitterFinder Auth Feature */
+
+.twoFactorForm {
+    width: 100%;
+    max-width: 28rem; /* 448px */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .twoFactorForm:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  /* Header */
+  .header {
+    padding: 1.5rem 2rem 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .headerTop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .iconWrapper {
+    width: 4rem;
+    height: 4rem;
+    background: linear-gradient(135deg, #F2B705 0%, #d97706 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(242, 183, 5, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  .shieldIcon {
+    color: white;
+    stroke-width: 2.5;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 8px 20px rgba(242, 183, 5, 0.3);
+    }
+    50% {
+      box-shadow: 0 12px 30px rgba(242, 183, 5, 0.5);
+    }
+  }
+  
+  .title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1A1E25; /* ritter-dark */
+    text-align: center;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  
+  .subtitle {
+    color: #64748b;
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  
+  /* Content */
+  .content {
+    padding: 0 2rem 2rem;
+  }
+  
+  .form {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .formGrid {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  /* Form Fields */
+  .fieldGroup {
+    display: grid;
+    gap: 0.5rem;
+  }
+  
+  .fieldLabel {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    line-height: 1.4;
+    text-align: center;
+  }
+  
+  /* Code Input */
+  .codeInput {
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 2rem !important;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.25rem;
+    transition: all 0.2s ease;
+    background: #fafafa;
+    color: #1f2937;
+  }
+  
+  .codeInput::placeholder {
+    color: #d1d5db;
+    font-weight: 400;
+  }
+  
+  .codeInput:focus {
+    outline: none;
+    border-color: #F2B705; /* ritter-gold */
+    background: white;
+    box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.1);
+  }
+  
+  .codeInput:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f3f4f6;
+  }
+  
+  .codeHelper {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 0.25rem;
+  }
+  
+  /* Error Message */
+  .errorMessage {
+    color: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  /* Button Group */
+  .buttonGroup {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .verifyButton {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: #F2B705; /* ritter-gold */
+    color: #1A1E25; /* ritter-dark */
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .verifyButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .verifyButton:hover:not(:disabled) {
+    background: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(242, 183, 5, 0.4);
+  }
+  
+  .verifyButton:hover:not(:disabled)::before {
+    left: 100%;
+  }
+  
+  .verifyButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  /* Action Buttons */
+  .actionButtons {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr;
+  }
+  
+  .resendButton {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    transition: all 0.2s ease;
+  }
+  
+  .resendButton:hover:not(:disabled) {
+    border-color: #F2B705;
+    color: #F2B705;
+    background: rgba(242, 183, 5, 0.05);
+  }
+  
+  .resendButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .cancelButton {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  
+  .cancelButton:hover:not(:disabled) {
+    color: #374151;
+    background: rgba(107, 114, 128, 0.1);
+  }
+  
+  /* Help Section */
+  .helpSection {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    text-align: center;
+  }
+  
+  .helpText {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+  
+  .helpLink {
+    font-size: 0.8125rem;
+    color: #F2B705;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    transition: color 0.2s ease;
+  }
+  
+  .helpLink:hover {
+    color: #d97706;
+    text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 640px) {
+    .twoFactorForm {
+      max-width: 100%;
+      margin: 0 1rem;
+      border-radius: 8px;
+    }
+  
+    .header {
+      padding: 1rem 1.5rem 0.5rem;
+    }
+  
+    .content {
+      padding: 0 1.5rem 1.5rem;
+    }
+  
+    .title {
+      font-size: 1.75rem;
+    }
+  
+    .headerTop {
+      margin-bottom: 1rem;
+    }
+  
+    .iconWrapper {
+      width: 3rem;
+      height: 3rem;
+    }
+  
+    .shieldIcon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  
+    .codeInput {
+      font-size: 1.5rem !important;
+      padding: 0.875rem;
+      letter-spacing: 0.125rem;
+    }
+  
+    .actionButtons {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .title {
+      font-size: 1.5rem;
+    }
+  
+    .codeInput {
+      font-size: 1.25rem !important;
+      padding: 0.75rem;
+    }
+  
+    .verifyButton {
+      padding: 0.75rem 0.875rem;
+      font-size: 0.875rem;
+    }
+  
+    .helpSection {
+      margin-top: 1rem;
+    }
+  }
+  
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .twoFactorForm {
+      border: 2px solid #000000;
+    }
+  
+    .iconWrapper {
+      background: #FFC107;
+      color: #000000;
+    }
+  
+    .codeInput {
+      border: 2px solid #000000;
+    }
+  
+    .codeInput:focus {
+      border-color: #FFC107;
+    }
+  }
+  
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .form,
+    .iconWrapper {
+      animation: none;
+    }
+  
+    .verifyButton:hover {
+      transform: none;
+    }
+  
+    .verifyButton::before {
+      display: none;
+    }
+  }

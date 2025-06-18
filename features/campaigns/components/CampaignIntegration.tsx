@@ -70,8 +70,8 @@ export function CampaignIntegration({
   const stats = {
     total: adaptedLeads.length,
     withValidEmail: adaptedLeads.filter(lead => lead.emailValidated).length,
-    withWebsite: adaptedLeads.filter(lead => lead.hasWebsite).length,
-    highConfidence: adaptedLeads.filter(lead => (lead.confidence || 0) > 0.7).length,
+    withWebsite: adaptedLeads.filter(lead => lead.websiteExists).length,
+    highQuality: adaptedLeads.filter(lead => (lead.data_quality_score || 1) >= 4).length,
     issuesCount: Object.keys(validationIssues).length
   }
 
@@ -136,10 +136,10 @@ export function CampaignIntegration({
             <span className={styles.statLabel}>Con Website</span>
           </div>
           <div className={styles.statItem}>
-            <span className={`${styles.statNumber} ${stats.highConfidence > 0 ? styles.statPositive : styles.statNeutral}`}>
-              {stats.highConfidence}
+            <span className={`${styles.statNumber} ${stats.highQuality > 0 ? styles.statPositive : styles.statNeutral}`}>
+              {stats.highQuality}
             </span>
-            <span className={styles.statLabel}>Alta Confianza</span>
+            <span className={styles.statLabel}>Alta Calidad</span>
           </div>
         </div>
 
@@ -176,7 +176,7 @@ export function CampaignIntegration({
                 <div key={leadId} className={styles.issueItem}>
                   <div className={styles.issueHeader}>
                     <span className={styles.issueLead}>
-                      {lead.name} ({lead.company})
+                      {lead.name || lead.company_name} ({lead.company || lead.company_name})
                     </span>
                   </div>
                   <ul className={styles.issueDetails}>

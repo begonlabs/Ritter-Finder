@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
 import { useResponsive } from "../hooks/useResponsive"
+import { useNavigation } from "../hooks/useNavigation"
+import { useLayout } from "../hooks/useLayout"
 import type { NavigationProps, NavigationItem } from "../types"
 import styles from "../styles/DashboardNavigation.module.css"
 
@@ -23,76 +25,19 @@ export function DashboardNavigation({
 }: DashboardNavigationProps) {
   const { t } = useLanguage()
   const { isMobile } = useResponsive()
-
-  const navigationItems: NavigationItem[] = [
-    {
-      id: "dashboard",
-      label: t("nav.dashboard"),
-      icon: Home,
-      disabled: false,
-      badge: null,
-    },
-    {
-      id: "search",
-      label: t("nav.search"),
-      icon: Search,
-      disabled: false,
-      badge: null,
-      dataOnboarding: "search",
-    },
-    {
-      id: "results",
-      label: t("results.title"),
-      icon: Users,
-      disabled: !searchComplete,
-      badge: null,
-      dataOnboarding: "results",
-    },
-    {
-      id: "campaign",
-      label: t("nav.campaigns"),
-      icon: Mail,
-      disabled: selectedLeadsCount === 0,
-      badge: selectedLeadsCount > 0 ? selectedLeadsCount : null,
-      dataOnboarding: "campaigns",
-    },
-    {
-      id: "history",
-      label: t("nav.history"),
-      icon: History,
-      disabled: false,
-      badge: null,
-      dataOnboarding: "history",
-    },
-    {
-      id: "scraping",
-      label: "Scraping",
-      icon: Zap,
-      disabled: false,
-      badge: null,
-      dataOnboarding: "scraping",
-    },
-    {
-      id: "analytics",
-      label: "Analytics",
-      icon: BarChart3,
-      disabled: false,
-      badge: null,
-      dataOnboarding: "analytics",
-    },
-    {
-      id: "admin",
-      label: "Admin",
-      icon: Shield,
-      disabled: false,
-      badge: null,
-      dataOnboarding: "admin",
-    },
-  ]
+  const { state } = useLayout()
+  
+  // Use the new navigation hook with permissions
+  const { navigationItems, hasAccess, permissionChecker } = useNavigation({
+    user: state.user,
+    activeTab,
+    searchComplete,
+    selectedLeadsCount
+  })
 
   const handleTabChange = (itemId: string) => {
     const item = navigationItems.find(nav => nav.id === itemId)
-    if (item && !item.disabled) {
+    if (item && !item.disabled && hasAccess(itemId)) {
       onTabChange(itemId)
     }
   }
@@ -114,13 +59,15 @@ export function DashboardNavigation({
         {navigationItems.map((item) => {
           const IconComponent = item.icon
           const isActive = activeTab === item.id
-          const isDisabled = item.disabled
+          const isDisabled = item.disabled || !hasAccess(item.id)
+          const hasPermissions = hasAccess(item.id)
 
           const itemClasses = cn(
             styles.navigationItem,
             compact ? styles.compact : styles.normal,
             isActive ? styles.active : styles.inactive,
-            isDisabled && styles.disabled
+            isDisabled && styles.disabled,
+            !hasPermissions && styles.unauthorized
           )
 
           return (
@@ -130,6 +77,7 @@ export function DashboardNavigation({
               disabled={isDisabled}
               data-onboarding={item.dataOnboarding}
               className={itemClasses}
+              title={!hasPermissions ? 'No tienes permisos para acceder a esta sección' : item.label}
             >
               <IconComponent className={cn(
                 styles.navigationIcon,
@@ -143,7 +91,7 @@ export function DashboardNavigation({
               </span>
 
               {/* Badge */}
-              {item.badge && (
+              {item.badge && hasPermissions && (
                 <div className={cn(
                   styles.navigationBadge,
                   compact ? styles.compact : styles.normal
@@ -152,8 +100,15 @@ export function DashboardNavigation({
                 </div>
               )}
 
+              {/* Permissions indicator for development/admin */}
+              {state.user?.role.name === 'Admin' && item.requiredPermissions && item.requiredPermissions.length > 0 && (
+                <div className={styles.permissionsIndicator} title={`Requiere: ${item.requiredPermissions.join(', ')}`}>
+                  🔐
+                </div>
+              )}
+
               {/* Active indicator */}
-              {isActive && (
+              {isActive && hasPermissions && (
                 <div className={cn(
                   styles.activeIndicator,
                   compact ? styles.compact : styles.normal
@@ -161,7 +116,7 @@ export function DashboardNavigation({
               )}
 
               {/* Hover effect */}
-              {!isDisabled && (
+              {!isDisabled && hasPermissions && (
                 <div className={styles.hoverEffect} />
               )}
             </button>
@@ -178,11 +133,33 @@ export function DashboardNavigation({
                 key={`indicator-${item.id}`}
                 className={cn(
                   styles.progressDot,
-                  activeTab === item.id ? styles.active : styles.inactive
+                  activeTab === item.id ? styles.active : styles.inactive,
+                  !hasAccess(item.id) && styles.unauthorized
                 )}
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* User permissions summary for development */}
+      {process.env.NODE_ENV === 'development' && state.user && (
+        <div className={styles.devPermissionsSummary}>
+          <details className={styles.devDetails}>
+            <summary>🔑 Permisos de {state.user.fullName}</summary>
+            <div className={styles.devPermissionsList}>
+              <p><strong>Rol:</strong> {state.user.role.name}</p>
+              <p><strong>Estado:</strong> {state.user.status}</p>
+              <p><strong>Permisos disponibles:</strong></p>
+              <ul>
+                {state.user.role.permissions.map(permission => (
+                  <li key={permission.id}>
+                    {permission.name} - {permission.description}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
         </div>
       )}
     </div>

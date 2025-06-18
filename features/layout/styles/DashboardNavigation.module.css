@@ -379,4 +379,106 @@
   .navigationBadge {
     animation: none;
   }
+}
+
+/* Unauthorized state */
+.unauthorized {
+  opacity: 0.4;
+  pointer-events: none;
+  position: relative;
+}
+
+.unauthorized::after {
+  content: '🔒';
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+/* Permissions indicator */
+.permissionsIndicator {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  font-size: 0.625rem;
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Progress dots unauthorized state */
+.progressDot.unauthorized {
+  background: #ef4444;
+  opacity: 0.3;
+}
+
+/* Development permissions summary */
+.devPermissionsSummary {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  max-width: 300px;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+}
+
+.devDetails {
+  cursor: pointer;
+}
+
+.devDetails summary {
+  list-style: none;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.devDetails summary::-webkit-details-marker {
+  display: none;
+}
+
+.devDetails[open] summary {
+  background: rgba(255, 255, 255, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+.devPermissionsList {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.25rem;
+}
+
+.devPermissionsList p {
+  margin: 0.25rem 0;
+}
+
+.devPermissionsList ul {
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+  font-size: 0.65rem;
+}
+
+.devPermissionsList li {
+  margin: 0.125rem 0;
+  opacity: 0.8;
+}
+
+/* Hide dev summary in production */
+@media (min-width: 768px) {
+  .devPermissionsSummary {
+    display: none;
+  }
 } 

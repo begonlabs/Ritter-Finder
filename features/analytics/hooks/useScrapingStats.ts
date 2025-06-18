@@ -1,9 +1,45 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import type { ScrapingStats, DailyScrapingStats, SourceStats } from "../types"
+import type { ScrapingStats, DailyScrapingStats, SourceStats, WebsiteSource } from "../types"
 
-// Import existing scraping data
+// API integration functions (to be implemented)
+async function fetchScrapingStatsFromDB(): Promise<ScrapingStats | null> {
+  // This would aggregate data from scraping_stats table
+  // SELECT 
+  //   COUNT(*) as sitesReviewed,
+  //   SUM(leads_found) as leadsObtained,
+  //   AVG(success_rate) as successRate,
+  //   SUM(estimated_savings) as moneySaved
+  // FROM scraping_stats
+  // WHERE session_start >= date_trunc('month', now())
+  return null // Placeholder
+}
+
+async function fetchWebsiteSourcesFromDB(): Promise<WebsiteSource[]> {
+  // This would query website_sources table
+  // SELECT * FROM website_sources 
+  // WHERE is_active = true 
+  // ORDER BY total_leads_found DESC 
+  // LIMIT 5
+  return [] // Placeholder
+}
+
+async function fetchDailyScrapingStats(): Promise<DailyScrapingStats[]> {
+  // This would query aggregated daily stats
+  // SELECT 
+  //   DATE(session_start) as date,
+  //   COUNT(*) as sites,
+  //   SUM(leads_found) as leads,
+  //   SUM(estimated_savings) as savings
+  // FROM scraping_stats
+  // WHERE session_start >= now() - interval '7 days'
+  // GROUP BY DATE(session_start)
+  // ORDER BY date DESC
+  return [] // Placeholder
+}
+
+// Mock data - in real app this would come from aggregated database queries
 const mockScrapingData: ScrapingStats = {
   sitesReviewed: 1247,
   leadsObtained: 3891,

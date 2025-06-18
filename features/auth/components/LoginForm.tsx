@@ -9,13 +9,40 @@ import Image from "next/image"
 import { LanguageSelector } from "@/components/language-selector"
 import { useLanguage } from "@/lib/language-context"
 import { useLogin } from "../hooks/useLogin"
+import { TwoFactorForm } from "./TwoFactorForm"
 import { useState } from "react"
+import type { TwoFactorResponse } from "../types"
 import styles from "../styles/LoginForm.module.css"
 
 export function LoginForm() {
   const { t } = useLanguage()
   const { formState, updateField, handleSubmit } = useLogin()
   const [showPassword, setShowPassword] = useState(false)
+
+  // Handle 2FA success
+  const handleTwoFactorSuccess = (response: TwoFactorResponse) => {
+    if (response.success && response.redirectUrl) {
+      window.location.href = response.redirectUrl
+    }
+  }
+
+  // Handle 2FA cancel
+  const handleTwoFactorCancel = () => {
+    updateField("showTwoFactor", false)
+    updateField("needsTwoFactor", false)
+    updateField("twoFactorCode", "")
+  }
+
+  // Show 2FA form if needed
+  if (formState.showTwoFactor && formState.needsTwoFactor) {
+    return (
+      <TwoFactorForm
+        sessionToken="demo-session-token"
+        onSuccess={handleTwoFactorSuccess}
+        onCancel={handleTwoFactorCancel}
+      />
+    )
+  }
 
   return (
     <Card className={`${styles.loginForm} w-full max-w-md shadow-lg border-0`}>
@@ -42,15 +69,15 @@ export function LoginForm() {
         <form onSubmit={handleSubmit} className={`${styles.form} animate-in fade-in duration-500`}>
           <div className={`${styles.formGrid} grid gap-4`}>
             <div className={`${styles.fieldGroup} grid gap-2`}>
-              <Label htmlFor="username" className={styles.fieldLabel}>
-                {t("login.username")}
+              <Label htmlFor="email" className={styles.fieldLabel}>
+                Correo Electrónico
               </Label>
               <Input
-                id="username"
-                type="text"
-                placeholder={t("login.username.placeholder")}
-                value={formState.username}
-                onChange={(e) => updateField("username", e.target.value)}
+                id="email"
+                type="email"
+                placeholder="ejemplo@empresa.com"
+                value={formState.email}
+                onChange={(e) => updateField("email", e.target.value)}
                 required
                 className={`${styles.fieldInput} border-gray-300`}
                 disabled={formState.isLoading}
@@ -100,9 +127,14 @@ export function LoginForm() {
         </form>
       </CardContent>
       <CardFooter className={`${styles.footer} flex justify-center`}>
-        <p className={`${styles.demoText} text-sm text-muted-foreground`}>
-          {t("login.demo")}
-        </p>
+        <div className={`${styles.demoSection} text-center`}>
+          <p className={`${styles.demoText} text-sm text-muted-foreground mb-2`}>
+            📧 <strong>Demo:</strong> Cualquier email válido | Contraseña: <strong>1234</strong>
+          </p>
+          <p className={`${styles.demoText} text-xs text-muted-foreground`}>
+            🔐 <strong>2FA Demo:</strong> Usa email con "2fa" o "admin" | Código: <strong>123456</strong>
+          </p>
+        </div>
       </CardFooter>
     </Card>
   )

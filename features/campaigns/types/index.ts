@@ -1,66 +1,85 @@
 export interface Lead {
   id: string
-  name: string
-  email: string
-  company: string
-  position: string
-  industry: string
+  
+  // Contact Information (simplified)
+  email?: string
+  verified_email?: boolean
   phone?: string
-  linkedin?: string
-  website?: string
-  notes?: string
+  verified_phone?: boolean
+  
+  // Company Information (aligned with database)
+  company_name: string // Renamed from 'company' to match DB
+  company_website?: string // Renamed from 'website' to match DB
+  verified_website?: boolean
+  
+  // Location Information (simplified - NO postal_code)
+  address?: string
+  state?: string
+  country?: string
+  
+  // New Fields (from simplified schema)
+  activity: string // Required in DB
+  description?: string
+  category?: string
+  
+  // Data Quality Score (1-5, NOT for use in email campaigns - only for filtering)
+  data_quality_score?: number // 1-5 based on verification flags
+  
+  // System Fields
+  created_at?: Date
+  updated_at?: Date
+  last_contacted_at?: Date
+  
+  // Legacy fields for campaign compatibility (computed fields)
+  name?: string // Computed from company_name
+  company?: string // Alias for company_name
+  website?: string // Alias for company_website
+  position?: string // Computed from activity
+  industry?: string // Computed from category
+  location?: string // Computed from address/state
+  emailValidated?: boolean // Computed from verified_email
+  phoneValidated?: boolean // Computed from verified_phone
+  websiteExists?: boolean // Computed from verified_website
+  
+  // Campaign specific fields
   tags?: string[]
   score?: number
   lastContact?: Date
   status?: 'new' | 'contacted' | 'qualified' | 'converted'
-  // Nuevos campos para datos normalizados
-  location?: string
-  confidence?: number
-  source?: 'paginas_amarillas' | 'axesor' | 'manual'
-  sourceUrl?: string
-  hasWebsite?: boolean
-  websiteExists?: boolean
-  emailValidated?: boolean
-  phoneValidated?: boolean
-  employees?: string
-  revenue?: string
-  cif?: string
-  legalForm?: string
-  cnaeCode?: string
 }
 
-// Interfaz para los datos normalizados de la API
+// Simplified NormalizedLead interface to match database
 export interface NormalizedLead {
   id: string
-  name: string
-  description?: string
-  address: string
+  
+  // Contact Information
+  email?: string
+  verified_email: boolean
   phone?: string
-  website?: string
-  cif_nif?: string
-  legal_form?: string
-  constitution_date?: string
-  business_object?: string
-  cnae_code?: string
-  sic_code?: string
-  industry: string
-  activities?: string
-  source_url: string
-  source_type: 'paginas_amarillas' | 'axesor'
-  confidence_score: number
-  location_normalized: string
-  city: string
-  province: string
-  postal_code?: string
-  email_found?: string
-  email_validated: boolean
-  website_validated: boolean
-  phone_validated: boolean
-  estimated_employees: string
-  estimated_revenue: string
-  scraped_at: string
-  processed_at?: string
-  last_updated: string
+  verified_phone: boolean
+  
+  // Company Information
+  company_name: string
+  company_website?: string
+  verified_website: boolean
+  
+  // Location Information (NO postal_code)
+  address?: string
+  state?: string
+  country?: string
+  
+  // New Fields
+  activity: string
+  description?: string
+  category?: string
+  
+  // Data Quality Score (1-5, calculated from verification flags)
+  data_quality_score: number // 1-5 based on verifications
+  
+  // System Fields
+  created_at: string
+  updated_at: string
+  last_contacted_at?: string
 }
 
 // Funciones de adaptación
@@ -162,12 +181,16 @@ export interface CampaignHistoryActions {
 
 export type Language = 'es' | 'en'
 
-// Variables que se cargan automáticamente desde la base de datos
+// Variables que se cargan automáticamente desde la base de datos (simplified schema)
+// NOTA: data_quality_score NO se incluye porque no debe usarse en campañas de email
 export const AUTO_VARIABLES = [
-  'contact_name', 'company_name', 'contact_email', 'contact_phone',
-  'first_name', 'last_name', 'full_name', 'lead_id', 'position', 'industry',
-  'location', 'confidence_score', 'source_type', 'website', 'cif_nif',
-  'legal_form', 'cnae_code', 'employees', 'revenue'
+  'lead_id', 'email', 'phone', 'company_name', 'company_website',
+  'address', 'state', 'country', 'activity', 'description', 'category',
+  'verified_email', 'verified_phone', 'verified_website',
+  'created_at', 'updated_at',
+  // Legacy computed fields for template compatibility
+  'contact_name', 'contact_email', 'contact_phone', 'name', 'company', 'website',
+  'position', 'industry', 'location', 'emailValidated', 'phoneValidated', 'websiteExists'
 ];
 
 export interface TemplateData {

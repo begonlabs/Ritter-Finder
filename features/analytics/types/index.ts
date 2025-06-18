@@ -75,7 +75,7 @@ export interface MonthlyTrend {
 
 export interface ActivityItem {
   id: string
-  type: 'search' | 'campaign' | 'export'
+  type: 'search' | 'campaign' | 'export' | 'user_action' | 'system'
   title: string
   description: string
   date: string
@@ -84,6 +84,10 @@ export interface ActivityItem {
     clientType?: string
     recipients?: number
     subject?: string
+    resourceType?: string
+    resourceId?: string
+    executionTimeMs?: number
+    responseStatus?: number
   }
 }
 
@@ -142,4 +146,69 @@ export interface AnalyticsState {
 export interface AnalyticsTabProps {
   showDetailed?: boolean
   period?: 'week' | 'month' | 'quarter' | 'year'
+}
+
+// Database-aligned interfaces
+export interface DashboardMetrics {
+  id: string
+  date: string
+  periodType: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  totalLeads: number
+  totalCampaigns: number
+  totalSearches: number
+  averageOpenRate: number
+  leadsQualityScore: number
+  campaignSuccessRate: number
+  searchEfficiency: number
+  costPerLead: number
+  roiPercentage: number
+  leadsTrendPercentage: number
+  campaignsTrendPercentage: number
+  searchesTrendPercentage: number
+  openRateTrendPercentage: number
+  estimatedMoneySaved: number
+  costSavingsPercentage: number
+  calculatedAt: string
+}
+
+export interface WebsiteSource {
+  id: string
+  websiteUrl: string
+  websiteName: string
+  domain: string
+  totalLeadsFound: number
+  totalSearches: number
+  successRate: number
+  averageLeadsPerSearch: number
+  leadQualityScore: number
+  validationSuccessRate: number
+  averageResponseTimeMs: number
+  errorRate: number
+  lastSuccessfulScrape?: string
+  isActive: boolean
+  isBlocked: boolean
+  blockedReason?: string
+  blockedUntil?: string
+  lastUsedAt?: string
+  monthlyUsageCount: number
+  totalUsageCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AnalyticsDataPoint {
+  id: string
+  date: string
+  metricType: string
+  metricName: string
+  countValue: number
+  sumValue: number
+  avgValue: number
+  minValue: number
+  maxValue: number
+  userId?: string
+  campaignId?: string
+  searchHistoryId?: string
+  dimensions: Record<string, any>
+  createdAt: string
 }

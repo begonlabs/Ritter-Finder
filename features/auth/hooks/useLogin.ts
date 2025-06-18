@@ -7,16 +7,19 @@ import type { LoginCredentials, LoginFormState, AuthResponse } from "../types"
 
 export function useLogin() {
   const [formState, setFormState] = useState<LoginFormState>({
-    username: "",
+    email: "",
     password: "",
+    twoFactorCode: "",
+    showTwoFactor: false,
     error: "",
     isLoading: false,
+    needsTwoFactor: false,
   })
 
   const router = useRouter()
   const { t } = useLanguage()
 
-  const updateField = (field: keyof LoginCredentials, value: string) => {
+  const updateField = (field: keyof LoginFormState, value: string | boolean) => {
     setFormState(prev => ({
       ...prev,
       [field]: value,
@@ -24,14 +27,54 @@ export function useLogin() {
     }))
   }
 
+  // Email validation helper
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
   const handleLogin = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     setFormState(prev => ({ ...prev, isLoading: true, error: "" }))
 
     try {
-      // Simulate loading
+      // Validate email format
+      if (!isValidEmail(credentials.email)) {
+        const error = "Por favor ingresa un email válido"
+        setFormState(prev => ({ ...prev, error, isLoading: false }))
+        return { success: false, error }
+      }
+
+      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
+      // Demo logic - check if user needs 2FA
+      const userNeedsTwoFactor = credentials.email.includes("2fa") || credentials.email.includes("admin")
+      
       if (credentials.password === "1234") {
+        // Check if user needs 2FA and hasn't provided code yet
+        if (userNeedsTwoFactor && !credentials.twoFactorCode) {
+          setFormState(prev => ({ 
+            ...prev, 
+            isLoading: false,
+            needsTwoFactor: true,
+            showTwoFactor: true,
+            error: ""
+          }))
+          return { 
+            success: false, 
+            error: "Se requiere código de verificación de dos factores" 
+          }
+        }
+
+        // If 2FA required, validate the code
+        if (userNeedsTwoFactor && credentials.twoFactorCode) {
+          if (credentials.twoFactorCode !== "123456") {
+            const error = "Código de verificación incorrecto"
+            setFormState(prev => ({ ...prev, error, isLoading: false }))
+            return { success: false, error }
+          }
+        }
+
         // Reset onboarding state
         localStorage.removeItem("hasSeenOnboarding")
         
@@ -45,7 +88,7 @@ export function useLogin() {
         return { success: false, error }
       }
     } catch (error) {
-      const errorMessage = "An unexpected error occurred"
+      const errorMessage = "Ocurrió un error inesperado"
       setFormState(prev => ({ ...prev, error: errorMessage, isLoading: false }))
       return { success: false, error: errorMessage }
     }
@@ -54,8 +97,9 @@ export function useLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await handleLogin({
-      username: formState.username,
+      email: formState.email,
       password: formState.password,
+      twoFactorCode: formState.twoFactorCode || undefined,
     })
   }
 

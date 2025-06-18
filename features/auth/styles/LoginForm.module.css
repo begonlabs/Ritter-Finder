@@ -248,11 +248,21 @@
   border-top: 1px solid #e2e8f0;
 }
 
+.demoSection {
+  max-width: 100%;
+  padding: 0.5rem;
+}
+
 .demoText {
   font-size: 0.875rem;
   color: #64748b;
   line-height: 1.4;
   margin: 0;
+}
+
+.demoText strong {
+  color: #F2B705;
+  font-weight: 600;
 }
 
 /* Responsive Design */

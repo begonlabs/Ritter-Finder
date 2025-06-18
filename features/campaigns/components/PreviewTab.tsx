@@ -66,7 +66,7 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
             >
               {selectedLeads.map((lead) => (
                 <option key={lead.id} value={lead.id}>
-                  {lead.name} ({lead.company})
+                  {lead.name || lead.company_name} ({lead.company || lead.company_name})
                 </option>
               ))}
             </select>
@@ -108,7 +108,7 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
                 <div className={styles.emailMetaLine}>
                   <span className={styles.emailLabel}>Para:</span>
                   <span className={styles.emailValue}>
-                    {previewLead.name} &lt;{previewLead.email}&gt;
+                    {previewLead.name || previewLead.company_name} &lt;{previewLead.email}&gt;
                   </span>
                 </div>
                 <div className={`${styles.emailSubject} font-semibold mt-3 p-2 bg-white rounded border`}>

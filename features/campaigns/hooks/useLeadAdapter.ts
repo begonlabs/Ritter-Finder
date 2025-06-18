@@ -11,62 +11,92 @@ interface UseLeadAdapterReturn extends LeadAdapter {
 
 export const useLeadAdapter = (): UseLeadAdapterReturn => {
   
-  // Inferir posición basada en forma jurídica e industria
-  const inferPosition = useCallback((legalForm?: string, industry?: string): string => {
-    if (!legalForm && !industry) return 'Contacto';
+  // Inferir posición basada en actividad y categoría
+  const inferPosition = useCallback((activity?: string, category?: string): string => {
+    if (!activity && !category) return 'Contacto';
     
-    // Mapeo de formas jurídicas a posiciones típicas
-    const positionByLegalForm: Record<string, string> = {
-      // Sociedades
-      'SA': 'Director General',
-      'SL': 'Gerente',
-      'SLU': 'Administrador Único',
-      'SLL': 'Gerente',
-      'SRC': 'Gerente',
-      'SAL': 'Director General',
-      'SLNE': 'Administrador',
+    // Mapeo de actividades a posiciones típicas
+    const positionByActivity: Record<string, string> = {
+      // Tecnología
+      'desarrollo de software': 'CTO',
+      'consultoría tecnológica': 'Consultor Senior',
+      'programación': 'Desarrollador',
+      'diseño web': 'Diseñador Web',
       
-      // Personas físicas
-      'Empresario Individual': 'Propietario',
-      'Autónomo': 'Autónomo',
-      'Profesional Liberal': 'Profesional',
+      // Ventas y Marketing
+      'ventas': 'Director Comercial',
+      'marketing digital': 'Director de Marketing',
+      'publicidad': 'Director Creativo',
+      'relaciones públicas': 'Director de Comunicación',
       
-      // Cooperativas
-      'Cooperativa': 'Presidente',
-      'SAT': 'Presidente',
+      // Construcción
+      'construcción': 'Jefe de Obra',
+      'arquitectura': 'Arquitecto',
+      'ingeniería': 'Ingeniero',
+      'reformas': 'Contratista',
       
-      // Otras formas
-      'Asociación': 'Presidente',
-      'Fundación': 'Director',
-      'ONG': 'Director',
-      'Administración Pública': 'Responsable'
+      // Servicios
+      'consultoría': 'Consultor',
+      'asesoría': 'Asesor',
+      'contabilidad': 'Contador',
+      'legal': 'Abogado',
+      
+      // Retail y Restauración
+      'restauración': 'Gerente',
+      'comercio': 'Gerente de Tienda',
+      'hostelería': 'Gerente',
+      
+      // Salud
+      'medicina': 'Doctor',
+      'farmacia': 'Farmacéutico',
+      'clínica': 'Director Médico',
+      
+      // Educación
+      'educación': 'Director',
+      'formación': 'Coordinador de Formación',
+      
+      // Energía
+      'energías renovables': 'Ingeniero Energético',
+      'instalaciones solares': 'Técnico Solar',
+      
+      // Transporte
+      'transporte': 'Jefe de Operaciones',
+      'logística': 'Director de Logística',
+      
+      // Inmobiliaria
+      'inmobiliaria': 'Agente Inmobiliario',
+      'gestión inmobiliaria': 'Gestor Inmobiliario'
     };
 
-    if (legalForm && positionByLegalForm[legalForm]) {
-      return positionByLegalForm[legalForm];
+    if (activity) {
+      const activityLower = activity.toLowerCase();
+      for (const [key, position] of Object.entries(positionByActivity)) {
+        if (activityLower.includes(key)) {
+          return position;
+        }
+      }
     }
 
-    // Si no hay forma jurídica específica, usar industria
-    const positionByIndustry: Record<string, string> = {
-      'tecnología': 'CTO',
-      'marketing': 'Director de Marketing',
-      'ventas': 'Director Comercial',
-      'finanzas': 'Director Financiero',
-      'construcción': 'Jefe de Obra',
-      'restauración': 'Gerente',
-      'retail': 'Gerente de Tienda',
-      'consultoría': 'Consultor Senior',
-      'educación': 'Director',
-      'salud': 'Director Médico',
-      'energía': 'Ingeniero Principal',
-      'transporte': 'Jefe de Operaciones',
-      'inmobiliaria': 'Agente Inmobiliario'
+    // Si no hay actividad específica, usar categoría
+    const positionByCategory: Record<string, string> = {
+      'tecnología': 'Responsable Técnico',
+      'servicios': 'Responsable de Servicios',
+      'comercio': 'Gerente Comercial',
+      'construcción': 'Responsable de Proyectos',
+      'salud': 'Responsable Sanitario',
+      'educación': 'Responsable Académico',
+      'energía': 'Responsable Energético',
+      'transporte': 'Responsable de Operaciones',
+      'inmobiliaria': 'Responsable Inmobiliario',
+      'alimentación': 'Responsable de Calidad',
+      'textil': 'Responsable de Producción',
+      'automoción': 'Responsable Técnico'
     };
 
-    if (industry) {
-      const industryLower = industry.toLowerCase();
-      for (const [key, position] of Object.entries(positionByIndustry)) {
-        if (industryLower.includes(key)) {
+    if (category) {
+      const categoryLower = category.toLowerCase();
+      for (const [key, position] of Object.entries(positionByCategory)) {
+        if (categoryLower.includes(key)) {
           return position;
         }
       }
@@ -75,35 +105,36 @@ export const useLeadAdapter = (): UseLeadAdapterReturn => {
     return 'Responsable';
   }, []);
 
-  // Crear nombre de empresa combinando nombre y forma jurídica
-  const createCompanyName = useCallback((name: string, legalForm?: string): string => {
-    if (!legalForm || name.includes(legalForm)) {
-      return name;
+  // Crear nombre de contacto basado en el nombre de la empresa
+  const createContactName = useCallback((companyName: string): string => {
+    // Extraer posibles nombres de la empresa
+    const cleanName = companyName
+      .replace(/\b(SL|SA|SLU|CB|SLL|SCoop|SAT)\b/gi, '') // Quitar formas jurídicas
+      .replace(/\b(Sociedad|Limitada|Anónima|Cooperativa)\b/gi, '') // Quitar palabras corporativas
+      .trim();
+    
+    // Si el nombre limpio es muy corto, usar el original
+    if (cleanName.length < 3) {
+      return `Responsable de ${companyName}`;
     }
     
-    // Si la forma jurídica es muy común, agregarla
-    const commonForms = ['SL', 'SA', 'SLU', 'CB', 'SLL'];
-    if (commonForms.includes(legalForm)) {
-      return `${name} ${legalForm}`;
-    }
-    
-    return name;
+    return `Responsable de ${cleanName}`;
   }, []);
 
   // Obtener email del lead normalizado
   const getEmailFromLead = useCallback((normalized: NormalizedLead): string => {
-    if (normalized.email_found) {
-      return normalized.email_found;
+    if (normalized.email) {
+      return normalized.email;
     }
     
     // Intentar generar un email genérico si no hay uno
-    if (normalized.website) {
-      const domain = normalized.website.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    if (normalized.company_website) {
+      const domain = normalized.company_website.replace(/^https?:\/\//, '').replace(/^www\./, '');
       return `info@${domain}`;
     }
     
-    // Email placeholder
-    const companySlug = normalized.name.toLowerCase()
+    // Email placeholder basado en el nombre de la empresa
+    const companySlug = normalized.company_name.toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Quitar acentos
       .replace(/[^a-z0-9]/g, '') // Solo letras y números
       .substring(0, 20);
@@ -120,40 +151,42 @@ export const useLeadAdapter = (): UseLeadAdapterReturn => {
       notes.push(`Descripción: ${normalized.description}`);
     }
     
-    if (normalized.business_object) {
-      notes.push(`Objeto social: ${normalized.business_object}`);
+    if (normalized.activity) {
+      notes.push(`Actividad: ${normalized.activity}`);
     }
     
-    if (normalized.activities) {
-      notes.push(`Actividades: ${normalized.activities}`);
+    if (normalized.category) {
+      notes.push(`Categoría: ${normalized.category}`);
     }
     
-    // Información legal y técnica
-    if (normalized.cif_nif) {
-      notes.push(`CIF/NIF: ${normalized.cif_nif}`);
+    // Información de contacto y ubicación
+    if (normalized.address) {
+      notes.push(`Dirección: ${normalized.address}`);
     }
     
-    if (normalized.cnae_code) {
-      notes.push(`CNAE: ${normalized.cnae_code}`);
+    if (normalized.state) {
+      notes.push(`Provincia: ${normalized.state}`);
     }
     
-    if (normalized.constitution_date) {
-      notes.push(`Fecha constitución: ${normalized.constitution_date}`);
-    }
+
     
-    // Validaciones
+    // Información de validación (nueva estructura)
     const validations: string[] = [];
-    if (normalized.email_validated) validations.push('Email validado');
-    if (normalized.website_validated) validations.push('Web validada');
-    if (normalized.phone_validated) validations.push('Teléfono validado');
+    if (normalized.verified_email) validations.push('Email verificado');
+    if (normalized.verified_website) validations.push('Web verificada');
+    if (normalized.verified_phone) validations.push('Teléfono verificado');
     
     if (validations.length > 0) {
-      notes.push(`Validaciones: ${validations.join(', ')}`);
+      notes.push(`Verificaciones: ${validations.join(', ')}`);
     }
     
-    // Información de scraping
-    notes.push(`Fuente: ${normalized.source_type}`);
-    notes.push(`Scraped: ${new Date(normalized.scraped_at).toLocaleDateString()}`);
+    // Puntuación de calidad (1-5, solo para filtros internos)
+    if (normalized.data_quality_score) {
+      notes.push(`Score de calidad: ${normalized.data_quality_score}/5`);
+    }
+    
+    // Información del sistema
+    notes.push(`Creado: ${new Date(normalized.created_at).toLocaleDateString()}`);
     
     return notes.join('\n');
   }, []);
@@ -161,64 +194,88 @@ export const useLeadAdapter = (): UseLeadAdapterReturn => {
   // Convertir lead normalizado a lead de campaña
   const fromNormalized = useCallback((normalized: NormalizedLead): Lead => {
     const email = getEmailFromLead(normalized);
-    const position = inferPosition(normalized.legal_form, normalized.industry);
-    const company = createCompanyName(normalized.name, normalized.legal_form);
+    const contactName = createContactName(normalized.company_name);
+    const position = inferPosition(normalized.activity, normalized.category);
     const notes = formatNotes(normalized);
+    
+    // Construir location a partir de address y state
+    const locationParts = [normalized.address, normalized.state].filter(Boolean);
+    const location = locationParts.join(', ');
     
     return {
       id: normalized.id,
-      name: normalized.name,
-      email: email,
-      company: company,
-      position: position,
-      industry: normalized.industry || 'General',
+      
+      // Contact Information (from simplified schema)
+      email: normalized.email,
       phone: normalized.phone,
-      website: normalized.website,
-      notes: notes,
       
-      // Campos adicionales de datos normalizados
-      location: `${normalized.city}, ${normalized.province}`,
-      confidence: normalized.confidence_score,
-      source: normalized.source_type,
-      sourceUrl: normalized.source_url,
-      hasWebsite: !!normalized.website,
-      websiteExists: normalized.website_validated,
-      emailValidated: normalized.email_validated,
-      phoneValidated: normalized.phone_validated,
-      employees: normalized.estimated_employees,
-      revenue: normalized.estimated_revenue,
-      cif: normalized.cif_nif,
-      legalForm: normalized.legal_form,
-      cnaeCode: normalized.cnae_code,
+      // Company Information (from simplified schema)
+      company_name: normalized.company_name,
+      company_website: normalized.company_website,
       
-      // Campos por defecto
-      status: 'new',
-      score: Math.round(normalized.confidence_score * 100),
-      tags: [
-        normalized.source_type,
-        normalized.industry,
-        ...(normalized.legal_form ? [normalized.legal_form] : [])
-      ].filter(Boolean),
-      lastContact: undefined
+      // Location Information (from simplified schema - NO postal_code)
+      address: normalized.address,
+      state: normalized.state,
+      country: normalized.country,
+      
+      // New Fields (from simplified schema)
+      activity: normalized.activity,
+      description: normalized.description,
+      category: normalized.category,
+      
+      // Verification flags (new structure)
+      verified_email: normalized.verified_email,
+      verified_phone: normalized.verified_phone,
+      verified_website: normalized.verified_website,
+      data_quality_score: normalized.data_quality_score,
+      
+      // System Fields (from simplified schema)
+      created_at: new Date(normalized.created_at),
+      updated_at: new Date(normalized.updated_at),
+      last_contacted_at: normalized.last_contacted_at ? new Date(normalized.last_contacted_at) : undefined,
+      
+      // Legacy computed fields for campaign compatibility
+      name: contactName,
+      company: normalized.company_name, // Alias
+      website: normalized.company_website, // Alias
+      position: position,
+      industry: normalized.category || 'General',
+      location: location,
+      emailValidated: normalized.verified_email,
+      phoneValidated: normalized.verified_phone,
+      websiteExists: normalized.verified_website,
+      
+             // Campaign specific fields (defaults)
+       status: 'new',
+       score: normalized.data_quality_score,
+       tags: [
+         normalized.activity,
+         normalized.category
+       ].filter((tag): tag is string => Boolean(tag)),
+      lastContact: normalized.last_contacted_at ? new Date(normalized.last_contacted_at) : undefined
     };
-  }, [getEmailFromLead, inferPosition, createCompanyName, formatNotes]);
+  }, [getEmailFromLead, createContactName, inferPosition, formatNotes]);
 
   // Convertir lead de campaña a normalizado (para updates)
   const toNormalized = useCallback((lead: Lead): Partial<NormalizedLead> => {
     return {
       id: lead.id,
-      name: lead.name,
+      email: lead.email,
+      verified_email: lead.verified_email || false,
       phone: lead.phone,
-      website: lead.website,
-      industry: lead.industry,
-      email_found: lead.email,
-      cif_nif: lead.cif,
-      legal_form: lead.legalForm,
-      cnae_code: lead.cnaeCode,
-      estimated_employees: lead.employees,
-      estimated_revenue: lead.revenue,
-      confidence_score: lead.confidence || 0.5,
-      last_updated: new Date().toISOString()
+      verified_phone: lead.verified_phone || false,
+      company_name: lead.company_name,
+      company_website: lead.company_website,
+      verified_website: lead.verified_website || false,
+      address: lead.address,
+      state: lead.state,
+      country: lead.country,
+      activity: lead.activity,
+      description: lead.description,
+      category: lead.category,
+      data_quality_score: lead.data_quality_score || 1,
+      updated_at: new Date().toISOString(),
+      last_contacted_at: lead.last_contacted_at ? lead.last_contacted_at.toISOString() : undefined
     };
   }, []);
 
@@ -235,20 +292,20 @@ export const useLeadAdapter = (): UseLeadAdapterReturn => {
       issues.push('Email no válido o es placeholder');
     }
     
-    if (!lead.name || lead.name.trim().length < 2) {
-      issues.push('Nombre demasiado corto');
-    }
-    
-    if (!lead.company || lead.company.trim().length < 2) {
+    if (!lead.company_name || lead.company_name.trim().length < 2) {
       issues.push('Nombre de empresa no válido');
     }
     
-    if (lead.confidence && lead.confidence < 0.3) {
-      issues.push('Confianza muy baja en los datos');
+    if (!lead.activity || lead.activity.trim().length < 2) {
+      issues.push('Actividad de la empresa no especificada');
     }
     
-    if (!lead.emailValidated && lead.source !== 'manual') {
-      issues.push('Email no validado automáticamente');
+    if (lead.data_quality_score && lead.data_quality_score < 2) {
+      issues.push('Score de calidad muy bajo (menos de 2/5)');
+    }
+    
+    if (lead.verified_email === false) {
+      issues.push('Email no verificado');
     }
 
     return {
@@ -261,7 +318,7 @@ export const useLeadAdapter = (): UseLeadAdapterReturn => {
     fromNormalized,
     toNormalized,
     inferPosition,
-    createCompanyName,
+    createCompanyName: createContactName, // Renamed function
     formatNotes,
     adaptLeadsForCampaign,
     getEmailFromLead,

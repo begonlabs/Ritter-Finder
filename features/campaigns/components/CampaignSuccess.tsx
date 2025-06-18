@@ -64,15 +64,15 @@ export function CampaignSuccess({ selectedLeads }: CampaignSuccessProps) {
               <span className={`${styles.summaryValue} font-medium`}>{selectedLeads.length} contactos</span>
             </div>
             <div className={`${styles.summaryItem} flex justify-between`}>
-              <span className={`${styles.summaryLabel} text-muted-foreground`}>Industrias objetivo:</span>
+              <span className={`${styles.summaryLabel} text-muted-foreground`}>Categorías objetivo:</span>
               <span className={`${styles.summaryValue} font-medium`}>
-                {Array.from(new Set(selectedLeads.map(lead => lead.industry))).length} sectores
+                {Array.from(new Set(selectedLeads.map(lead => lead.industry || lead.category))).length} sectores
               </span>
             </div>
             <div className={`${styles.summaryItem} flex justify-between`}>
               <span className={`${styles.summaryLabel} text-muted-foreground`}>Empresas contactadas:</span>
               <span className={`${styles.summaryValue} font-medium`}>
-                {Array.from(new Set(selectedLeads.map(lead => lead.company))).length} empresas
+                {Array.from(new Set(selectedLeads.map(lead => lead.company || lead.company_name))).length} empresas
               </span>
             </div>
           </div>

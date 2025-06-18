@@ -294,42 +294,50 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
 
     let personalizedContent = content;
 
-    // Split name into first and last names if needed
-    const nameParts = (lead.name || '').split(' ');
+    // Create contact name from company name if not available
+    const contactName = lead.name || (lead.company_name ? `Responsable de ${lead.company_name}` : '');
+    const nameParts = contactName.split(' ');
     const firstName = nameParts[0] || '';
     const lastName = nameParts.slice(1).join(' ') || '';
 
-    // Replace standard lead variables - ensure all values are strings
+    // Replace standard lead variables - ensure all values are strings (simplified schema)
     const leadVariables: Record<string, string> = {
-      // Variables básicas
-      'contact_name': String(lead.name || ''),
-      'company_name': String(lead.company || ''),
+      // Direct database fields
+      'lead_id': String(lead.id || ''),
+      'email': String(lead.email || ''),
+      'phone': String(lead.phone || ''),
+      'company_name': String(lead.company_name || ''),
+      'company_website': String(lead.company_website || ''),
+      'address': String(lead.address || ''),
+      'state': String(lead.state || ''),
+      'country': String(lead.country || ''),
+      'activity': String(lead.activity || ''),
+      'description': String(lead.description || ''),
+      'category': String(lead.category || ''),
+      
+      // Verification fields (new structure)
+      'verified_email': lead.verified_email ? 'Sí' : 'No',
+      'verified_phone': lead.verified_phone ? 'Sí' : 'No', 
+      'verified_website': lead.verified_website ? 'Sí' : 'No',
+      
+      // Legacy compatibility variables
+      'contact_name': String(contactName),
       'contact_email': String(lead.email || ''),
       'contact_phone': String(lead.phone || ''),
       'first_name': String(firstName),
       'last_name': String(lastName),
-      'full_name': String(lead.name || ''),
-      'lead_id': String(lead.id || ''),
+      'full_name': String(contactName),
+      'name': String(contactName),
+      'company': String(lead.company_name || ''), // Alias
+      'website': String(lead.company_website || ''), // Alias
       'position': String(lead.position || ''),
       'industry': String(lead.industry || ''),
-      
-      // Variables de datos normalizados
       'location': String(lead.location || ''),
-      'confidence_score': String(Math.round((lead.confidence || 0) * 100)),
-      'source_type': String(lead.source || ''),
-      'website': String(lead.website || ''),
-      'cif_nif': String(lead.cif || ''),
-      'legal_form': String(lead.legalForm || ''),
-      'cnae_code': String(lead.cnaeCode || ''),
-      'employees': String(lead.employees || ''),
-      'revenue': String(lead.revenue || ''),
       
-      // Variables calculadas
-      'has_website': lead.hasWebsite ? 'Sí' : 'No',
-      'website_validated': lead.websiteExists ? 'Validada' : 'No validada',
-      'email_validated': lead.emailValidated ? 'Validado' : 'No validado',
-      'phone_validated': lead.phoneValidated ? 'Validado' : 'No validado',
-      'confidence_level': (lead.confidence || 0) > 0.7 ? 'Alta' : (lead.confidence || 0) > 0.4 ? 'Media' : 'Baja'
+      // Computed validation fields for templates (legacy compatibility)
+      'emailValidated': lead.emailValidated ? 'Validado' : 'No validado',
+      'phoneValidated': lead.phoneValidated ? 'Validado' : 'No validado',
+      'websiteExists': lead.websiteExists ? 'Validada' : 'No validada'
     };
 
     // Apply lead variables

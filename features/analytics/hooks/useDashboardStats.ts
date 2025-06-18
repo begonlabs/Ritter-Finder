@@ -1,22 +1,49 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import type { DashboardStats, TrendData, AnalyticsState } from "../types"
+import type { DashboardStats, TrendData, AnalyticsState, DashboardMetrics } from "../types"
 
-// Mock data - in real app this would come from API
+// Mock data - in real app this would come from dashboard_metrics table
 const mockDashboardData = {
   current: {
     totalLeads: 1234,
     totalCampaigns: 45,
     totalSearches: 89,
-    averageOpenRate: 68
+    averageOpenRate: 68,
+    leadsQualityScore: 85.5,
+    campaignSuccessRate: 72.3,
+    searchEfficiency: 91.2,
+    costPerLead: 15.50,
+    roiPercentage: 340.75,
+    estimatedMoneySaved: 58365
   },
   previous: {
     totalLeads: 1102,
     totalCampaigns: 42,
     totalSearches: 85,
-    averageOpenRate: 66
+    averageOpenRate: 66,
+    leadsQualityScore: 82.1,
+    campaignSuccessRate: 69.8,
+    searchEfficiency: 88.7,
+    costPerLead: 17.20,
+    roiPercentage: 315.40,
+    estimatedMoneySaved: 54230
   }
+}
+
+// API integration functions (to be implemented)
+async function fetchDashboardMetrics(period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<DashboardMetrics | null> {
+  // This would query the dashboard_metrics table
+  // SELECT * FROM dashboard_metrics 
+  // WHERE period_type = $1 
+  // ORDER BY date DESC 
+  // LIMIT 1
+  return null // Placeholder
+}
+
+async function fetchPreviousPeriodMetrics(period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<DashboardMetrics | null> {
+  // This would query for previous period comparison
+  return null // Placeholder
 }
 
 function calculateTrend(current: number, previous: number, label: string = "from last month"): TrendData {

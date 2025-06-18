@@ -1,774 +1,363 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { 
+  User, Mail, Shield, Calendar, Clock, 
+  CheckCircle, AlertCircle, Eye, EyeOff,
+  Settings, Edit3, Save, X 
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { 
-  User,
-  Mail,
-  Phone,
-  Calendar,
-  MapPin,
-  Shield,
-  Key,
-  Edit2,
-  Save,
-  X,
-  Eye,
-  EyeOff,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-  Activity,
-  Crown,
-  Users,
-  Settings,
-  Lock
-} from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { Switch } from "@/components/ui/switch"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useLayout } from "../hooks/useLayout"
-import { formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow, format } from "date-fns"
 import { es } from "date-fns/locale"
-import type { UserProfileProps, RoleInfo } from "../types"
+import type { UserProfileProps } from "../types"
 import styles from "../styles/UserProfile.module.css"
 
-interface PasswordChangeForm {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+interface UserProfileExtendedProps extends UserProfileProps {
+  canEdit?: boolean
+  onEdit?: () => void
+  onSave?: (data: any) => void
+  onCancel?: () => void
 }
 
-interface PasswordErrors {
-  currentPassword?: string
-  newPassword?: string
-  confirmPassword?: string
-  general?: string
-}
-
-interface ProfileEditForm {
-  name: string
-  email: string
-  phone: string
-  location: string
-}
-
-export function UserProfile({ className = "" }: UserProfileProps) {
-  const { t } = useLanguage()
-  const { state } = useLayout()
-  
-  // Enhanced role information
-  const roleDefinitions: Record<string, RoleInfo> = {
-    Admin: {
-      id: "admin",
-      name: "Admin",
-      displayName: "Administrador del Sistema",
-      description: "Acceso completo a todas las funcionalidades del sistema, gestión de usuarios y configuración avanzada.",
-      level: "admin",
-      permissions: [
-        "Gestión completa de usuarios",
-        "Configuración del sistema",
-        "Acceso a todas las campañas",
-        "Reportes y analytics avanzados",
-        "Gestión de roles y permisos",
-        "Configuración de seguridad"
-      ],
-      color: {
-        background: "bg-gradient-to-r from-red-50 to-pink-50",
-        text: "text-red-800",
-        border: "border-red-200"
-      }
-    },
-    Supervisor: {
-      id: "supervisor",
-      name: "Supervisor",
-      displayName: "Supervisor de Equipo",
-      description: "Supervisión de equipos comerciales, acceso a reportes y gestión de campañas asignadas.",
-      level: "advanced",
-      permissions: [
-        "Supervisión de equipos",
-        "Gestión de campañas asignadas",
-        "Reportes de equipo",
-        "Asignación de leads",
-        "Configuración básica"
-      ],
-      color: {
-        background: "bg-gradient-to-r from-blue-50 to-indigo-50",
-        text: "text-blue-800",
-        border: "border-blue-200"
-      }
-    },
-    Comercial: {
-      id: "comercial",
-      name: "Comercial",
-      displayName: "Agente Comercial",
-      description: "Acceso a herramientas de búsqueda, gestión de leads asignados y seguimiento de campañas.",
-      level: "intermediate",
-      permissions: [
-        "Búsqueda de leads",
-        "Gestión de leads asignados",
-        "Seguimiento de campañas",
-        "Reportes básicos",
-        "Actualización de perfil"
-      ],
-      color: {
-        background: "bg-gradient-to-r from-green-50 to-emerald-50",
-        text: "text-green-800",
-        border: "border-green-200"
-      }
-    }
-  }
-  
-  // Mock user data with enhanced role info
-  const mockUser = {
-    id: "user_001",
-    name: "Juan Carlos Pérez",
-    email: "juan.perez@ritterfinder.com",
-    phone: "+34 600 123 456",
-    location: "Madrid, España",
-    role: "Admin",
-    roleInfo: roleDefinitions["Admin"],
-    avatar: null,
-    joinDate: new Date(2023, 5, 15),
-    lastLogin: new Date(Date.now() - 1000 * 60 * 30),
-    loginCount: 245,
-    status: "active" as const,
-    permissions: ["admin.users", "admin.roles", "admin.settings"],
-    preferences: {
-      language: "es",
-      timezone: "Europe/Madrid",
-      notifications: true
-    }
-  }
-
-  // States
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [isChangingPassword, setIsChangingPassword] = useState(false)
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  
-  const [profileForm, setProfileForm] = useState<ProfileEditForm>({
-    name: mockUser.name,
-    email: mockUser.email,
-    phone: mockUser.phone,
-    location: mockUser.location
+export function UserProfile({ 
+  className = "",
+  canEdit = true,
+  onEdit,
+  onSave,
+  onCancel 
+}: UserProfileExtendedProps) {
+  const { state, actions } = useLayout()
+  const [isEditing, setIsEditing] = useState(false)
+  const [showSensitiveInfo, setShowSensitiveInfo] = useState(false)
+  const [editData, setEditData] = useState({
+    fullName: state.user?.fullName || '',
+    email: state.user?.email || ''
   })
-  
-  const [passwordForm, setPasswordForm] = useState<PasswordChangeForm>({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
-  })
-  
-  const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({})
-  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false)
-  const [isSubmittingProfile, setIsSubmittingProfile] = useState(false)
 
-  // Password validation
-  const validatePassword = (password: string): string[] => {
-    const errors: string[] = []
-    if (password.length < 8) errors.push("Mínimo 8 caracteres")
-    if (!/[A-Z]/.test(password)) errors.push("Al menos una mayúscula")
-    if (!/[a-z]/.test(password)) errors.push("Al menos una minúscula")
-    if (!/\d/.test(password)) errors.push("Al menos un número")
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push("Al menos un carácter especial")
-    return errors
+  if (!state.user) {
+    return (
+      <div className={`${styles.profileContainer} ${className}`}>
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">No hay usuario autenticado</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
-  // Handle password change
-  const handlePasswordChange = async () => {
-    setPasswordErrors({})
-    
-    const errors: PasswordErrors = {}
-    
-    if (!passwordForm.currentPassword) {
-      errors.currentPassword = "La contraseña actual es requerida"
-    }
-    
-    if (!passwordForm.newPassword) {
-      errors.newPassword = "La nueva contraseña es requerida"
-    } else {
-      const passwordValidation = validatePassword(passwordForm.newPassword)
-      if (passwordValidation.length > 0) {
-        errors.newPassword = passwordValidation.join(", ")
-      }
-    }
-    
-    if (!passwordForm.confirmPassword) {
-      errors.confirmPassword = "Confirma la nueva contraseña"
-    } else if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      errors.confirmPassword = "Las contraseñas no coinciden"
-    }
-    
-    if (Object.keys(errors).length > 0) {
-      setPasswordErrors(errors)
-      return
-    }
-    
-    setIsSubmittingPassword(true)
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      setPasswordForm({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-      })
-      setIsChangingPassword(false)
-      
-      console.log("Contraseña cambiada exitosamente")
-    } catch (error) {
-      setPasswordErrors({ general: "Error al cambiar la contraseña" })
-    } finally {
-      setIsSubmittingPassword(false)
-    }
-  }
+  const user = state.user
 
-  // Handle profile update
-  const handleProfileUpdate = async () => {
-    setIsSubmittingProfile(true)
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      setIsEditingProfile(false)
-      console.log("Perfil actualizado exitosamente")
-    } catch (error) {
-      console.error("Error actualizando perfil:", error)
-    } finally {
-      setIsSubmittingProfile(false)
-    }
-  }
-
-  // Cancel profile edit
-  const handleCancelProfileEdit = () => {
-    setProfileForm({
-      name: mockUser.name,
-      email: mockUser.email,
-      phone: mockUser.phone,
-      location: mockUser.location
-    })
-    setIsEditingProfile(false)
-  }
-
-  // Get role level icon
-  const getRoleLevelIcon = (level: string) => {
-    switch (level) {
-      case 'admin':
-        return <Crown className="h-4 w-4" />
-      case 'advanced':
-        return <Users className="h-4 w-4" />
-      case 'intermediate':
-        return <Settings className="h-4 w-4" />
+  const getStatusInfo = (status: string) => {
+    switch (status) {
+      case 'active':
+        return { color: 'bg-green-100 text-green-800 border-green-200', text: 'Activo', icon: CheckCircle }
+      case 'invited':
+        return { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', text: 'Invitado', icon: Clock }
+      case 'inactive':
+        return { color: 'bg-gray-100 text-gray-800 border-gray-200', text: 'Inactivo', icon: AlertCircle }
+      case 'suspended':
+        return { color: 'bg-red-100 text-red-800 border-red-200', text: 'Suspendido', icon: AlertCircle }
+      case 'banned':
+        return { color: 'bg-red-100 text-red-800 border-red-200', text: 'Baneado', icon: AlertCircle }
+      case 'locked':
+        return { color: 'bg-orange-100 text-orange-800 border-orange-200', text: 'Bloqueado', icon: AlertCircle }
       default:
-        return <User className="h-4 w-4" />
+        return { color: 'bg-gray-100 text-gray-800 border-gray-200', text: 'Desconocido', icon: AlertCircle }
     }
+  }
+
+  const statusInfo = getStatusInfo(user.status)
+  const StatusIcon = statusInfo.icon
+
+  const handleEdit = () => {
+    setIsEditing(true)
+    setEditData({
+      fullName: user.fullName,
+      email: user.email
+    })
+    onEdit?.()
+  }
+
+  const handleSave = () => {
+    // Update user data
+    const updatedUser = { ...user, ...editData }
+    actions.setUser(updatedUser)
+    setIsEditing(false)
+    onSave?.(editData)
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false)
+    setEditData({
+      fullName: user.fullName,
+      email: user.email
+    })
+    onCancel?.()
   }
 
   return (
-    <div className={`${styles.userProfile} ${className}`}>
-      {/* Header */}
-      <div className={styles.profileHeader}>
-        <div className={styles.headerContent}>
-          <div className={styles.userInfo}>
-            <div className={styles.userAvatar}>
-              <User className="h-8 w-8" />
-            </div>
-            <div className={styles.userDetails}>
-              <h1 className={styles.userName}>{mockUser.name}</h1>
-              <p className={styles.userEmail}>{mockUser.email}</p>
+    <div className={`${styles.profileContainer} ${className}`}>
+      {/* Header Card */}
+      <Card className={styles.headerCard}>
+        <CardHeader>
+          <div className={styles.profileHeader}>
+            <Avatar className={styles.profileAvatar}>
+              <AvatarFallback className={styles.avatarFallback}>
+                {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className={styles.profileHeaderInfo}>
+              <div className={styles.profileNameSection}>
+                {isEditing ? (
+                  <div className={styles.editNameSection}>
+                    <Input
+                      value={editData.fullName}
+                      onChange={(e) => setEditData(prev => ({ ...prev, fullName: e.target.value }))}
+                      className={styles.editInput}
+                      placeholder="Nombre completo"
+                    />
+                    <div className={styles.editActions}>
+                      <Button size="sm" onClick={handleSave} className={styles.saveButton}>
+                        <Save className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={handleCancel} className={styles.cancelButton}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.nameDisplay}>
+                    <CardTitle className={styles.profileName}>{user.fullName}</CardTitle>
+                    {canEdit && (
+                      <Button size="sm" variant="ghost" onClick={handleEdit} className={styles.editButton}>
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
               
-              {/* Enhanced Role Display */}
-              <div className={styles.roleContainer}>
-                <div className={`${styles.roleBadge} ${mockUser.roleInfo?.color.background} ${mockUser.roleInfo?.color.text} ${mockUser.roleInfo?.color.border}`}>
-                  {getRoleLevelIcon(mockUser.roleInfo?.level || 'basic')}
-                  <span className={styles.roleTitle}>{mockUser.roleInfo?.displayName || mockUser.role}</span>
-                  <Badge variant="outline" className={styles.roleLevelBadge}>
-                    {mockUser.roleInfo?.level === 'admin' ? 'Nivel Máximo' : 
-                     mockUser.roleInfo?.level === 'advanced' ? 'Nivel Avanzado' : 
-                     mockUser.roleInfo?.level === 'intermediate' ? 'Nivel Intermedio' : 'Nivel Básico'}
+              <div className={styles.profileEmail}>
+                {isEditing ? (
+                  <Input
+                    type="email"
+                    value={editData.email}
+                    onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
+                    className={styles.editInput}
+                    placeholder="email@example.com"
+                  />
+                ) : (
+                  <p className={styles.emailText}>{user.email}</p>
+                )}
+              </div>
+
+              <div className={styles.profileBadges}>
+                <Badge className={statusInfo.color}>
+                  <StatusIcon className="h-3 w-3 mr-1" />
+                  {statusInfo.text}
+                </Badge>
+                <Badge variant="outline" className={styles.roleBadge}>
+                  <Shield className="h-3 w-3 mr-1" />
+                  {user.role.name}
+                </Badge>
+                {user.twoFactorEnabled && (
+                  <Badge variant="outline" className={styles.twofaBadge}>
+                    <Shield className="h-3 w-3 mr-1" />
+                    2FA
+                  </Badge>
+                )}
+                {user.emailVerifiedAt && (
+                  <Badge variant="outline" className={styles.verifiedBadge}>
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verificado
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Account Information */}
+      <Card className={styles.infoCard}>
+        <CardHeader>
+          <CardTitle className={styles.cardTitle}>
+            <User className="h-5 w-5" />
+            Información de la Cuenta
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={styles.infoContent}>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Estado</Label>
+              <div className={styles.infoValue}>
+                <StatusIcon className="h-4 w-4 mr-2" />
+                {statusInfo.text}
+              </div>
+            </div>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Rol</Label>
+              <div className={styles.infoValue}>
+                <Shield className="h-4 w-4 mr-2" />
+                {user.role.name}
+                {user.role.isSystemRole && (
+                  <Badge variant="outline" className="ml-2">Sistema</Badge>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Último acceso</Label>
+              <div className={styles.infoValue}>
+                <Clock className="h-4 w-4 mr-2" />
+                {user.lastLoginAt ? (
+                  <>
+                    {formatDistanceToNow(user.lastLoginAt, { addSuffix: true, locale: es })}
+                    <span className={styles.infoSubtext}>
+                      ({format(user.lastLoginAt, 'dd/MM/yyyy HH:mm', { locale: es })})
+                    </span>
+                  </>
+                ) : (
+                  'Nunca'
+                )}
+              </div>
+            </div>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Miembro desde</Label>
+              <div className={styles.infoValue}>
+                <Calendar className="h-4 w-4 mr-2" />
+                {format(user.createdAt, 'dd/MM/yyyy', { locale: es })}
+              </div>
+            </div>
+
+            {user.invitedAt && (
+              <div className={styles.infoItem}>
+                <Label className={styles.infoLabel}>Invitado</Label>
+                <div className={styles.infoValue}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  {format(user.invitedAt, 'dd/MM/yyyy', { locale: es })}
+                </div>
+              </div>
+            )}
+
+            {user.passwordSetAt && (
+              <div className={styles.infoItem}>
+                <Label className={styles.infoLabel}>Password establecida</Label>
+                <div className={styles.infoValue}>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  {format(user.passwordSetAt, 'dd/MM/yyyy', { locale: es })}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Security Information */}
+      <Card className={styles.securityCard}>
+        <CardHeader>
+          <CardTitle className={styles.cardTitle}>
+            <Shield className="h-5 w-5" />
+            Seguridad
+            <div className={styles.securityToggle}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSensitiveInfo(!showSensitiveInfo)}
+              >
+                {showSensitiveInfo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={styles.securityContent}>
+          <div className={styles.securityGrid}>
+            <div className={styles.securityItem}>
+              <Label className={styles.securityLabel}>Autenticación 2FA</Label>
+              <div className={styles.securityValue}>
+                <Switch 
+                  checked={user.twoFactorEnabled} 
+                  disabled 
+                  className={styles.securitySwitch}
+                />
+                <span className={user.twoFactorEnabled ? styles.enabled : styles.disabled}>
+                  {user.twoFactorEnabled ? 'Habilitada' : 'Deshabilitada'}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.securityItem}>
+              <Label className={styles.securityLabel}>Email verificado</Label>
+              <div className={styles.securityValue}>
+                {user.emailVerifiedAt ? (
+                  <div className={styles.verified}>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Verificado</span>
+                    {showSensitiveInfo && (
+                      <span className={styles.verificationDate}>
+                        ({format(user.emailVerifiedAt, 'dd/MM/yyyy', { locale: es })})
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className={styles.unverified}>
+                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                    <span>No verificado</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {showSensitiveInfo && (
+              <div className={styles.securityItem}>
+                <Label className={styles.securityLabel}>Intentos fallidos</Label>
+                <div className={styles.securityValue}>
+                  <span className={user.failedLoginAttempts > 0 ? styles.warning : styles.safe}>
+                    {user.failedLoginAttempts}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Permissions */}
+      <Card className={styles.permissionsCard}>
+        <CardHeader>
+          <CardTitle className={styles.cardTitle}>
+            <Settings className="h-5 w-5" />
+            Permisos ({user.role.permissions.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={styles.permissionsContent}>
+          <div className={styles.permissionsList}>
+            {user.role.permissions.map((permission) => (
+              <div key={permission.id} className={styles.permissionItem}>
+                <div className={styles.permissionMain}>
+                  <span className={styles.permissionName}>{permission.name}</span>
+                  <Badge variant="outline" className={styles.permissionCategory}>
+                    {permission.category}
                   </Badge>
                 </div>
-                <p className={styles.roleDescription}>
-                  {mockUser.roleInfo?.description}
-                </p>
+                {permission.description && (
+                  <p className={styles.permissionDescription}>{permission.description}</p>
+                )}
               </div>
-            </div>
+            ))}
           </div>
-          
-          <div className={styles.headerActions}>
-            <Button
-              variant="outline"
-              onClick={() => setIsEditingProfile(!isEditingProfile)}
-              className={styles.editButton}
-            >
-              {isEditingProfile ? (
-                <>
-                  <X className="h-4 w-4 mr-2" />
-                  Cancelar
-                </>
-              ) : (
-                <>
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Editar Perfil
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <Tabs defaultValue="info" className={styles.profileTabs}>
-        <TabsList className={styles.tabsList}>
-          <TabsTrigger value="info" className={styles.tabsTrigger}>
-            <User className="h-4 w-4 mr-2" />
-            Información Personal
-          </TabsTrigger>
-          <TabsTrigger value="security" className={styles.tabsTrigger}>
-            <Shield className="h-4 w-4 mr-2" />
-            Seguridad
-          </TabsTrigger>
-          <TabsTrigger value="activity" className={styles.tabsTrigger}>
-            <Activity className="h-4 w-4 mr-2" />
-            Actividad
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Personal Information Tab */}
-        <TabsContent value="info" className={styles.tabsContent}>
-          <div className={styles.infoTabContainer}>
-            {/* Personal Info Card */}
-            <Card className={styles.infoCard}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Información Personal</span>
-                  {isEditingProfile && (
-                    <Button
-                      onClick={handleProfileUpdate}
-                      disabled={isSubmittingProfile}
-                      className={styles.saveButton}
-                    >
-                      {isSubmittingProfile ? (
-                        <>
-                          <div className={styles.spinner} />
-                          Guardando...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-4 w-4 mr-2" />
-                          Guardar
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className={styles.infoContent}>
-                <div className={styles.infoGrid}>
-                  <div className={styles.infoField}>
-                    <Label className={styles.fieldLabel}>
-                      <User className="h-4 w-4 mr-2" />
-                      Nombre Completo
-                    </Label>
-                    {isEditingProfile ? (
-                      <Input
-                        value={profileForm.name}
-                        onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
-                        className={styles.fieldInput}
-                      />
-                    ) : (
-                      <p className={styles.fieldValue}>{mockUser.name}</p>
-                    )}
-                  </div>
-
-                  <div className={styles.infoField}>
-                    <Label className={styles.fieldLabel}>
-                      <Mail className="h-4 w-4 mr-2" />
-                      Correo Electrónico
-                    </Label>
-                    {isEditingProfile ? (
-                      <Input
-                        type="email"
-                        value={profileForm.email}
-                        onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
-                        className={styles.fieldInput}
-                      />
-                    ) : (
-                      <p className={styles.fieldValue}>{mockUser.email}</p>
-                    )}
-                  </div>
-
-                  <div className={styles.infoField}>
-                    <Label className={styles.fieldLabel}>
-                      <Phone className="h-4 w-4 mr-2" />
-                      Teléfono
-                    </Label>
-                    {isEditingProfile ? (
-                      <Input
-                        value={profileForm.phone}
-                        onChange={(e) => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
-                        className={styles.fieldInput}
-                      />
-                    ) : (
-                      <p className={styles.fieldValue}>{mockUser.phone}</p>
-                    )}
-                  </div>
-
-                  <div className={styles.infoField}>
-                    <Label className={styles.fieldLabel}>
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Ubicación
-                    </Label>
-                    {isEditingProfile ? (
-                      <Input
-                        value={profileForm.location}
-                        onChange={(e) => setProfileForm(prev => ({ ...prev, location: e.target.value }))}
-                        className={styles.fieldInput}
-                      />
-                    ) : (
-                      <p className={styles.fieldValue}>{mockUser.location}</p>
-                    )}
-                  </div>
-
-                  <div className={styles.infoField}>
-                    <Label className={styles.fieldLabel}>
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Fecha de Registro
-                    </Label>
-                    <p className={styles.fieldValue}>
-                      {mockUser.joinDate.toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  </div>
-
-                  <div className={styles.infoField}>
-                    <Label className={styles.fieldLabel}>
-                      <Shield className="h-4 w-4 mr-2" />
-                      Estado de la Cuenta
-                    </Label>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Activa
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Role & Permissions Card */}
-            <Card className={styles.roleCard}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-ritter-gold" />
-                  Rol y Permisos
-                </CardTitle>
-              </CardHeader>
-              <CardContent className={styles.roleContent}>
-                <div className={styles.roleInfo}>
-                  <div className={styles.roleHeader}>
-                    <div className={`${styles.roleMainBadge} ${mockUser.roleInfo?.color.background} ${mockUser.roleInfo?.color.text} ${mockUser.roleInfo?.color.border}`}>
-                      {getRoleLevelIcon(mockUser.roleInfo?.level || 'basic')}
-                      <div className={styles.roleMainInfo}>
-                        <h3 className={styles.roleMainTitle}>{mockUser.roleInfo?.displayName}</h3>
-                        <p className={styles.roleMainLevel}>
-                          {mockUser.roleInfo?.level === 'admin' ? 'Administrador del Sistema' : 
-                           mockUser.roleInfo?.level === 'advanced' ? 'Usuario Avanzado' : 
-                           mockUser.roleInfo?.level === 'intermediate' ? 'Usuario Intermedio' : 'Usuario Básico'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <p className={styles.roleMainDescription}>
-                    {mockUser.roleInfo?.description}
-                  </p>
-
-                  <Separator className="my-4" />
-
-                  <div className={styles.permissionsSection}>
-                    <h4 className={styles.permissionsTitle}>
-                      <Lock className="h-4 w-4 mr-2" />
-                      Permisos Asignados
-                    </h4>
-                    <div className={styles.permissionsList}>
-                      {mockUser.roleInfo?.permissions.map((permission, index) => (
-                        <div key={index} className={styles.permissionItem}>
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                          <span>{permission}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Security Tab */}
-        <TabsContent value="security" className={styles.tabsContent}>
-          <Card className={styles.securityCard}>
-            <CardHeader>
-              <CardTitle>Configuración de Seguridad</CardTitle>
-            </CardHeader>
-            <CardContent className={styles.securityContent}>
-              <div className={styles.securitySection}>
-                <div className={styles.sectionHeader}>
-                  <div className={styles.sectionInfo}>
-                    <h3 className={styles.sectionTitle}>Contraseña</h3>
-                    <p className={styles.sectionDescription}>
-                      Mantén tu cuenta segura con una contraseña fuerte
-                    </p>
-                  </div>
-                  
-                  <Dialog open={isChangingPassword} onOpenChange={setIsChangingPassword}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className={styles.changePasswordButton}>
-                        <Key className="h-4 w-4 mr-2" />
-                        Cambiar Contraseña
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className={styles.passwordDialog}>
-                      <DialogHeader>
-                        <DialogTitle>Cambiar Contraseña</DialogTitle>
-                        <DialogDescription>
-                          Ingresa tu contraseña actual y elige una nueva contraseña segura.
-                        </DialogDescription>
-                      </DialogHeader>
-                      
-                      <div className={styles.passwordForm}>
-                        {/* Current Password */}
-                        <div className={styles.passwordField}>
-                          <Label htmlFor="currentPassword">Contraseña Actual</Label>
-                          <div className={styles.passwordInputWrapper}>
-                            <Input
-                              id="currentPassword"
-                              type={showCurrentPassword ? "text" : "password"}
-                              value={passwordForm.currentPassword}
-                              onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                              className={passwordErrors.currentPassword ? styles.inputError : ''}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                              className={styles.passwordToggle}
-                            >
-                              {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                          </div>
-                          {passwordErrors.currentPassword && (
-                            <p className={styles.errorMessage}>
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {passwordErrors.currentPassword}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* New Password */}
-                        <div className={styles.passwordField}>
-                          <Label htmlFor="newPassword">Nueva Contraseña</Label>
-                          <div className={styles.passwordInputWrapper}>
-                            <Input
-                              id="newPassword"
-                              type={showNewPassword ? "text" : "password"}
-                              value={passwordForm.newPassword}
-                              onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                              className={passwordErrors.newPassword ? styles.inputError : ''}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                              className={styles.passwordToggle}
-                            >
-                              {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                          </div>
-                          {passwordErrors.newPassword && (
-                            <p className={styles.errorMessage}>
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {passwordErrors.newPassword}
-                            </p>
-                          )}
-                          
-                          {/* Password Requirements */}
-                          {passwordForm.newPassword && (
-                            <div className={styles.passwordRequirements}>
-                              <p className={styles.requirementsTitle}>Requisitos de contraseña:</p>
-                              <ul className={styles.requirementsList}>
-                                {[
-                                  { test: passwordForm.newPassword.length >= 8, text: "Mínimo 8 caracteres" },
-                                  { test: /[A-Z]/.test(passwordForm.newPassword), text: "Una mayúscula" },
-                                  { test: /[a-z]/.test(passwordForm.newPassword), text: "Una minúscula" },
-                                  { test: /\d/.test(passwordForm.newPassword), text: "Un número" },
-                                  { test: /[!@#$%^&*(),.?":{}|<>]/.test(passwordForm.newPassword), text: "Un carácter especial" }
-                                ].map((req, index) => (
-                                  <li key={index} className={req.test ? styles.requirementMet : styles.requirementUnmet}>
-                                    {req.test ? <CheckCircle className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                                    {req.text}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Confirm Password */}
-                        <div className={styles.passwordField}>
-                          <Label htmlFor="confirmPassword">Confirmar Nueva Contraseña</Label>
-                          <div className={styles.passwordInputWrapper}>
-                            <Input
-                              id="confirmPassword"
-                              type={showConfirmPassword ? "text" : "password"}
-                              value={passwordForm.confirmPassword}
-                              onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                              className={passwordErrors.confirmPassword ? styles.inputError : ''}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              className={styles.passwordToggle}
-                            >
-                              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                          </div>
-                          {passwordErrors.confirmPassword && (
-                            <p className={styles.errorMessage}>
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {passwordErrors.confirmPassword}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* General Error */}
-                        {passwordErrors.general && (
-                          <div className={styles.generalError}>
-                            <AlertCircle className="h-4 w-4 mr-2" />
-                            {passwordErrors.general}
-                          </div>
-                        )}
-                      </div>
-                      
-                      <DialogFooter>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setIsChangingPassword(false)
-                            setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" })
-                            setPasswordErrors({})
-                          }}
-                        >
-                          Cancelar
-                        </Button>
-                        <Button
-                          onClick={handlePasswordChange}
-                          disabled={isSubmittingPassword}
-                          className={styles.submitButton}
-                        >
-                          {isSubmittingPassword ? (
-                            <>
-                              <div className={styles.spinner} />
-                              Cambiando...
-                            </>
-                          ) : (
-                            <>
-                              <Key className="h-4 w-4 mr-2" />
-                              Cambiar Contraseña
-                            </>
-                          )}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                
-                <Separator className="my-6" />
-                
-                <div className={styles.securityInfo}>
-                  <div className={styles.securityItem}>
-                    <div className={styles.securityIcon}>
-                      <Shield className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div className={styles.securityDetails}>
-                      <h4 className={styles.securityItemTitle}>Autenticación de Dos Factores</h4>
-                      <p className={styles.securityItemDescription}>
-                        Próximamente disponible para mayor seguridad
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                      Próximamente
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Activity Tab */}
-        <TabsContent value="activity" className={styles.tabsContent}>
-          <Card className={styles.activityCard}>
-            <CardHeader>
-              <CardTitle>Actividad de la Cuenta</CardTitle>
-            </CardHeader>
-            <CardContent className={styles.activityContent}>
-              <div className={styles.activityStats}>
-                <div className={styles.statItem}>
-                  <div className={styles.statIcon}>
-                    <Clock className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div className={styles.statDetails}>
-                    <p className={styles.statLabel}>Último Acceso</p>
-                    <p className={styles.statValue}>
-                      {formatDistanceToNow(mockUser.lastLogin, { addSuffix: true, locale: es })}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className={styles.statItem}>
-                  <div className={styles.statIcon}>
-                    <Activity className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div className={styles.statDetails}>
-                    <p className={styles.statLabel}>Total de Accesos</p>
-                    <p className={styles.statValue}>{mockUser.loginCount}</p>
-                  </div>
-                </div>
-                
-                <div className={styles.statItem}>
-                  <div className={styles.statIcon}>
-                    <Calendar className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div className={styles.statDetails}>
-                    <p className={styles.statLabel}>Miembro desde</p>
-                    <p className={styles.statValue}>
-                      {formatDistanceToNow(mockUser.joinDate, { addSuffix: true, locale: es })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   )
 } 

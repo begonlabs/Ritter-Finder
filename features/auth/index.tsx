@@ -10,10 +10,12 @@ export { default as SetPasswordFormStyles } from "./styles/SetPasswordForm.modul
 export { default as WelcomeSectionStyles } from "./styles/WelcomeSection.module.css"
 export { default as MobileHeaderStyles } from "./styles/MobileHeader.module.css"
 export { default as MobileFeaturesStyles } from "./styles/MobileFeatures.module.css"
+export { default as TwoFactorFormStyles } from "./styles/TwoFactorForm.module.css"
 
 // Main components  
 export { LoginForm } from "./components/LoginForm"
 export { SetPasswordForm } from "./components/SetPasswordForm"
+export { TwoFactorForm } from "./components/TwoFactorForm"
 export { WelcomeSection } from "./components/WelcomeSection"
 export { MobileHeader } from "./components/MobileHeader"
 export { MobileFeatures } from "./components/MobileFeatures"
@@ -33,6 +35,10 @@ export type {
   SetPasswordResponse,
   SetPasswordFormProps,
   SetPasswordPageProps,
+  TwoFactorCredentials,
+  TwoFactorFormState,
+  TwoFactorResponse,
+  TwoFactorFormProps,
   WelcomeSectionProps,
   MobileHeaderProps,
   FeatureItem,

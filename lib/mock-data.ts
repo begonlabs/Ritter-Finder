@@ -1,11 +1,33 @@
 export const mockLeads = [
   {
     id: "1",
-    name: "John Doe",
-    company: "SolarTech Inc.",
+    
+    // Contact Information
     email: "john.doe@solartech.com",
-    website: "www.solartech.com",
+    verified_email: true,
     phone: "+34 912 345 678",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "SolarTech Inc.",
+    company_website: "www.solartech.com",
+    verified_website: true,
+    
+    // Location Information
+    address: "Calle Mayor 123",
+    state: "Madrid",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Solar panel installation and maintenance",
+    description: "Empresa líder en instalaciones solares residenciales",
+    category: "Solar Installation",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 5, // High quality: all verifications passed
+    
+    // Legacy fields for compatibility
+    name: "John Doe",
     position: "CEO",
     location: "Madrid, España",
     industry: "Solar Installation",
@@ -13,19 +35,42 @@ export const mockLeads = [
     revenue: "€2M-5M",
     source: "www.solarinstallers.com",
     confidence: 95,
-    lastActivity: "2024-01-26T10:30:00Z",
+    lastActivity: "2024-01-15",
     notes: "Empresa líder en instalaciones solares residenciales",
+    // Legacy compatibility fields (keep for backward compatibility)
     hasWebsite: true,
     websiteExists: true,
     emailValidated: true,
   },
   {
     id: "2",
-    name: "Jane Smith",
-    company: "Green Energy Co.",
+    
+    // Contact Information
     email: "jane.smith@greenenergyco.net",
-    website: "www.greenenergyco.net",
+    verified_email: true,
     phone: "+34 913 456 789",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "Green Energy Co.",
+    company_website: "www.greenenergyco.net",
+    verified_website: true,
+    
+    // Location Information
+    address: "Passeig de Gràcia 456",
+    state: "Barcelona",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Commercial renewable energy projects",
+    description: "Especializada en proyectos comerciales de gran escala",
+    category: "Renewable Energy",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 5, // High quality: all verifications passed
+    
+    // Legacy fields for compatibility
+    name: "Jane Smith",
     position: "Director of Operations",
     location: "Barcelona, España",
     industry: "Renewable Energy",
@@ -41,11 +86,33 @@ export const mockLeads = [
   },
   {
     id: "3",
-    name: "Robert Johnson",
-    company: "EcoSolutions",
+    
+    // Contact Information
     email: "robert@ecosolutions.org",
-    website: "www.ecosolutions.org",
+    verified_email: true,
     phone: "+34 914 567 890",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "EcoSolutions",
+    company_website: "www.ecosolutions.org",
+    verified_website: true,
+    
+    // Location Information
+    address: "Avenida del Puerto 789",
+    state: "Valencia",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Environmental consulting and energy efficiency",
+    description: "Consultoría especializada en eficiencia energética",
+    category: "Environmental Consulting",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 5, // High quality: all verifications passed
+    
+    // Legacy fields for compatibility
+    name: "Robert Johnson",
     position: "Sustainability Manager",
     location: "Valencia, España",
     industry: "Environmental Consulting",
@@ -61,11 +128,33 @@ export const mockLeads = [
   },
   {
     id: "4",
-    name: "Emily Williams",
-    company: "Renewable Power Systems",
+    
+    // Contact Information
     email: "emily@renewablepower.com",
-    website: "www.renewablepower.com",
+    verified_email: false, // Email not verified
     phone: "+34 915 678 901",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "Renewable Power Systems",
+    company_website: "www.renewablepower.com",
+    verified_website: true,
+    
+    // Location Information
+    address: "Calle Betis 321",
+    state: "Sevilla",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Industrial renewable power systems",
+    description: "Sistemas de energía renovable para industria",
+    category: "Power Systems",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 4, // Good quality: email not verified
+    
+    // Legacy fields for compatibility
+    name: "Emily Williams",
     position: "Technical Director",
     location: "Sevilla, España",
     industry: "Power Systems",
@@ -81,11 +170,33 @@ export const mockLeads = [
   },
   {
     id: "5",
-    name: "Michael Brown",
-    company: "SunPower Installations",
+    
+    // Contact Information
     email: "michael@sunpower-install.com",
-    website: "www.sunpower-install.com",
+    verified_email: true,
     phone: "+34 916 789 012",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "SunPower Installations",
+    company_website: "www.sunpower-install.com",
+    verified_website: false, // Website not verified
+    
+    // Location Information
+    address: "Gran Víaù 654",
+    state: "Bilbao",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Residential solar panel installations",
+    description: "Instalaciones solares para sector residencial",
+    category: "Solar Installation",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 4, // Good quality: website not verified
+    
+    // Legacy fields for compatibility
+    name: "Michael Brown",
     position: "Sales Manager",
     location: "Bilbao, España",
     industry: "Solar Installation",
@@ -101,11 +212,33 @@ export const mockLeads = [
   },
   {
     id: "6",
-    name: "Sarah Miller",
-    company: "Clean Energy Partners",
+    
+    // Contact Information
     email: "sarah@cleanenergypartners.net",
-    website: "www.cleanenergypartners.net",
+    verified_email: true,
     phone: "+34 917 890 123",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "Clean Energy Partners",
+    company_website: "www.cleanenergypartners.net",
+    verified_website: true,
+    
+    // Location Information
+    address: "Plaza del Pilar 987",
+    state: "Zaragoza",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Clean energy consulting and partnerships",
+    description: "Consultoría en transición energética",
+    category: "Energy Consulting",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 5, // High quality: all verifications passed
+    
+    // Legacy fields for compatibility
+    name: "Sarah Miller",
     position: "Business Development",
     location: "Zaragoza, España",
     industry: "Energy Consulting",
@@ -121,11 +254,33 @@ export const mockLeads = [
   },
   {
     id: "7",
-    name: "David Wilson",
-    company: "Sustainable Solutions LLC",
+    
+    // Contact Information
     email: "david@sustainablesolutions.co",
-    website: "www.sustainablesolutions.co",
+    verified_email: true,
     phone: "+34 918 901 234",
+    verified_phone: true,
+    
+    // Company Information
+    company_name: "Sustainable Solutions LLC",
+    company_website: "www.sustainablesolutions.co",
+    verified_website: true,
+    
+    // Location Information
+    address: "Calle Larios 147",
+    state: "Málaga",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Corporate sustainability solutions",
+    description: "Soluciones sostenibles para empresas",
+    category: "Sustainability",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 5, // High quality: all verifications passed
+    
+    // Legacy fields for compatibility
+    name: "David Wilson",
     position: "Project Manager",
     location: "Málaga, España",
     industry: "Sustainability",
@@ -141,11 +296,33 @@ export const mockLeads = [
   },
   {
     id: "8",
-    name: "Lisa Taylor",
-    company: "EcoConsult Group",
+    
+    // Contact Information
     email: "lisa@ecoconsult.org",
-    website: "www.ecoconsult.org",
-    phone: "+34 919 012 345",
+    verified_email: false, // Email not verified
+    phone: "", // No phone number
+    verified_phone: false,
+    
+    // Company Information
+    company_name: "EcoConsult Group",
+    company_website: "", // No website
+    verified_website: false,
+    
+    // Location Information
+    address: "Ronda Segura 258",
+    state: "Murcia",
+    country: "España",
+    
+    // New Fields from schema
+    activity: "Environmental consulting and certifications",
+    description: "Consultoría ambiental y certificaciones",
+    category: "Environmental Consulting",
+    
+    // Data Quality Score (1-5 scale)
+    data_quality_score: 1, // Low quality: no verifications passed
+    
+    // Legacy fields for compatibility
+    name: "Lisa Taylor",
     position: "Senior Consultant",
     location: "Murcia, España",
     industry: "Environmental Consulting",

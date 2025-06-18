@@ -1,13 +1,17 @@
 export interface LoginCredentials {
-  username: string
+  email: string
   password: string
+  twoFactorCode?: string
 }
 
 export interface LoginFormState {
-  username: string
+  email: string
   password: string
+  twoFactorCode: string
+  showTwoFactor: boolean
   error: string
   isLoading: boolean
+  needsTwoFactor: boolean
 }
 
 export interface AuthResponse {
@@ -58,6 +62,26 @@ export interface SetPasswordResponse {
   redirectUrl?: string
 }
 
+// Two Factor Authentication Types
+export interface TwoFactorCredentials {
+  code: string
+  sessionToken: string
+}
+
+export interface TwoFactorFormState {
+  code: string
+  error: string
+  isLoading: boolean
+  remainingAttempts: number
+}
+
+export interface TwoFactorResponse {
+  success: boolean
+  error?: string
+  redirectUrl?: string
+  remainingAttempts?: number
+}
+
 // Component Props
 export interface SetPasswordFormProps {
   token?: string
@@ -66,4 +90,11 @@ export interface SetPasswordFormProps {
 
 export interface SetPasswordPageProps {
   token?: string
+}
+
+export interface TwoFactorFormProps {
+  sessionToken: string
+  onSuccess: (response: TwoFactorResponse) => void
+  onCancel: () => void
+  className?: string
 } 

@@ -6,6 +6,260 @@
   width: 100%;
 }
 
+/* Enhanced Metrics Section */
+.enhancedMetrics {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  animation: fadeInStagger 0.6s ease-out;
+}
+
+.metricCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.metricCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.metricTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metricIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+/* Quality Distribution Styles */
+.qualityGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.qualityItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.qualityItem:hover {
+  background: #f3f4f6;
+}
+
+.qualityStars {
+  color: #f59e0b;
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.qualityCount {
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Breakdown Lists */
+.breakdownList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.breakdownItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.breakdownItem:hover {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+}
+
+.breakdownLabel {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breakdownCount {
+  color: #6b7280;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Summary Grid */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.summaryItem:hover {
+  background: #fffbeb;
+  transform: scale(1.02);
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summaryValue {
+  font-size: 1.125rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+/* Animations for Enhanced Metrics */
+@keyframes fadeInStagger {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design for Enhanced Metrics */
+@media (max-width: 768px) {
+  .enhancedMetrics {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .metricCard {
+    padding: 1rem;
+  }
+  
+  .summaryGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .qualityGrid {
+    gap: 0.5rem;
+  }
+  
+  .breakdownItem {
+    padding: 0.375rem 0.5rem;
+  }
+  
+  .breakdownLabel {
+    font-size: 0.8125rem;
+  }
+  
+  .breakdownCount {
+    font-size: 0.75rem;
+    padding: 0.0625rem 0.375rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .metricTitle {
+    font-size: 0.9375rem;
+  }
+  
+  .qualityStars {
+    font-size: 0.875rem;
+    min-width: 60px;
+  }
+  
+  .qualityCount {
+    font-size: 0.8125rem;
+  }
+  
+  .summaryValue {
+    font-size: 1rem;
+  }
+  
+  .summaryLabel {
+    font-size: 0.6875rem;
+  }
+}
+
+/* High Contrast Mode Support for Enhanced Metrics */
+@media (prefers-contrast: high) {
+  .metricCard {
+    border: 2px solid #000;
+  }
+  
+  .qualityItem,
+  .breakdownItem,
+  .summaryItem {
+    border: 1px solid #000;
+  }
+}
+
+/* Reduced Motion Support for Enhanced Metrics */
+@media (prefers-reduced-motion: reduce) {
+  .enhancedMetrics,
+  .metricCard,
+  .qualityItem,
+  .breakdownItem,
+  .summaryItem {
+    animation: none;
+    transition: none;
+  }
+  
+  .metricCard:hover,
+  .summaryItem:hover {
+    transform: none;
+  }
+}
+
 /* Results Section */
 .resultsSection {
   margin-top: 2rem;

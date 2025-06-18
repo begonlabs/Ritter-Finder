@@ -35,9 +35,9 @@ export function RecipientsTab({ selectedLeads }: RecipientsTabProps) {
                   {index + 1}
                 </div>
                 <div className={styles.recipientInfo}>
-                  <p className={`${styles.recipientName} font-medium`}>{lead.name}</p>
+                  <p className={`${styles.recipientName} font-medium`}>{lead.name || lead.company_name}</p>
                   <p className={`${styles.recipientPosition} text-sm text-muted-foreground`}>
-                    {lead.position} en {lead.company}
+                    {lead.position || lead.activity} en {lead.company || lead.company_name}
                   </p>
                   <p className={`${styles.recipientEmail} text-sm text-blue-600`}>{lead.email}</p>
                   {lead.location && (
@@ -45,26 +45,24 @@ export function RecipientsTab({ selectedLeads }: RecipientsTabProps) {
                       📍 {lead.location}
                     </p>
                   )}
-                  {lead.confidence && (
+                  {lead.data_quality_score !== undefined && (
                     <p className={`${styles.recipientConfidence} text-xs`}>
                       <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${
-                        lead.confidence > 0.7 ? 'bg-green-100 text-green-800' :
-                        lead.confidence > 0.4 ? 'bg-yellow-100 text-yellow-800' :
+                        lead.data_quality_score >= 4 ? 'bg-green-100 text-green-800' :
+                        lead.data_quality_score >= 3 ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>
-                        {Math.round(lead.confidence * 100)}% confianza
+                        {lead.data_quality_score}/5 calidad
                       </span>
                     </p>
                   )}
                 </div>
               </div>
               <div className={`${styles.recipientRight} flex flex-col items-end gap-1`}>
-                <Badge variant="outline" className={styles.recipientBadge}>{lead.industry}</Badge>
-                {lead.source && (
+                <Badge variant="outline" className={styles.recipientBadge}>{lead.industry || lead.category}</Badge>
+                {lead.category && (
                   <Badge variant="secondary" className={`${styles.sourceBadge} text-xs`}>
-                    {lead.source === 'paginas_amarillas' ? 'P. Amarillas' : 
-                     lead.source === 'axesor' ? 'Axesor' : 
-                     lead.source}
+                    {lead.category}
                   </Badge>
                 )}
                 <div className={`${styles.validationIcons} flex gap-1 mt-1`}>
@@ -100,11 +98,11 @@ export function RecipientsTab({ selectedLeads }: RecipientsTabProps) {
             <div className={styles.summaryStats}>
               <div className={styles.statItem}>
                 <div className={styles.statDot}></div>
-                <span>{Array.from(new Set(selectedLeads.map(lead => lead.company))).length} empresas</span>
+                <span>{Array.from(new Set(selectedLeads.map(lead => lead.company || lead.company_name))).length} empresas</span>
               </div>
               <div className={styles.statItem}>
                 <div className={styles.statDot}></div>
-                <span>{Array.from(new Set(selectedLeads.map(lead => lead.industry))).length} sectores</span>
+                <span>{Array.from(new Set(selectedLeads.map(lead => lead.industry || lead.category))).length} sectores</span>
               </div>
             </div>
           </div>

@@ -34,10 +34,7 @@ import {
   Server,
   HardDrive,
   Activity,
-  Eye,
-  Search,
-  Trash2,
-  Archive
+  Search
 } from "lucide-react"
 import type { SystemSettingsProps } from "../types"
 import styles from "../styles/SystemSettings.module.css"
@@ -64,27 +61,7 @@ const systemInfo = {
   }
 }
 
-// Mock backup data
-const mockBackups = [
-  {
-    id: "backup_001",
-    name: "Backup Automático - Diario",
-    type: "automatic",
-    size: "1.2 GB",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-    status: "completed",
-    includes: ["database", "files", "config"]
-  },
-  {
-    id: "backup_002", 
-    name: "Backup Manual - Pre-actualización",
-    type: "manual",
-    size: "1.1 GB",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
-    status: "completed",
-    includes: ["database", "config"]
-  }
-]
+
 
 // Mock system logs
 const mockLogs = [
@@ -116,10 +93,8 @@ const mockLogs = [
 
 export function SystemSettings({ className = "" }: SystemSettingsProps) {
   const [isUpdating, setIsUpdating] = useState(false)
-  const [isCreatingBackup, setIsCreatingBackup] = useState(false)
   const [logFilter, setLogFilter] = useState<string>("all")
   const [logSearch, setLogSearch] = useState("")
-  const [selectedBackupType, setSelectedBackupType] = useState<string>("full")
 
   // Filter logs
   const filteredLogs = mockLogs.filter(log => {
@@ -142,18 +117,7 @@ export function SystemSettings({ className = "" }: SystemSettingsProps) {
     }
   }
 
-  // Handle backup creation
-  const handleCreateBackup = async () => {
-    setIsCreatingBackup(true)
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log("Backup creado exitosamente")
-    } catch (error) {
-      console.error("Error creando backup:", error)
-    } finally {
-      setIsCreatingBackup(false)
-    }
-  }
+
 
   // Get log level badge
   const getLogLevelBadge = (level: string) => {
@@ -171,26 +135,7 @@ export function SystemSettings({ className = "" }: SystemSettingsProps) {
     )
   }
 
-  // Get backup status badge
-  const getBackupStatusBadge = (status: string) => {
-    const styles = {
-      completed: "bg-green-100 text-green-800 border-green-200",
-      running: "bg-blue-100 text-blue-800 border-blue-200",
-      failed: "bg-red-100 text-red-800 border-red-200"
-    }
-    
-    const labels = {
-      completed: "Completado",
-      running: "En progreso",
-      failed: "Fallido"
-    }
-    
-    return (
-      <Badge variant="outline" className={styles[status as keyof typeof styles]}>
-        {labels[status as keyof typeof labels]}
-      </Badge>
-    )
-  }
+
 
   return (
     <div className={`${styles.systemSettings} ${className} space-y-6`}>
@@ -202,7 +147,7 @@ export function SystemSettings({ className = "" }: SystemSettingsProps) {
             Configuración del Sistema
           </h2>
           <p className={styles.settingsDescription}>
-            Gestiona actualizaciones, backups y monitoreo del sistema
+            Gestiona actualizaciones y monitoreo del sistema
           </p>
         </div>
       </div>
@@ -289,10 +234,6 @@ export function SystemSettings({ className = "" }: SystemSettingsProps) {
             <RefreshCw className="h-4 w-4 mr-2" />
             Actualizaciones
           </TabsTrigger>
-          <TabsTrigger value="backups" className={styles.tabsTrigger}>
-            <Archive className="h-4 w-4 mr-2" />
-            Backups
-          </TabsTrigger>
           <TabsTrigger value="logs" className={styles.tabsTrigger}>
             <FileText className="h-4 w-4 mr-2" />
             Logs del Sistema
@@ -347,87 +288,6 @@ export function SystemSettings({ className = "" }: SystemSettingsProps) {
                     Verificar Integridad
                   </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Backups Tab */}
-        <TabsContent value="backups" className={styles.tabsContent}>
-          <Card className={styles.backupsCard}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Gestión de Backups</span>
-                <Button
-                  onClick={handleCreateBackup}
-                  disabled={isCreatingBackup}
-                  className={styles.createBackupButton}
-                >
-                  {isCreatingBackup ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      Creando...
-                    </>
-                  ) : (
-                    <>
-                      <Archive className="h-4 w-4 mr-2" />
-                      Crear Backup
-                    </>
-                  )}
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={styles.backupsTable}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Tamaño</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mockBackups.map((backup) => (
-                      <TableRow key={backup.id} className={styles.backupRow}>
-                        <TableCell>
-                          <div className={styles.backupName}>
-                            <Archive className="h-4 w-4 text-blue-600 mr-2" />
-                            {backup.name}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={
-                            backup.type === 'automatic' 
-                              ? 'bg-blue-50 text-blue-700' 
-                              : 'bg-purple-50 text-purple-700'
-                          }>
-                            {backup.type === 'automatic' ? 'Automático' : 'Manual'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{backup.size}</TableCell>
-                        <TableCell>{backup.createdAt.toLocaleDateString()}</TableCell>
-                        <TableCell>{getBackupStatusBadge(backup.status)}</TableCell>
-                        <TableCell className="text-right">
-                          <div className={styles.backupActions}>
-                            <Button variant="ghost" size="sm">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
               </div>
             </CardContent>
           </Card>

@@ -86,13 +86,18 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
                   <span className={styles.validationLabel}>Sitio Web</span>
                 </div>
                 <div className={styles.validationStatus}>
-                  {lead.hasWebsite ? (
-                    <>
-                      <CheckCircle className={styles.validationSuccess} />
-                      <span className={styles.validationText}>
-                        {lead.websiteExists ? "Sitio web activo" : "Sitio web no accesible"}
-                      </span>
-                    </>
+                  {lead.website ? (
+                    lead.verified_website ? (
+                      <>
+                        <CheckCircle className={styles.validationSuccess} />
+                        <span className={styles.validationText}>Sitio web verificado</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className={styles.validationError} />
+                        <span className={styles.validationText}>Sitio web no verificado</span>
+                      </>
+                    )
                   ) : (
                     <>
                       <XCircle className={styles.validationError} />
@@ -108,15 +113,42 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
                   <span className={styles.validationLabel}>Email</span>
                 </div>
                 <div className={styles.validationStatus}>
-                  {lead.emailValidated ? (
+                  {lead.verified_email ? (
                     <>
                       <CheckCircle className={styles.validationSuccess} />
-                      <span className={styles.validationText}>Email validado</span>
+                      <span className={styles.validationText}>Email verificado</span>
                     </>
                   ) : (
                     <>
                       <XCircle className={styles.validationError} />
-                      <span className={styles.validationText}>Email no validado</span>
+                      <span className={styles.validationText}>Email no verificado</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              <div className={styles.validationItem}>
+                <div className={styles.validationHeader}>
+                  <Phone className={styles.validationIcon} />
+                  <span className={styles.validationLabel}>Teléfono</span>
+                </div>
+                <div className={styles.validationStatus}>
+                  {lead.phone ? (
+                    lead.verified_phone ? (
+                      <>
+                        <CheckCircle className={styles.validationSuccess} />
+                        <span className={styles.validationText}>Teléfono verificado</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className={styles.validationError} />
+                        <span className={styles.validationText}>Teléfono no verificado</span>
+                      </>
+                    )
+                  ) : (
+                    <>
+                      <XCircle className={styles.validationError} />
+                      <span className={styles.validationText}>Sin teléfono</span>
                     </>
                   )}
                 </div>
