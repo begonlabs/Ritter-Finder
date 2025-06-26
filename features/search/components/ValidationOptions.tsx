@@ -1,6 +1,6 @@
 "use client"
 
-import { Shield, Globe, Mail, CheckCircle, X } from "lucide-react"
+import { Shield, Globe, Mail, Phone, CheckCircle, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -11,27 +11,37 @@ interface ValidationOptionsProps {
   requireWebsite: boolean
   validateEmail: boolean
   validateWebsite: boolean
+  requirePhone: boolean
+  validatePhone: boolean
   setRequireWebsite: (require: boolean) => void
   setValidateEmail: (validate: boolean) => void
   setValidateWebsite: (validate: boolean) => void
+  setRequirePhone: (require: boolean) => void
+  setValidatePhone: (validate: boolean) => void
 }
 
 export function ValidationOptions({ 
   requireWebsite, 
   validateEmail, 
   validateWebsite,
+  requirePhone,
+  validatePhone,
   setRequireWebsite,
   setValidateEmail,
-  setValidateWebsite
+  setValidateWebsite,
+  setRequirePhone,
+  setValidatePhone
 }: ValidationOptionsProps) {
   
   const clearAll = () => {
     setRequireWebsite(false)
     setValidateEmail(false)
     setValidateWebsite(false)
+    setRequirePhone(false)
+    setValidatePhone(false)
   }
 
-  const hasAnyValidation = requireWebsite || validateEmail || validateWebsite
+  const hasAnyValidation = requireWebsite || validateEmail || validateWebsite || requirePhone || validatePhone
 
   return (
     <Card className={styles.validationOptions}>
@@ -114,6 +124,50 @@ export function ValidationOptions({
               <div className={styles.optionNote}>
                 <CheckCircle className={styles.noteIcon} />
                 <span className={styles.noteText}>Aumentará el tiempo de búsqueda</span>
+              </div>
+            )}
+          </div>
+
+          {/* Require Phone Option */}
+          <div className={styles.optionItem}>
+            <div className={styles.optionHeader}>
+              <Checkbox
+                id="require-phone"
+                checked={requirePhone}
+                onCheckedChange={setRequirePhone}
+                className={styles.optionCheckbox}
+              />
+              <Label htmlFor="require-phone" className={styles.optionLabel}>
+                <Phone className={styles.optionIcon} />
+                Solo empresas con teléfono
+              </Label>
+            </div>
+            <p className={styles.optionDescription}>
+              Filtrar solo empresas que tengan un número de teléfono registrado
+            </p>
+          </div>
+
+          {/* Validate Phone Option */}
+          <div className={styles.optionItem}>
+            <div className={styles.optionHeader}>
+              <Checkbox
+                id="validate-phone"
+                checked={validatePhone}
+                onCheckedChange={setValidatePhone}
+                className={styles.optionCheckbox}
+              />
+              <Label htmlFor="validate-phone" className={styles.optionLabel}>
+                <Phone className={styles.optionIcon} />
+                Validar números de teléfono
+              </Label>
+            </div>
+            <p className={styles.optionDescription}>
+              Verificar que los números de teléfono sean válidos y estén activos
+            </p>
+            {validatePhone && (
+              <div className={styles.optionNote}>
+                <CheckCircle className={styles.noteIcon} />
+                <span className={styles.noteText}>Aumentará significativamente el tiempo de búsqueda</span>
               </div>
             )}
           </div>

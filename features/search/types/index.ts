@@ -4,6 +4,8 @@ export interface SearchConfig {
   requireWebsite: boolean
   validateEmail: boolean
   validateWebsite: boolean
+  requirePhone: boolean
+  validatePhone: boolean
   // New search criteria based on simplified schema
   minQualityScore?: number // 1-5 scale
   activityFilter?: string[] // Filter by business activity
@@ -23,6 +25,8 @@ export interface SearchActions {
   setRequireWebsite: (require: boolean) => void
   setValidateEmail: (validate: boolean) => void
   setValidateWebsite: (validate: boolean) => void
+  setRequirePhone: (require: boolean) => void
+  setValidatePhone: (validate: boolean) => void
   handleSearch: () => void
   resetSearch: () => void
   rerunSearch: (config: SearchConfig) => void
@@ -122,6 +126,8 @@ export interface SearchHistoryItem {
   requireWebsite: boolean
   validateEmail: boolean
   validateWebsite: boolean
+  requirePhone: boolean
+  validatePhone: boolean
   // Enhanced search history
   minQualityScore?: number
   activityFilters?: string[]
@@ -165,10 +171,10 @@ export interface ValidationOptions {
   requireWebsite: boolean
   validateEmail: boolean
   validateWebsite: boolean
+  requirePhone: boolean
+  validatePhone: boolean
   // New validation options
   minQualityScore?: number // Minimum quality score (1-5)
-  requirePhone?: boolean // Require phone number
-  verifyPhone?: boolean // Verify phone numbers
 }
 
 // Search criteria mapping functions for database integration

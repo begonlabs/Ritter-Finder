@@ -10,6 +10,8 @@ export function useSearchConfig() {
     requireWebsite: false,
     validateEmail: false,
     validateWebsite: false,
+    requirePhone: false,
+    validatePhone: false,
   })
 
   const setSelectedClientTypes = (clientTypes: string[]) => {
@@ -32,6 +34,14 @@ export function useSearchConfig() {
     setConfig(prev => ({ ...prev, validateWebsite: validate }))
   }
 
+  const setRequirePhone = (require: boolean) => {
+    setConfig(prev => ({ ...prev, requirePhone: require }))
+  }
+
+  const setValidatePhone = (validate: boolean) => {
+    setConfig(prev => ({ ...prev, validatePhone: validate }))
+  }
+
   const resetConfig = () => {
     setConfig({
       selectedClientTypes: [],
@@ -39,6 +49,8 @@ export function useSearchConfig() {
       requireWebsite: false,
       validateEmail: false,
       validateWebsite: false,
+      requirePhone: false,
+      validatePhone: false,
     })
   }
 
@@ -53,6 +65,8 @@ export function useSearchConfig() {
     setRequireWebsite,
     setValidateEmail,
     setValidateWebsite,
+    setRequirePhone,
+    setValidatePhone,
     resetSearch: resetConfig,
   }
 
