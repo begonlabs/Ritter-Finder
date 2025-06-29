@@ -21,46 +21,6 @@ const defaultTheme: LayoutTheme = {
   borderRadius: '0.5rem'
 }
 
-// Function to convert permission names to Permission objects
-const convertPermissionNamesToObjects = (permissionNames: string[]): Permission[] => {
-  return permissionNames.map((name, index) => {
-    const parts = name.split('.')
-    const resource = parts[0] || 'unknown'
-    const action = parts[1] || '*'
-    const category = getCategoryFromResource(resource)
-    
-    return {
-      id: `perm-${resource}-${action}-${index}`,
-      name,
-      description: `${action} access to ${resource}`,
-      category,
-      resource,
-      action
-    }
-  })
-}
-
-// Helper function to determine category from resource
-const getCategoryFromResource = (resource: string): PermissionCategory => {
-  switch (resource) {
-    case 'admin':
-    case 'users':
-    case 'roles':
-    case 'settings':
-      return 'admin'
-    case 'leads':
-      return 'leads'
-    case 'campaigns':
-      return 'campaigns'
-    case 'analytics':
-      return 'analytics'
-    case 'export':
-      return 'export'
-    default:
-      return 'settings' // Default fallback to a valid PermissionCategory
-  }
-}
-
 // Function to fetch user profile data from Supabase
 const fetchUserProfileFromDatabase = async (authUser: any): Promise<UserProfile | null> => {
   if (!authUser) return null
@@ -68,98 +28,231 @@ const fetchUserProfileFromDatabase = async (authUser: any): Promise<UserProfile 
   const supabase = createClient()
 
   try {
-    // First, get user profile data
+    console.log('🔍 Fetching user profile for:', authUser.email, '(ID:', authUser.id, ')')
+
+    // Get user profile with role information using role_id
     const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select(`
-        *,
-        role:roles(
-          id,
-          name,
-          description,
-          is_system_role,
-          permissions,
-          created_at,
-          updated_at
-        )
+        id,
+        full_name,
+        role_id,
+        last_activity_at,
+        metadata,
+        created_at,
+        updated_at
       `)
       .eq('id', authUser.id)
       .single()
 
     if (profileError) {
-      console.error('Error fetching user profile:', profileError)
-      // If no profile exists, create one with basic role
-      return createFallbackUserProfile(authUser)
+      console.error('❌ Error fetching user profile:', profileError)
+      return null
     }
 
-    // If user has a role, get detailed permissions
+    if (!profileData) {
+      console.log('⚠️ No profile found for user:', authUser.email)
+      return null
+    }
+
+    console.log('✅ Profile data retrieved:', {
+      fullName: profileData.full_name,
+      roleId: profileData.role_id
+    })
+
+    // Now get the role information using the role_id
+    let roleData = null
+    if (profileData.role_id) {
+      console.log('🔑 Fetching role data for role_id:', profileData.role_id)
+      
+      const { data: roleInfo, error: roleError } = await supabase
+        .from('roles')
+        .select(`
+          id,
+          name,
+          description,
+          is_system_role,
+          created_at,
+          updated_at
+        `)
+        .eq('id', profileData.role_id)
+        .single()
+
+      if (roleError) {
+        console.error('❌ Error fetching role:', roleError)
+      } else if (roleInfo) {
+        roleData = roleInfo
+        console.log('✅ Role data retrieved:', {
+          name: roleInfo.name,
+          description: roleInfo.description,
+          isSystemRole: roleInfo.is_system_role
+        })
+      }
+    }
+
+    // Get user permissions via role_permissions relationship
     let rolePermissions: Permission[] = []
-    if (profileData.role) {
-      // Use role permissions from JSONB field (simpler approach)
-      const permissionNames = profileData.role.permissions || []
-      rolePermissions = convertPermissionNamesToObjects(permissionNames)
+    if (roleData) {
+      console.log('🔑 Fetching permissions for role:', roleData.name, '(ID:', roleData.id, ')')
+      
+      const { data: permissionsData, error: permissionsError } = await supabase
+        .from('role_permissions')
+        .select(`
+          permissions(
+            id,
+            name,
+            description,
+            category,
+            resource,
+            action
+          )
+        `)
+        .eq('role_id', roleData.id)
+
+      if (permissionsError) {
+        console.error('❌ Error fetching role permissions:', permissionsError)
+      } else if (permissionsData) {
+        console.log('📋 Raw permissions data:', permissionsData)
+        
+        rolePermissions = permissionsData
+          .filter(rp => rp.permissions)
+          .map(rp => {
+            // Handle permissions as either object or array
+            const p = Array.isArray(rp.permissions) ? rp.permissions[0] : rp.permissions
+            return {
+              id: p.id,
+              name: p.name,
+              description: p.description,
+              category: p.category as PermissionCategory,
+              resource: p.resource,
+              action: p.action
+            }
+          })
+          
+        console.log('🔑 Processed role permissions:', rolePermissions.map(p => p.name))
+      } else {
+        console.log('⚠️ No permissions data returned for role:', roleData.name)
+      }
+    } else {
+      console.log('⚠️ No role found for role_id:', profileData.role_id)
     }
 
-    // Construct the role object
-    const role: Role = profileData.role ? {
-      id: profileData.role.id,
-      name: profileData.role.name,
-      description: profileData.role.description,
-      isSystemRole: profileData.role.is_system_role,
-      permissions: rolePermissions,
-      createdAt: new Date(profileData.role.created_at),
-      updatedAt: new Date(profileData.role.updated_at)
-    } : createDefaultRole()
+    // Also get any specific user permissions (overrides/additions)
+    const { data: userPermissionsData, error: userPermissionsError } = await supabase
+      .from('user_permissions')
+      .select(`
+        granted,
+        expires_at,
+        permissions(
+          id,
+          name,
+          description,
+          category,
+          resource,
+          action
+        )
+      `)
+      .eq('user_id', authUser.id)
+      .eq('granted', true)
 
-    // Construct the UserProfile
-    const userProfile: UserProfile = {
-      id: authUser.id,
+    let userSpecificPermissions: Permission[] = []
+    if (!userPermissionsError && userPermissionsData) {
+      userSpecificPermissions = userPermissionsData
+        .filter(up => up.permissions && (up.expires_at === null || new Date(up.expires_at) > new Date()))
+        .map(up => {
+          // Handle permissions as either object or array
+          const p = Array.isArray(up.permissions) ? up.permissions[0] : up.permissions
+          return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            category: p.category as PermissionCategory,
+            resource: p.resource,
+            action: p.action
+          }
+        })
+      
+      console.log('👤 User-specific permissions:', userSpecificPermissions.map(p => p.name))
+    }
+
+    // Combine role permissions with user-specific permissions
+    const allPermissions = [...rolePermissions, ...userSpecificPermissions]
+    console.log('🔧 Combined permissions:', allPermissions.map(p => p.name))
+
+    // Create role object with permissions from relations
+    const roleWithPermissions: Role = roleData ? {
+      id: roleData.id,
+      name: roleData.name,
+      description: roleData.description,
+      isSystemRole: roleData.is_system_role,
+      permissions: allPermissions,
+      createdAt: new Date(roleData.created_at),
+      updatedAt: new Date(roleData.updated_at)
+    } : createDefaultRole() // Fallback to default role if no role found
+
+    console.log('🎭 Final role object:', {
+      name: roleWithPermissions.name,
+      isSystemRole: roleWithPermissions.isSystemRole,
+      permissionsCount: roleWithPermissions.permissions.length
+    })
+
+    // Get notifications from database
+    const { data: notificationsData } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', authUser.id)
+      .eq('is_read', false)
+      .order('created_at', { ascending: false })
+      .limit(10)
+
+    const notifications: NotificationItem[] = (notificationsData || []).map(notification => ({
+      id: notification.id,
+      type: notification.type,
+      title: notification.title,
+      message: notification.message,
+      priority: notification.priority || 0,
+      isRead: notification.is_read,
+      readAt: notification.read_at ? new Date(notification.read_at) : undefined,
+      isArchived: notification.is_archived || false,
+      archivedAt: notification.archived_at ? new Date(notification.archived_at) : undefined,
+      actionUrl: notification.action_url,
+      actionText: notification.action_text,
+      actionData: notification.action_data || {},
+      relatedType: notification.related_type,
+      relatedId: notification.related_id,
+      createdAt: new Date(notification.created_at),
+      expiresAt: notification.expires_at ? new Date(notification.expires_at) : undefined
+    }))
+
+    console.log('📬 User notifications loaded:', notifications.length)
+
+    const finalUserProfile: UserProfile = {
+      id: profileData.id,
+      fullName: profileData.full_name,
       email: authUser.email,
-      fullName: profileData.full_name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuario',
-      status: authUser.email_confirmed_at ? 'active' : 'invited',
-      role,
-      lastLoginAt: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
+      avatar: profileData.metadata?.avatar_url || null,
+      role: roleWithPermissions,
+      status: 'active', // Supabase users are active by default
+      lastLoginAt: profileData.last_activity_at ? new Date(profileData.last_activity_at) : undefined,
       emailVerifiedAt: authUser.email_confirmed_at ? new Date(authUser.email_confirmed_at) : undefined,
-      twoFactorEnabled: false, // TODO: Get from user metadata or separate table
-      failedLoginAttempts: 0, // TODO: Get from user metadata
-      createdAt: new Date(authUser.created_at),
-      updatedAt: new Date(profileData.updated_at || authUser.updated_at),
-      // Optional fields
-      invitedAt: profileData.invited_at ? new Date(profileData.invited_at) : undefined,
-      avatar: authUser.user_metadata?.avatar_url
+      twoFactorEnabled: false, // TODO: implement 2FA
+      failedLoginAttempts: 0, // TODO: get from user metadata
+      createdAt: new Date(profileData.created_at),
+      updatedAt: new Date(profileData.updated_at)
     }
 
-    return userProfile
+    console.log('✅ Final user profile created:', {
+      fullName: finalUserProfile.fullName,
+      email: finalUserProfile.email,
+      role: finalUserProfile.role.name,
+      permissionsCount: finalUserProfile.role.permissions.length
+    })
+
+    return finalUserProfile
 
   } catch (error) {
-    console.error('Error fetching user profile from database:', error)
-    return createFallbackUserProfile(authUser)
-  }
-}
-
-// Fallback function when database fetch fails
-const createFallbackUserProfile = (authUser: any): UserProfile => {
-  const isAdmin = authUser.email?.includes('admin') || 
-                  authUser.user_metadata?.role === 'admin'
-
-  const role = isAdmin ? createAdminRole() : createDefaultRole()
-
-  return {
-    id: authUser.id,
-    email: authUser.email,
-    fullName: authUser.user_metadata?.full_name || 
-              authUser.user_metadata?.name || 
-              authUser.email?.split('@')[0] || 
-              'Usuario',
-    status: authUser.email_confirmed_at ? 'active' : 'invited',
-    role,
-    lastLoginAt: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
-    emailVerifiedAt: authUser.email_confirmed_at ? new Date(authUser.email_confirmed_at) : undefined,
-    twoFactorEnabled: false,
-    failedLoginAttempts: 0,
-    createdAt: new Date(authUser.created_at),
-    updatedAt: new Date(),
-    avatar: authUser.user_metadata?.avatar_url
+    console.error('💥 Error in fetchUserProfileFromDatabase:', error)
+    return null
   }
 }
 
@@ -172,15 +265,15 @@ const createDefaultRole = (): Role => ({
   permissions: [
     {
       id: 'perm-leads-search',
-      name: 'leads.search',
-      description: 'Search for leads',
-      category: 'leads',
-      resource: 'leads',
-      action: 'search'
-    },
-    {
+      name: 'leads:search',
+    description: 'Search for leads',
+    category: 'leads',
+    resource: 'leads',
+    action: 'search'
+  },
+  {
       id: 'perm-leads-read',
-      name: 'leads.read',
+      name: 'leads:read',
       description: 'View leads',
       category: 'leads',
       resource: 'leads',
@@ -188,80 +281,20 @@ const createDefaultRole = (): Role => ({
     },
     {
       id: 'perm-campaigns-create',
-      name: 'campaigns.create',
-      description: 'Create campaigns',
-      category: 'campaigns',
-      resource: 'campaigns',
-      action: 'create'
-    },
-    {
+      name: 'campaigns:create',
+    description: 'Create campaigns',
+    category: 'campaigns',
+    resource: 'campaigns',
+    action: 'create'
+  },
+  {
       id: 'perm-analytics-view',
-      name: 'analytics.view',
-      description: 'View analytics',
-      category: 'analytics',
-      resource: 'analytics',
-      action: 'view'
-    }
-  ],
-  createdAt: new Date(),
-  updatedAt: new Date()
-})
-
-// Create admin role for admin users
-const createAdminRole = (): Role => ({
-  id: 'role-admin-default',
-  name: 'Admin',
-  description: 'Administrator with full system access',
-  isSystemRole: true,
-  permissions: [
-    {
-      id: 'perm-admin-users',
-      name: 'admin.users.manage',
-      description: 'Manage users',
-      category: 'admin',
-      resource: 'users',
-      action: 'manage'
-    },
-    {
-      id: 'perm-admin-roles',
-      name: 'admin.roles.manage',
-      description: 'Manage roles and permissions',
-      category: 'admin',
-      resource: 'roles',
-      action: 'manage'
-    },
-    {
-      id: 'perm-admin-settings',
-      name: 'admin.settings.manage',
-      description: 'Manage system settings',
-      category: 'admin',
-      resource: 'settings',
-      action: 'manage'
-    },
-    {
-      id: 'perm-leads-all',
-      name: 'leads.*',
-      description: 'Full leads access',
-      category: 'leads',
-      resource: 'leads',
-      action: '*'
-    },
-    {
-      id: 'perm-campaigns-all',
-      name: 'campaigns.*',
-      description: 'Full campaigns access',
-      category: 'campaigns',
-      resource: 'campaigns',
-      action: '*'
-    },
-    {
-      id: 'perm-analytics-all',
-      name: 'analytics.*',
-      description: 'Full analytics access',
-      category: 'analytics',
-      resource: 'analytics',
-      action: '*'
-    }
+      name: 'analytics:view',
+    description: 'View analytics',
+    category: 'analytics',
+    resource: 'analytics',
+    action: 'view'
+  }
   ],
   createdAt: new Date(),
   updatedAt: new Date()
@@ -369,11 +402,10 @@ export const useLayout = (): UseLayoutReturn => {
 
       } catch (error) {
         console.error('Error loading user data:', error)
-        // Fallback to basic user profile
-        const fallbackProfile = createFallbackUserProfile(auth.user)
+        // Set user to null if there's an error - the UI will handle this gracefully
         setState(prev => ({
           ...prev,
-          user: fallbackProfile,
+          user: null,
           notifications: getWelcomeNotification()
         }))
       }
