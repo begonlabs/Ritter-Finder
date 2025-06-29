@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/lib/language-context"
+import { useAuthService } from "./useAuth"
 import type { LoginCredentials, LoginFormState, AuthResponse } from "../types"
 
 export function useLogin() {
@@ -18,6 +19,7 @@ export function useLogin() {
 
   const router = useRouter()
   const { t } = useLanguage()
+  const authService = useAuthService()
 
   const updateField = (field: keyof LoginFormState, value: string | boolean) => {
     setFormState(prev => ({
@@ -44,49 +46,52 @@ export function useLogin() {
         return { success: false, error }
       }
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Demo logic - check if user needs 2FA
+      // Check if user needs 2FA (for demo purposes, check email pattern)
       const userNeedsTwoFactor = credentials.email.includes("2fa") || credentials.email.includes("admin")
       
-      if (credentials.password === "1234") {
-        // Check if user needs 2FA and hasn't provided code yet
-        if (userNeedsTwoFactor && !credentials.twoFactorCode) {
-          setFormState(prev => ({ 
-            ...prev, 
-            isLoading: false,
-            needsTwoFactor: true,
-            showTwoFactor: true,
-            error: ""
-          }))
-          return { 
-            success: false, 
-            error: "Se requiere código de verificación de dos factores" 
-          }
+      // If 2FA is required and not provided yet
+      if (userNeedsTwoFactor && !credentials.twoFactorCode) {
+        setFormState(prev => ({ 
+          ...prev, 
+          isLoading: false,
+          needsTwoFactor: true,
+          showTwoFactor: true,
+          error: ""
+        }))
+        return { 
+          success: false, 
+          error: "Se requiere código de verificación de dos factores" 
         }
+      }
 
-        // If 2FA required, validate the code
-        if (userNeedsTwoFactor && credentials.twoFactorCode) {
-          if (credentials.twoFactorCode !== "123456") {
-            const error = "Código de verificación incorrecto"
-            setFormState(prev => ({ ...prev, error, isLoading: false }))
-            return { success: false, error }
-          }
+      // Validate 2FA code if required
+      if (userNeedsTwoFactor && credentials.twoFactorCode) {
+        if (credentials.twoFactorCode !== "123456") {
+          const error = "Código de verificación incorrecto"
+          setFormState(prev => ({ ...prev, error, isLoading: false }))
+          return { success: false, error }
         }
+      }
 
+      // Use Supabase auth for actual login
+      const result = await authService.signIn(credentials.email, credentials.password)
+      
+      if (result.success) {
         // Reset onboarding state
         localStorage.removeItem("hasSeenOnboarding")
         
         // Redirect to dashboard
         router.push("/dashboard")
         
+        setFormState(prev => ({ ...prev, isLoading: false }))
         return { success: true, redirectUrl: "/dashboard" }
       } else {
-        const error = t("login.error")
+        // Handle Supabase errors
+        const error = result.error || t("login.error")
         setFormState(prev => ({ ...prev, error, isLoading: false }))
         return { success: false, error }
       }
+
     } catch (error) {
       const errorMessage = "Ocurrió un error inesperado"
       setFormState(prev => ({ ...prev, error: errorMessage, isLoading: false }))
