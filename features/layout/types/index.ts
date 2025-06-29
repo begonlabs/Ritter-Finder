@@ -241,6 +241,7 @@ export interface LayoutActions {
   markNotificationRead: (id: string) => void
   clearNotifications: () => void
   setUser: (user: UserProfile | null) => void
+  updateUserProfile: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>
   
   // New security actions
   addSecurityAlert: (alert: SecurityAlert) => void

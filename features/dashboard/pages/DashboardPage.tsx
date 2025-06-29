@@ -5,6 +5,7 @@ import { DashboardLayout, UserProfileComponent } from "@/features/layout"
 // import { OnboardingModal } from "@/features/onboarding" // Temporalmente desactivado
 import { AdminDashboard } from "@/features/admin"
 import { useAuth } from "@/features/auth/hooks/useAuth"
+import { useLayout } from "@/features/layout/hooks/useLayout"
 import { useDashboard } from "../hooks/useDashboard"
 import { DashboardOverview } from "../components/DashboardOverview"
 import { SearchTab } from "../components/SearchTab"
@@ -13,12 +14,12 @@ import { CampaignTab } from "../components/CampaignTab"
 import { HistoryTab } from "../components/HistoryTab"
 import { ScrapingTab } from "../components/ScrapingTab"
 import { AnalyticsTab } from "../components/AnalyticsTab"
-import type { UserProfile as UserProfileType } from "@/features/layout/types"
 import styles from "../styles/DashboardPage.module.css"
 
 export function DashboardPage() {
   const { state, actions } = useDashboard()
   const auth = useAuth()
+  const layout = useLayout()
   const [showProfile, setShowProfile] = useState(false)
 
   // Computed values
@@ -31,35 +32,19 @@ export function DashboardPage() {
   
   const selectedLeadsData = state.leads.filter((lead) => state.selectedLeads.includes(lead.id))
 
-  // Get user data from auth
-  const currentUser = auth.user
-  
-  // Create a simplified user object for the layout
-  const dashboardUser = {
-    id: currentUser?.id || "user_001",
-    fullName: currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || "Usuario",
-    email: currentUser?.email || "usuario@ritterfinder.com",
-    avatar: currentUser?.user_metadata?.avatar_url || undefined,
-    
-    // Mock the complex Role object structure
-    role: {
-      id: "admin_role",
-      name: "admin",
-      description: "Administrator",
-      isSystemRole: true,
-      permissions: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    
-    // Required fields for UserProfile
-    status: "active" as const,
-    twoFactorEnabled: false,
-    failedLoginAttempts: 0,
-    createdAt: new Date(currentUser?.created_at || Date.now()),
-    updatedAt: new Date(),
-    emailVerifiedAt: currentUser?.email_confirmed_at ? new Date(currentUser.email_confirmed_at) : undefined,
-    lastLoginAt: currentUser?.last_sign_in_at ? new Date(currentUser.last_sign_in_at) : undefined
+  // Use user data from layout (which gets it from Supabase)
+  const currentUser = layout.state.user
+
+  // If no user in layout, show loading or error
+  if (!currentUser) {
+    return (
+      <div className={styles.dashboardPage}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+          <p className={styles.loadingText}>Cargando información del usuario...</p>
+        </div>
+      </div>
+    )
   }
 
   const handleProfileClick = () => {
@@ -96,6 +81,7 @@ export function DashboardPage() {
   const handleProfileUpdate = (data: any) => {
     console.log("Perfil actualizado:", data)
     // Here you would typically call an API to update the user profile
+    // The updated data would then be reflected in the layout state
   }
 
   const handlePasswordChange = (data: any) => {
@@ -121,7 +107,7 @@ export function DashboardPage() {
         onTabChange={handleTabChange} // Enable navigation from profile
         searchComplete={state.searchComplete}
         selectedLeadsCount={state.selectedLeads.length}
-        user={dashboardUser}
+        user={currentUser}
         onLogout={handleLogout}
         headerProps={{
           onProfileClick: handleProfileClick
@@ -142,7 +128,7 @@ export function DashboardPage() {
               </p>
             </div>
             <UserProfileComponent
-              user={dashboardUser}
+              user={currentUser}
               onProfileUpdate={handleProfileUpdate}
               onPasswordChange={handlePasswordChange}
             />
@@ -181,7 +167,7 @@ export function DashboardPage() {
       onTabChange={handleTabChange}
       searchComplete={state.searchComplete}
       selectedLeadsCount={state.selectedLeads.length}
-      user={dashboardUser}
+      user={currentUser}
       onLogout={handleLogout}
       headerProps={{
         onProfileClick: handleProfileClick

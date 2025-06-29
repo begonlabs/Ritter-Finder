@@ -27,21 +27,33 @@ interface UserProfileExtendedProps extends UserProfileProps {
 }
 
 export function UserProfile({ 
+  user,
   className = "",
   canEdit = true,
   onEdit,
   onSave,
   onCancel 
 }: UserProfileExtendedProps) {
-  const { state, actions } = useLayout()
+  const layout = useLayout()
   const [isEditing, setIsEditing] = useState(false)
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [editData, setEditData] = useState({
-    fullName: state.user?.fullName || '',
-    email: state.user?.email || ''
+    fullName: user?.fullName || '',
+    email: user?.email || ''
   })
 
-  if (!state.user) {
+  // Update edit data when user changes
+  useState(() => {
+    if (user) {
+      setEditData({
+        fullName: user.fullName,
+        email: user.email
+      })
+    }
+  })
+
+  if (!user) {
     return (
       <div className={`${styles.profileContainer} ${className}`}>
         <Card>
@@ -52,8 +64,6 @@ export function UserProfile({
       </div>
     )
   }
-
-  const user = state.user
 
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -86,12 +96,30 @@ export function UserProfile({
     onEdit?.()
   }
 
-  const handleSave = () => {
-    // Update user data
-    const updatedUser = { ...user, ...editData }
-    actions.setUser(updatedUser)
-    setIsEditing(false)
-    onSave?.(editData)
+  const handleSave = async () => {
+    if (!editData.fullName.trim()) {
+      return
+    }
+
+    setIsLoading(true)
+    
+    try {
+      const result = await layout.actions.updateUserProfile({
+        fullName: editData.fullName.trim()
+      })
+
+      if (result.success) {
+        setIsEditing(false)
+        onSave?.(editData)
+      } else {
+        console.error('Error updating profile:', result.error)
+      }
+      
+    } catch (error) {
+      console.error('Error updating user profile:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleCancel = () => {
@@ -105,85 +133,98 @@ export function UserProfile({
 
   return (
     <div className={`${styles.profileContainer} ${className}`}>
-      {/* Header Card */}
+      {/* Profile Header */}
       <Card className={styles.headerCard}>
-        <CardHeader>
-          <div className={styles.profileHeader}>
-            <Avatar className={styles.profileAvatar}>
-              <AvatarFallback className={styles.avatarFallback}>
-                {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className={styles.profileHeaderInfo}>
-              <div className={styles.profileNameSection}>
-                {isEditing ? (
-                  <div className={styles.editNameSection}>
-                    <Input
-                      value={editData.fullName}
-                      onChange={(e) => setEditData(prev => ({ ...prev, fullName: e.target.value }))}
-                      className={styles.editInput}
-                      placeholder="Nombre completo"
-                    />
-                    <div className={styles.editActions}>
-                      <Button size="sm" onClick={handleSave} className={styles.saveButton}>
-                        <Save className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={handleCancel} className={styles.cancelButton}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.nameDisplay}>
-                    <CardTitle className={styles.profileName}>{user.fullName}</CardTitle>
-                    {canEdit && (
-                      <Button size="sm" variant="ghost" onClick={handleEdit} className={styles.editButton}>
-                        <Edit3 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className={styles.profileEmail}>
-                {isEditing ? (
-                  <Input
-                    type="email"
-                    value={editData.email}
-                    onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
-                    className={styles.editInput}
-                    placeholder="email@example.com"
-                  />
-                ) : (
-                  <p className={styles.emailText}>{user.email}</p>
-                )}
-              </div>
+        <div className={styles.profileHeader}>
+          <Avatar className={styles.profileAvatar}>
+            <AvatarFallback className={styles.avatarFallback}>
+              {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
 
-              <div className={styles.profileBadges}>
-                <Badge className={statusInfo.color}>
-                  <StatusIcon className="h-3 w-3 mr-1" />
-                  {statusInfo.text}
-                </Badge>
-                <Badge variant="outline" className={styles.roleBadge}>
+          <div className={styles.profileHeaderInfo}>
+            <div className={styles.profileNameSection}>
+              {isEditing ? (
+                <div className={styles.editNameSection}>
+                  <Input
+                    value={editData.fullName}
+                    onChange={(e) => setEditData(prev => ({ ...prev, fullName: e.target.value }))}
+                    className={styles.editInput}
+                    placeholder="Nombre completo"
+                    disabled={isLoading}
+                  />
+                  <div className={styles.editActions}>
+                    <Button 
+                      size="sm" 
+                      onClick={handleSave} 
+                      className={styles.saveButton}
+                      disabled={isLoading || !editData.fullName.trim()}
+                    >
+                      {isLoading ? (
+                        <div className={styles.spinner} />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={handleCancel} 
+                      className={styles.cancelButton}
+                      disabled={isLoading}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.nameDisplay}>
+                  <h1 className={styles.profileName}>{user.fullName}</h1>
+                  {canEdit && (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={handleEdit} 
+                      className={styles.editButton}
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.profileEmail}>
+              <p className={styles.emailText}>{user.email}</p>
+              <small className={styles.emailNote}>
+                {user.emailVerifiedAt ? '✓ Email verificado' : '⚠ Email no verificado'}
+              </small>
+            </div>
+
+            <div className={styles.profileBadges}>
+              <Badge className={statusInfo.color}>
+                <StatusIcon className="h-3 w-3 mr-1" />
+                {statusInfo.text}
+              </Badge>
+              <Badge variant="outline" className={styles.roleBadge}>
+                <Shield className="h-3 w-3 mr-1" />
+                {user.role.name}
+              </Badge>
+              {user.twoFactorEnabled && (
+                <Badge variant="outline" className={styles.twofaBadge}>
                   <Shield className="h-3 w-3 mr-1" />
-                  {user.role.name}
+                  2FA
                 </Badge>
-                {user.twoFactorEnabled && (
-                  <Badge variant="outline" className={styles.twofaBadge}>
-                    <Shield className="h-3 w-3 mr-1" />
-                    2FA
-                  </Badge>
-                )}
-                {user.emailVerifiedAt && (
-                  <Badge variant="outline" className={styles.verifiedBadge}>
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Verificado
-                  </Badge>
-                )}
-              </div>
+              )}
+              {user.emailVerifiedAt && (
+                <Badge variant="outline" className={styles.verifiedBadge}>
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Verificado
+                </Badge>
+              )}
             </div>
           </div>
-        </CardHeader>
+        </div>
       </Card>
 
       {/* Account Information */}
@@ -196,6 +237,13 @@ export function UserProfile({
         </CardHeader>
         <CardContent className={styles.infoContent}>
           <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>ID de Usuario</Label>
+              <div className={styles.infoValue}>
+                <span className="font-mono text-sm">{user.id}</span>
+              </div>
+            </div>
+
             <div className={styles.infoItem}>
               <Label className={styles.infoLabel}>Estado</Label>
               <div className={styles.infoValue}>
@@ -249,16 +297,6 @@ export function UserProfile({
                 </div>
               </div>
             )}
-
-            {user.passwordSetAt && (
-              <div className={styles.infoItem}>
-                <Label className={styles.infoLabel}>Password establecida</Label>
-                <div className={styles.infoValue}>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  {format(user.passwordSetAt, 'dd/MM/yyyy', { locale: es })}
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -301,7 +339,7 @@ export function UserProfile({
               <div className={styles.securityValue}>
                 {user.emailVerifiedAt ? (
                   <div className={styles.verified}>
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4" />
                     <span>Verificado</span>
                     {showSensitiveInfo && (
                       <span className={styles.verificationDate}>
@@ -311,7 +349,7 @@ export function UserProfile({
                   </div>
                 ) : (
                   <div className={styles.unverified}>
-                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                    <AlertCircle className="h-4 w-4" />
                     <span>No verificado</span>
                   </div>
                 )}
