@@ -4,6 +4,7 @@ import { useState } from "react"
 import { DashboardLayout, UserProfileComponent } from "@/features/layout"
 // import { OnboardingModal } from "@/features/onboarding" // Temporalmente desactivado
 import { AdminDashboard } from "@/features/admin"
+import { useAuth } from "@/features/auth/hooks/useAuth"
 import { useDashboard } from "../hooks/useDashboard"
 import { DashboardOverview } from "../components/DashboardOverview"
 import { SearchTab } from "../components/SearchTab"
@@ -17,6 +18,7 @@ import styles from "../styles/DashboardPage.module.css"
 
 export function DashboardPage() {
   const { state, actions } = useDashboard()
+  const auth = useAuth()
   const [showProfile, setShowProfile] = useState(false)
 
   // Computed values
@@ -29,13 +31,35 @@ export function DashboardPage() {
   
   const selectedLeadsData = state.leads.filter((lead) => state.selectedLeads.includes(lead.id))
 
-  // Mock user data
-  const mockUser: UserProfileType = {
-    id: "user_001",
-    name: "Juan Carlos Pérez",
-    email: "juan.perez@ritterfinder.com",
-    avatar: undefined,
-    role: "Admin"
+  // Get user data from auth
+  const currentUser = auth.user
+  
+  // Create a simplified user object for the layout
+  const dashboardUser = {
+    id: currentUser?.id || "user_001",
+    fullName: currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || "Usuario",
+    email: currentUser?.email || "usuario@ritterfinder.com",
+    avatar: currentUser?.user_metadata?.avatar_url || undefined,
+    
+    // Mock the complex Role object structure
+    role: {
+      id: "admin_role",
+      name: "admin",
+      description: "Administrator",
+      isSystemRole: true,
+      permissions: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    
+    // Required fields for UserProfile
+    status: "active" as const,
+    twoFactorEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date(currentUser?.created_at || Date.now()),
+    updatedAt: new Date(),
+    emailVerifiedAt: currentUser?.email_confirmed_at ? new Date(currentUser.email_confirmed_at) : undefined,
+    lastLoginAt: currentUser?.last_sign_in_at ? new Date(currentUser.last_sign_in_at) : undefined
   }
 
   const handleProfileClick = () => {
@@ -46,11 +70,27 @@ export function DashboardPage() {
     setShowProfile(false)
   }
 
-  const handleLogout = () => {
-    console.log("Cerrando sesión...")
-    // Here you would typically handle logout logic
-    // For now, just redirect to home
-    window.location.href = "/"
+  const handleLogout = async () => {
+    try {
+      console.log("🚪 Dashboard: Starting logout...")
+      
+      // Clear dashboard state first
+      actions.resetSearch()
+      
+      // Call auth signOut (this will handle redirect)
+      await auth.signOut()
+      
+      console.log("✅ Dashboard: Logout completed")
+    } catch (error) {
+      console.warn("⚠️ Dashboard: Logout error (forcing fallback):", error)
+      
+      // Clear dashboard state
+      actions.resetSearch()
+      
+      // Force redirect immediately if auth fails
+      console.log("🔄 Dashboard: Forcing immediate redirect due to error")
+      window.location.href = "/"
+    }
   }
 
   const handleProfileUpdate = (data: any) => {
@@ -81,7 +121,7 @@ export function DashboardPage() {
         onTabChange={handleTabChange} // Enable navigation from profile
         searchComplete={state.searchComplete}
         selectedLeadsCount={state.selectedLeads.length}
-        user={mockUser}
+        user={dashboardUser}
         onLogout={handleLogout}
         headerProps={{
           onProfileClick: handleProfileClick
@@ -102,7 +142,7 @@ export function DashboardPage() {
               </p>
             </div>
             <UserProfileComponent
-              user={mockUser}
+              user={dashboardUser}
               onProfileUpdate={handleProfileUpdate}
               onPasswordChange={handlePasswordChange}
             />
@@ -141,7 +181,7 @@ export function DashboardPage() {
       onTabChange={handleTabChange}
       searchComplete={state.searchComplete}
       selectedLeadsCount={state.selectedLeads.length}
-      user={mockUser}
+      user={dashboardUser}
       onLogout={handleLogout}
       headerProps={{
         onProfileClick: handleProfileClick

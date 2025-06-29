@@ -28,12 +28,15 @@ export async function middleware(request: NextRequest) {
     const { data: { session }, error } = await supabase.auth.getSession()
 
     if (!session || error) {
+      console.log('🛡️ Middleware: No valid session, redirecting to login')
       // Redirect to login with return URL
       const redirectUrl = request.nextUrl.clone()
       redirectUrl.pathname = '/'
       redirectUrl.searchParams.set('redirectTo', path)
       return NextResponse.redirect(redirectUrl)
     }
+    
+    console.log('✅ Middleware: Valid session found for', session.user?.email)
   }
 
   // Redirect authenticated users away from login

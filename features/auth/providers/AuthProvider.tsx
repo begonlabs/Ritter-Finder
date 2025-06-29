@@ -190,27 +190,48 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Sign Out
   const signOut = async (): Promise<void> => {
+    console.log('🚪 Starting logout process...')
     setIsLoading(true)
     
     try {
-      const { error } = await supabase.auth.signOut()
+      // Check if we have a session before trying to sign out
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
       
-      if (error) {
-        console.error('Sign out error:', error.message)
+      if (currentSession) {
+        console.log('📱 Found active session, attempting Supabase signOut...')
+        // Only try to sign out if we have an active session
+        const { error } = await supabase.auth.signOut()
+        
+        if (error) {
+          console.warn('⚠️ Supabase signOut warning (continuing anyway):', error.message)
+          // Don't throw error, just log it - we'll clear local state anyway
+        } else {
+          console.log('✅ Supabase signOut successful')
+        }
+      } else {
+        console.log('ℹ️ No active session found, clearing local state only')
       }
       
-      // Clear local state
-      setUser(null)
-      setSession(null)
-      
-      // Redirect to login
-      router.push('/')
-      
     } catch (error) {
-      console.error('Sign out error:', error)
-    } finally {
-      setIsLoading(false)
+      console.warn('⚠️ Supabase signOut failed (continuing anyway):', error)
     }
+
+    // ALWAYS clear local state regardless of Supabase result
+    console.log('🧹 Clearing local auth state...')
+    setUser(null)
+    setSession(null)
+    
+    // Clear any local storage or cached data
+    localStorage.removeItem('hasSeenOnboarding')
+    localStorage.removeItem('sb-localhost-auth-token') // Clear Supabase local storage
+    
+    // Force complete reload to ensure clean state
+    console.log('🔄 Forcing page reload and redirect...')
+    
+    setIsLoading(false)
+    
+    // Use window.location for guaranteed redirect
+    window.location.href = '/'
   }
 
   // Reset Password
