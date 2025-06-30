@@ -126,16 +126,6 @@ export function LoginForm() {
           </div>
         </form>
       </CardContent>
-      <CardFooter className={`${styles.footer} flex justify-center`}>
-        <div className={`${styles.demoSection} text-center`}>
-          <p className={`${styles.demoText} text-sm text-muted-foreground mb-2`}>
-            🔐 <strong>Admin:</strong> itsjhonalex@gmail.com | Tu contraseña configurada
-          </p>
-          <p className={`${styles.demoText} text-xs text-muted-foreground`}>
-            💡 <strong>2FA Demo:</strong> Usa email con "2fa" o "admin" | Código: <strong>123456</strong>
-          </p>
-        </div>
-      </CardFooter>
     </Card>
   )
 } 
