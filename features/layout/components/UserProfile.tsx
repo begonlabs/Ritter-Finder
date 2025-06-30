@@ -109,8 +109,8 @@ export function UserProfile({
       })
 
       if (result.success) {
-        setIsEditing(false)
-        onSave?.(editData)
+    setIsEditing(false)
+    onSave?.(editData)
       } else {
         console.error('Error updating profile:', result.error)
       }
@@ -135,25 +135,25 @@ export function UserProfile({
     <div className={`${styles.profileContainer} ${className}`}>
       {/* Profile Header */}
       <Card className={styles.headerCard}>
-        <div className={styles.profileHeader}>
-          <Avatar className={styles.profileAvatar}>
-            <AvatarFallback className={styles.avatarFallback}>
-              {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <div className={styles.profileHeader}>
+            <Avatar className={styles.profileAvatar}>
+              <AvatarFallback className={styles.avatarFallback}>
+                {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
 
-          <div className={styles.profileHeaderInfo}>
-            <div className={styles.profileNameSection}>
-              {isEditing ? (
-                <div className={styles.editNameSection}>
-                  <Input
-                    value={editData.fullName}
-                    onChange={(e) => setEditData(prev => ({ ...prev, fullName: e.target.value }))}
-                    className={styles.editInput}
-                    placeholder="Nombre completo"
+            <div className={styles.profileHeaderInfo}>
+              <div className={styles.profileNameSection}>
+                {isEditing ? (
+                  <div className={styles.editNameSection}>
+                    <Input
+                      value={editData.fullName}
+                      onChange={(e) => setEditData(prev => ({ ...prev, fullName: e.target.value }))}
+                      className={styles.editInput}
+                      placeholder="Nombre completo"
                     disabled={isLoading}
-                  />
-                  <div className={styles.editActions}>
+                    />
+                    <div className={styles.editActions}>
                     <Button 
                       size="sm" 
                       onClick={handleSave} 
@@ -165,7 +165,7 @@ export function UserProfile({
                       ) : (
                         <Save className="h-4 w-4" />
                       )}
-                    </Button>
+                      </Button>
                     <Button 
                       size="sm" 
                       variant="outline" 
@@ -173,58 +173,58 @@ export function UserProfile({
                       className={styles.cancelButton}
                       disabled={isLoading}
                     >
-                      <X className="h-4 w-4" />
-                    </Button>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className={styles.nameDisplay}>
+                ) : (
+                  <div className={styles.nameDisplay}>
                   <h1 className={styles.profileName}>{user.fullName}</h1>
-                  {canEdit && (
+                    {canEdit && (
                     <Button 
                       size="sm" 
                       variant="ghost" 
                       onClick={handleEdit} 
                       className={styles.editButton}
                     >
-                      <Edit3 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <div className={styles.profileEmail}>
-              <p className={styles.emailText}>{user.email}</p>
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className={styles.profileEmail}>
+                  <p className={styles.emailText}>{user.email}</p>
               <small className={styles.emailNote}>
                 {user.emailVerifiedAt ? '✓ Email verificado' : '⚠ Email no verificado'}
               </small>
-            </div>
+              </div>
 
-            <div className={styles.profileBadges}>
-              <Badge className={statusInfo.color}>
-                <StatusIcon className="h-3 w-3 mr-1" />
-                {statusInfo.text}
-              </Badge>
-              <Badge variant="outline" className={styles.roleBadge}>
-                <Shield className="h-3 w-3 mr-1" />
-                {user.role.name}
-              </Badge>
-              {user.twoFactorEnabled && (
-                <Badge variant="outline" className={styles.twofaBadge}>
+              <div className={styles.profileBadges}>
+                <Badge className={statusInfo.color}>
+                  <StatusIcon className="h-3 w-3 mr-1" />
+                  {statusInfo.text}
+                </Badge>
+                <Badge variant="outline" className={styles.roleBadge}>
                   <Shield className="h-3 w-3 mr-1" />
-                  2FA
+                  {user.role.name}
                 </Badge>
-              )}
-              {user.emailVerifiedAt && (
-                <Badge variant="outline" className={styles.verifiedBadge}>
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Verificado
-                </Badge>
-              )}
+                {user.twoFactorEnabled && (
+                  <Badge variant="outline" className={styles.twofaBadge}>
+                    <Shield className="h-3 w-3 mr-1" />
+                    2FA
+                  </Badge>
+                )}
+                {user.emailVerifiedAt && (
+                  <Badge variant="outline" className={styles.verifiedBadge}>
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verificado
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
-        </div>
       </Card>
 
       {/* Account Information */}

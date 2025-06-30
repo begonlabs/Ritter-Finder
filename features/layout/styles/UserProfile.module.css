@@ -99,7 +99,7 @@
   .profileNameSection {
     flex-direction: column;
     gap: 0.5rem;
-  }
+}
 }
 
 .nameDisplay {
@@ -498,7 +498,7 @@
   .profileName {
     font-size: 1.25rem;
   }
-  
+
   .infoGrid,
   .securityGrid {
     gap: 1rem;

@@ -2,17 +2,24 @@
 
 import { useState, useCallback } from "react"
 import { mockLeads } from "@/lib/mock-data"
+import { useLeadsSearch } from "./useLeadsSearch"
 import type { DashboardState, DashboardActions, TabType, CampaignData, SearchHistoryItem, SearchResults } from "../types"
 
 export function useDashboard() {
+  // Hook para búsqueda real de leads en Supabase
+  const leadsSearch = useLeadsSearch()
+  
   const [state, setState] = useState<DashboardState>({
     // Search configuration
     selectedWebsites: [],
     selectedClientTypes: [],
     selectedLocations: [],
     requireWebsite: false,
+    requireEmail: false,
+    requirePhone: false,
     validateEmail: false,
     validateWebsite: false,
+    validatePhone: false,
     
     // UI state
     activeTab: "search" as TabType,
@@ -48,12 +55,24 @@ export function useDashboard() {
     setState(prev => ({ ...prev, requireWebsite: require }))
   }, [])
 
+  const setRequireEmail = useCallback((require: boolean) => {
+    setState(prev => ({ ...prev, requireEmail: require }))
+  }, [])
+
+  const setRequirePhone = useCallback((require: boolean) => {
+    setState(prev => ({ ...prev, requirePhone: require }))
+  }, [])
+
   const setValidateEmail = useCallback((validate: boolean) => {
     setState(prev => ({ ...prev, validateEmail: validate }))
   }, [])
 
   const setValidateWebsite = useCallback((validate: boolean) => {
     setState(prev => ({ ...prev, validateWebsite: validate }))
+  }, [])
+
+  const setValidatePhone = useCallback((validate: boolean) => {
+    setState(prev => ({ ...prev, validatePhone: validate }))
   }, [])
 
   // UI actions
@@ -111,8 +130,8 @@ export function useDashboard() {
     }))
   }, [])
 
-  // Search action
-  const handleSearch = useCallback(() => {
+  // Search action con Supabase
+  const handleSearch = useCallback(async () => {
     if (state.selectedClientTypes.length === 0 || state.selectedLocations.length === 0) {
       return
     }
@@ -122,25 +141,65 @@ export function useDashboard() {
       isSearching: true,
       searchComplete: false,
       searchProgress: 0,
-      currentStep: "Iniciando búsqueda...",
+      currentStep: "Iniciando búsqueda en Supabase...",
       leads: [],
       selectedLeads: [],
       emailSent: false,
     }))
 
-    // Simulate search process
-    setTimeout(() => {
+    try {
+      // Actualizar progreso
+      setState(prev => ({
+        ...prev,
+        searchProgress: 25,
+        currentStep: "Conectando con base de datos..."
+      }))
+
+      // Ejecutar búsqueda real
+      await leadsSearch.searchLeads({
+        selectedClientTypes: state.selectedClientTypes,
+        selectedLocations: state.selectedLocations,
+        requireWebsite: state.requireWebsite,
+        requireEmail: state.requireEmail,
+        requirePhone: state.requirePhone,
+      })
+
+      // Verificar si hay error
+      if (leadsSearch.error) {
+        throw new Error(leadsSearch.error)
+      }
+
+      setState(prev => ({
+        ...prev,
+        searchProgress: 75,
+        currentStep: "Procesando resultados..."
+      }))
+
+      // Simular un poco de procesamiento
+      setTimeout(() => {
+        setState(prev => ({
+          ...prev,
+          isSearching: false,
+          searchComplete: true,
+          searchProgress: 100,
+          currentStep: "Búsqueda completada",
+          leads: leadsSearch.leads,
+          activeTab: "results" as TabType,
+        }))
+      }, 1000)
+
+    } catch (error) {
+      console.error('Error en búsqueda:', error)
       setState(prev => ({
         ...prev,
         isSearching: false,
-        searchComplete: true,
-        searchProgress: 100,
-        currentStep: "Búsqueda completada",
-        leads: mockLeads,
-        activeTab: "results" as TabType,
+        searchComplete: false,
+        searchProgress: 0,
+        currentStep: "Error en la búsqueda",
+        leads: [],
       }))
-    }, 5000)
-  }, [state.selectedClientTypes, state.selectedLocations])
+    }
+  }, [state.selectedClientTypes, state.selectedLocations, state.requireWebsite, state.requireEmail, state.requirePhone, leadsSearch])
 
   // Campaign actions
   const handleSendCampaign = useCallback((campaignData: CampaignData) => {
@@ -194,8 +253,11 @@ export function useDashboard() {
       selectedClientTypes: [],
       selectedLocations: [],
       requireWebsite: false,
+      requireEmail: false,
+      requirePhone: false,
       validateEmail: false,
       validateWebsite: false,
+      validatePhone: false,
       isSearching: false,
       searchComplete: false,
       searchProgress: 0,
@@ -205,7 +267,10 @@ export function useDashboard() {
       selectedLeads: [],
       emailSent: false,
     }))
-  }, [])
+    
+    // También limpiar resultados de búsqueda
+    leadsSearch.clearResults()
+  }, [leadsSearch])
 
   const actions: DashboardActions = {
     // Search configuration actions
@@ -213,8 +278,11 @@ export function useDashboard() {
     setSelectedClientTypes,
     setSelectedLocations,
     setRequireWebsite,
+    setRequireEmail,
+    setRequirePhone,
     setValidateEmail,
     setValidateWebsite,
+    setValidatePhone,
     
     // UI actions
     setActiveTab,

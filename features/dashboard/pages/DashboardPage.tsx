@@ -74,7 +74,7 @@ export function DashboardPage() {
       
       // Force redirect immediately if auth fails
       console.log("🔄 Dashboard: Forcing immediate redirect due to error")
-      window.location.href = "/"
+    window.location.href = "/"
     }
   }
 

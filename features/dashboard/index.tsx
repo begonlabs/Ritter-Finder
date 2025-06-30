@@ -12,6 +12,8 @@ export { AnalyticsTab } from "./components/AnalyticsTab"
 
 // Hooks
 export { useDashboard } from "./hooks/useDashboard"
+export { useLeadsSearch } from "./hooks/useLeadsSearch"
+export { useSupabaseTest } from "./hooks/useSupabaseTest"
 
 // Styles
 export { default as dashboardPageStyles } from './styles/DashboardPage.module.css'

@@ -2,9 +2,10 @@ export interface SearchConfig {
   selectedClientTypes: string[]
   selectedLocations: string[]
   requireWebsite: boolean
+  requireEmail: boolean
+  requirePhone: boolean
   validateEmail: boolean
   validateWebsite: boolean
-  requirePhone: boolean
   validatePhone: boolean
   // New search criteria based on simplified schema
   minQualityScore?: number // 1-5 scale
@@ -23,9 +24,10 @@ export interface SearchActions {
   setSelectedClientTypes: (clientTypes: string[]) => void
   setSelectedLocations: (locations: string[]) => void
   setRequireWebsite: (require: boolean) => void
+  setRequireEmail: (require: boolean) => void
+  setRequirePhone: (require: boolean) => void
   setValidateEmail: (validate: boolean) => void
   setValidateWebsite: (validate: boolean) => void
-  setRequirePhone: (require: boolean) => void
   setValidatePhone: (validate: boolean) => void
   handleSearch: () => void
   resetSearch: () => void
@@ -124,9 +126,10 @@ export interface SearchHistoryItem {
   clientTypes: string[]
   locations: string[]
   requireWebsite: boolean
+  requireEmail: boolean
+  requirePhone: boolean
   validateEmail: boolean
   validateWebsite: boolean
-  requirePhone: boolean
   validatePhone: boolean
   // Enhanced search history
   minQualityScore?: number
@@ -169,9 +172,10 @@ export interface Location {
 
 export interface ValidationOptions {
   requireWebsite: boolean
+  requireEmail: boolean
+  requirePhone: boolean
   validateEmail: boolean
   validateWebsite: boolean
-  requirePhone: boolean
   validatePhone: boolean
   // New validation options
   minQualityScore?: number // Minimum quality score (1-5)

@@ -5,8 +5,11 @@ export interface DashboardState {
   selectedClientTypes: string[]
   selectedLocations: string[]
   requireWebsite: boolean
+  requireEmail: boolean
+  requirePhone: boolean
   validateEmail: boolean
   validateWebsite: boolean
+  validatePhone: boolean
   isSearching: boolean
   searchComplete: boolean
   searchProgress: number
@@ -113,8 +116,11 @@ export interface DashboardActions {
   setSelectedClientTypes: (clientTypes: string[]) => void
   setSelectedLocations: (locations: string[]) => void
   setRequireWebsite: (require: boolean) => void
+  setRequireEmail: (require: boolean) => void
+  setRequirePhone: (require: boolean) => void
   setValidateEmail: (validate: boolean) => void
   setValidateWebsite: (validate: boolean) => void
+  setValidatePhone: (validate: boolean) => void
   setActiveTab: (tab: TabType) => void
   setIsSearching: (searching: boolean) => void
   setSearchComplete: (complete: boolean) => void

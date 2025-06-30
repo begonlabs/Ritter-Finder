@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, ChevronsUpDown, MapPin, X } from "lucide-react"
+import { Check, ChevronsUpDown, MapPin, X, RefreshCw, TrendingUp, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -8,26 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
+import { useLocations } from "../hooks"
 import styles from "../styles/LocationSelector.module.css"
-
-const spanishLocations = [
-  { value: "all", label: "Toda España", region: "España" },
-  { value: "madrid", label: "Madrid", region: "Comunidad de Madrid" },
-  { value: "barcelona", label: "Barcelona", region: "Cataluña" },
-  { value: "valencia", label: "Valencia", region: "Comunidad Valenciana" },
-  { value: "sevilla", label: "Sevilla", region: "Andalucía" },
-  { value: "bilbao", label: "Bilbao", region: "País Vasco" },
-  { value: "malaga", label: "Málaga", region: "Andalucía" },
-  { value: "zaragoza", label: "Zaragoza", region: "Aragón" },
-  { value: "murcia", label: "Murcia", region: "Región de Murcia" },
-  { value: "palma", label: "Palma", region: "Islas Baleares" },
-  { value: "las-palmas", label: "Las Palmas", region: "Canarias" },
-  { value: "vigo", label: "Vigo", region: "Galicia" },
-  { value: "gijon", label: "Gijón", region: "Asturias" },
-  { value: "hospitalet", label: "L'Hospitalet", region: "Cataluña" },
-  { value: "cordoba", label: "Córdoba", region: "Andalucía" },
-  { value: "valladolid", label: "Valladolid", region: "Castilla y León" },
-]
 
 interface LocationSelectorProps {
   selectedLocations: string[]
@@ -36,13 +18,14 @@ interface LocationSelectorProps {
 
 export function LocationSelector({ selectedLocations, setSelectedLocations }: LocationSelectorProps) {
   const { t } = useLanguage()
+  const { locations, isLoading, error, refetch } = useLocations()
 
   const handleSelect = (value: string) => {
     if (value === "all") {
-      // Si selecciona "Toda España", limpiar otras selecciones
+      // Si selecciona "Todas las ubicaciones", limpiar otras selecciones
       setSelectedLocations(["all"])
     } else {
-      // Si selecciona una ubicación específica, quitar "Toda España" si está seleccionada
+      // Si selecciona una ubicación específica, quitar "Todas las ubicaciones" si está seleccionada
       const newSelections = selectedLocations.filter(loc => loc !== "all")
       
       if (newSelections.includes(value)) {
@@ -62,7 +45,7 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
   }
 
   const getLocationLabel = (value: string) => {
-    const location = spanishLocations.find(loc => loc.value === value)
+    const location = locations.find(loc => loc.value === value)
     return location ? location.label : value
   }
 
@@ -72,7 +55,23 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
         <CardTitle className={styles.title}>
           <MapPin className={styles.titleIcon} />
           Ubicación de Búsqueda
+          <div className={styles.headerActions}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={refetch}
+              disabled={isLoading}
+              className={styles.refreshButton}
+            >
+              <RefreshCw className={cn(styles.refreshIcon, isLoading && "animate-spin")} />
+            </Button>
+          </div>
         </CardTitle>
+        {error && (
+          <p className={styles.errorText}>
+            {error} - Usando datos de respaldo
+          </p>
+        )}
       </CardHeader>
       <CardContent className={styles.content}>
         <Popover>
@@ -93,7 +92,7 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
               <CommandList>
                 <CommandEmpty>No se encontraron ubicaciones.</CommandEmpty>
                 <CommandGroup>
-                  {spanishLocations.map((location) => (
+                  {locations.map((location) => (
                     <CommandItem 
                       key={location.value} 
                       value={location.value} 
@@ -102,12 +101,31 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
                     >
                       <div className={styles.commandItemContent}>
                         <div className={styles.commandItemHeader}>
-                          <div className={styles.commandItemDetails}>
-                            <span className={styles.commandItemLabel}>
-                              {location.label}
-                            </span>
-                            {location.value !== "all" && (
-                              <div className={styles.commandItemRegion}>{location.region}</div>
+                          <div className={styles.commandItemLabelSection}>
+                            <div className={styles.commandItemDetails}>
+                              <span className={styles.commandItemLabel}>
+                                {location.label}
+                              </span>
+                              {location.region && (
+                                <div className={styles.commandItemRegion}>{location.region}</div>
+                              )}
+                            </div>
+                            {location.stats && (
+                              <div className={styles.commandItemStats}>
+                                <TrendingUp className={styles.statsIcon} />
+                                <span className={styles.statsText}>
+                                  {location.stats.totalLeads.toLocaleString()} leads
+                                </span>
+                                <span className={styles.qualityScore}>
+                                  ★ {location.stats.avgQuality}/5
+                                </span>
+                                {location.stats.recentActivity > 0 && (
+                                  <span className={styles.recentActivity}>
+                                    <Clock className={styles.clockIcon} />
+                                    {location.stats.recentActivity} recientes
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
                           <Check
@@ -119,6 +137,18 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
                             )}
                           />
                         </div>
+                        {location.stats && (
+                          <div className={styles.commandItemExtendedStats}>
+                            <span className={styles.extendedStat}>
+                              📧 {location.stats.verifiedEmails} emails verificados
+                            </span>
+                            {location.stats.contactablePercentage > 0 && (
+                              <span className={styles.extendedStat}>
+                                📞 {location.stats.contactablePercentage}% contactables
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </CommandItem>
                   ))}
