@@ -281,6 +281,35 @@
   flex-shrink: 0;
 }
 
+/* Quality Score Display */
+.qualityScore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.qualityStars {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.star {
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.starFilled {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+.starEmpty {
+  color: #d1d5db;
+  fill: none;
+}
+
 /* Confidence Badge */
 .confidenceBadge {
   display: inline-flex;
@@ -510,83 +539,6 @@
   animation-delay: 0.25s;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .tableHeaderCell,
-  .tableCell {
-    padding: 0.75rem 1rem;
-  }
-  
-  .searchInput {
-    width: 12rem;
-  }
-  
-  .headerActions {
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 640px) {
-  .tableHeaderCell,
-  .tableCell {
-    padding: 0.5rem 0.75rem;
-  }
-  
-  .searchInput {
-    width: 10rem;
-  }
-  
-  .contactInfo,
-  .companyInfo {
-    gap: 0.125rem;
-  }
-  
-  .contactName,
-  .companyName {
-    font-size: 0.8125rem;
-  }
-  
-  .contactPosition,
-  .contactEmail,
-  .companyDetails {
-    font-size: 0.6875rem;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .tableWrapper {
-    border-color: #000;
-  }
-  
-  .confidenceBadge,
-  .industryBadge {
-    border: 1px solid #000;
-  }
-  
-  .actionButton,
-  .viewButton {
-    border-color: #000;
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .tableContainer,
-  .tableCard,
-  .tableRow,
-  .confidenceBadge,
-  .actionBar {
-    animation: none;
-  }
-  
-  .actionButton:hover,
-  .viewButton:hover,
-  .campaignButton:hover {
-    transform: none;
-  }
-} 
-
 /* Validation Indicators */
 .validationIndicators {
   display: flex;
@@ -629,7 +581,61 @@
   }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
+  .tableHeaderCell,
+  .tableCell {
+    padding: 0.75rem 1rem;
+  }
+  
+  .searchInput {
+    width: 12rem;
+  }
+  
+  .headerActions {
+    flex-wrap: wrap;
+  }
+  
+  .qualityStars {
+    gap: 0.0625rem;
+  }
+  
+  .star {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .tableHeaderCell,
+  .tableCell {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .searchInput {
+    width: 10rem;
+  }
+  
+  .contactInfo,
+  .companyInfo {
+    gap: 0.125rem;
+  }
+  
+  .contactName,
+  .companyName {
+    font-size: 0.8125rem;
+  }
+  
+  .contactPosition,
+  .contactEmail,
+  .companyDetails {
+    font-size: 0.6875rem;
+  }
+  
+  .qualityScore {
+    gap: 0.125rem;
+  }
+  
   .validationIndicators {
     gap: 0.375rem;
   }
@@ -638,5 +644,45 @@
   .validationStatus {
     width: 0.625rem;
     height: 0.625rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .tableWrapper {
+    border-color: #000;
+  }
+  
+  .confidenceBadge,
+  .industryBadge {
+    border: 1px solid #000;
+  }
+  
+  .actionButton,
+  .viewButton {
+    border-color: #000;
+  }
+  
+  .starFilled {
+    color: #000;
+    fill: #000;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .tableContainer,
+  .tableCard,
+  .tableRow,
+  .confidenceBadge,
+  .actionBar,
+  .star {
+    animation: none;
+  }
+  
+  .actionButton:hover,
+  .viewButton:hover,
+  .campaignButton:hover {
+    transform: none;
   }
 } 

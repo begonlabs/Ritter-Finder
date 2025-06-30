@@ -4,7 +4,7 @@ import { normalizedToLead, leadToNormalized } from "../types"
 
 export function useLeadsAdapter() {
   
-  // Convert normalized lead to frontend Lead interface using the transformation function
+  // Convert normalized lead to frontend Lead interface using enhanced transformation
   const adaptNormalizedLead = (normalized: NormalizedLead): Lead => {
     return normalizedToLead(normalized)
   }
@@ -37,14 +37,14 @@ export function useLeadsAdapter() {
     }
     
     if (filters.industryFilter) {
-      // Search in both industry and activity fields
-      params.industry = filters.industryFilter
+      // Search in both category and activity fields
+      params.category = filters.industryFilter
     }
     
     if (filters.locationFilter) {
-      // Extract city from location filter
-      const city = filters.locationFilter.split(',')[0].trim()
-      params.city = city
+      // Extract state from location filter
+      const state = filters.locationFilter.split(',')[0].trim()
+      params.state = state
     }
     
     if (filters.confidenceRange) {
@@ -94,15 +94,6 @@ export function useLeadsAdapter() {
     return Math.min(score, 5) // Cap at 5
   }
 
-  // Get display-friendly source name
-  const getSourceDisplayName = (sourceType?: string): string => {
-    const sourceMap: Record<string, string> = {
-      'paginas_amarillas': 'Páginas Amarillas',
-      'axesor': 'Axesor',
-    }
-    return sourceMap[sourceType || ''] || 'Web Scraping'
-  }
-
   return {
     adaptNormalizedLead,
     adaptNormalizedLeads,
@@ -111,6 +102,5 @@ export function useLeadsAdapter() {
     isPhoneVerified,
     isWebsiteVerified,
     calculateQualityScore,
-    getSourceDisplayName,
   }
 } 

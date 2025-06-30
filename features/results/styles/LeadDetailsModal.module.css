@@ -158,6 +158,13 @@
   color: #6b7280;
 }
 
+/* Quality Score Display */
+.qualityScore {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Industry Badge */
 .industryBadge {
   display: inline-flex;

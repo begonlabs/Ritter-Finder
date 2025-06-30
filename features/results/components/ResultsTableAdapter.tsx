@@ -11,8 +11,8 @@ import {
   Search,
   Eye,
   MapPin,
-  Users,
-  Euro,
+  Building,
+  Star,
   ExternalLink,
   Filter,
   SortAsc,
@@ -58,10 +58,10 @@ export function ResultsTableAdapter({
     actions,
   } = useResultsFiltering(leads, selectedLeads)
 
-  // Map confidence levels to CSS module classes
-  const getConfidenceStyle = (confidence: number): string => {
-    if (confidence >= 90) return styles.confidenceHigh
-    if (confidence >= 80) return styles.confidenceMedium
+  // Map quality score to CSS module classes
+  const getQualityStyle = (score: number): string => {
+    if (score >= 4) return styles.confidenceHigh
+    if (score >= 3) return styles.confidenceMedium
     return styles.confidenceLow
   }
 
@@ -70,7 +70,7 @@ export function ResultsTableAdapter({
     <div className={styles.validationIndicators}>
       <div className={styles.validationItem}>
         <Globe className={styles.validationIcon} />
-        {lead.website ? (
+        {lead.company_website || lead.website ? (
           lead.verified_website ? (
             <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
           ) : (
@@ -82,8 +82,12 @@ export function ResultsTableAdapter({
       </div>
       <div className={styles.validationItem}>
         <Mail className={styles.validationIcon} />
-        {lead.verified_email ? (
-          <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
+        {lead.email ? (
+          lead.verified_email ? (
+            <CheckCircle className={`${styles.validationStatus} ${styles.validationSuccess}`} />
+          ) : (
+            <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
+          )
         ) : (
           <XCircle className={`${styles.validationStatus} ${styles.validationError}`} />
         )}
@@ -107,20 +111,20 @@ export function ResultsTableAdapter({
     const selectedData = leads
       .filter(lead => selectedLeads.includes(lead.id))
       .map(lead => ({
-        Name: lead.name,
-        Company: lead.company,
-        Email: lead.email,
-        Phone: lead.phone,
-        Position: lead.position,
-        Website: lead.website,
-        Industry: lead.industry,
-        Location: lead.location,
-        Confidence: `${lead.confidence}%`,
-        Employees: lead.employees,
-        Revenue: lead.revenue,
-        HasWebsite: lead.hasWebsite ? 'Sí' : 'No',
-        WebsiteExists: lead.websiteExists ? 'Sí' : 'No',
-        EmailValidated: lead.emailValidated ? 'Sí' : 'No',
+        'Nombre Empresa': lead.company_name || lead.company,
+        'Actividad': lead.activity || 'No especificado',
+        'Categoría': lead.category || lead.industry || 'Otros',
+        'Email': lead.email || 'Sin email',
+        'Teléfono': lead.phone || 'Sin teléfono',
+        'Sitio Web': lead.company_website || lead.website || 'Sin sitio web',
+        'Ubicación': lead.location || `${lead.state || ''}, ${lead.country || ''}`.replace(/^, |, $/, ''),
+        'Dirección': lead.address || 'No disponible',
+        'Email Verificado': lead.verified_email ? 'Sí' : 'No',
+        'Teléfono Verificado': lead.verified_phone ? 'Sí' : 'No',
+        'Sitio Web Verificado': lead.verified_website ? 'Sí' : 'No',
+        'Calidad de Datos': `${lead.data_quality_score || 1}/5`,
+        'Descripción': lead.description || 'Sin descripción',
+        'Fuente': lead.source || 'RitterFinder Database',
       }))
 
     if (selectedData.length === 0) return
@@ -139,7 +143,7 @@ export function ResultsTableAdapter({
     const link = document.createElement("a")
     const url = URL.createObjectURL(blob)
     link.setAttribute("href", url)
-    link.setAttribute("download", `selected_leads_${new Date().toISOString().split('T')[0]}.csv`)
+    link.setAttribute("download", `leads_ritterfinder_${new Date().toISOString().split('T')[0]}.csv`)
     link.style.visibility = "hidden"
     document.body.appendChild(link)
     link.click()
@@ -187,7 +191,7 @@ export function ResultsTableAdapter({
               <div className={styles.searchContainer}>
                 <Search className={styles.searchIcon} />
                 <Input
-                  placeholder="Buscar leads..."
+                  placeholder="Buscar empresas, actividades..."
                   className={styles.searchInput}
                   value={filters.searchTerm}
                   onChange={(e) => actions.setSearchTerm(e.target.value)}
@@ -221,25 +225,25 @@ export function ResultsTableAdapter({
                     />
                   </TableHead>
                   <TableHead className={styles.tableHeaderCell}>
-                    <Button variant="ghost" onClick={() => handleSort("name")} className={styles.sortButton}>
-                      Contacto
-                      {getSortIcon("name")}
-                    </Button>
-                  </TableHead>
-                  <TableHead className={styles.tableHeaderCell}>
-                    <Button variant="ghost" onClick={() => handleSort("company")} className={styles.sortButton}>
+                    <Button variant="ghost" onClick={() => handleSort("company_name")} className={styles.sortButton}>
                       Empresa
-                      {getSortIcon("company")}
+                      {getSortIcon("company_name")}
                     </Button>
                   </TableHead>
                   <TableHead className={styles.tableHeaderCell}>
-                    <Button variant="ghost" onClick={() => handleSort("confidence")} className={styles.sortButton}>
-                      Confianza
-                      {getSortIcon("confidence")}
+                    <Button variant="ghost" onClick={() => handleSort("activity")} className={styles.sortButton}>
+                      Actividad
+                      {getSortIcon("activity")}
+                    </Button>
+                  </TableHead>
+                  <TableHead className={styles.tableHeaderCell}>
+                    <Button variant="ghost" onClick={() => handleSort("data_quality_score")} className={styles.sortButton}>
+                      Calidad
+                      {getSortIcon("data_quality_score")}
                     </Button>
                   </TableHead>
                   <TableHead className={`${styles.tableHeaderCell} hidden lg:table-cell`}>Validación</TableHead>
-                  <TableHead className={`${styles.tableHeaderCell} hidden lg:table-cell`}>Industria</TableHead>
+                  <TableHead className={`${styles.tableHeaderCell} hidden lg:table-cell`}>Categoría</TableHead>
                   <TableHead className={`${styles.tableHeaderCell} hidden xl:table-cell`}>Ubicación</TableHead>
                   <TableHead className={`${styles.tableHeaderCell} text-center`}>Acciones</TableHead>
                 </TableRow>
@@ -258,44 +262,62 @@ export function ResultsTableAdapter({
                         <Checkbox
                           checked={selectedLeads.includes(lead.id)}
                           onCheckedChange={() => onSelectLead(lead.id)}
-                          aria-label={`Select ${lead.name}`}
+                          aria-label={`Select ${lead.company_name || lead.company}`}
                         />
                       </TableCell>
                       <TableCell className={styles.tableCell}>
                         <div className={styles.contactInfo}>
-                          <p className={styles.contactName}>{lead.name}</p>
-                          <p className={styles.contactPosition}>{lead.position}</p>
-                          <p className={styles.contactEmail}>{lead.email}</p>
+                          <p className={styles.contactName}>{lead.company_name || lead.company}</p>
+                          {lead.email && (
+                            <p className={styles.contactEmail}>{lead.email}</p>
+                          )}
+                          {lead.phone && (
+                            <p className={styles.contactPosition}>{lead.phone}</p>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className={styles.tableCell}>
                         <div className={styles.companyInfo}>
-                          <p className={styles.companyName}>{lead.company}</p>
-                          <div className={styles.companyDetails}>
-                            <Users className={styles.companyIcon} />
-                            {lead.employees}
-                          </div>
-                          <div className={styles.companyDetails}>
-                            <Euro className={styles.companyIcon} />
-                            {lead.revenue}
-                          </div>
+                          <p className={styles.companyName}>{lead.activity || 'Actividad no especificada'}</p>
+                          {lead.description && (
+                            <div className={styles.companyDetails}>
+                              <Building className={styles.companyIcon} />
+                              {lead.description.length > 50 ? `${lead.description.substring(0, 50)}...` : lead.description}
+                            </div>
+                          )}
+                          {lead.company_website && (
+                            <div className={styles.companyDetails}>
+                              <Globe className={styles.companyIcon} />
+                              Sitio web disponible
+                            </div>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className={styles.tableCell}>
-                        <span className={`${styles.confidenceBadge} ${getConfidenceStyle(lead.confidence)}`}>
-                          {lead.confidence}%
-                        </span>
+                        <div className={styles.qualityScore}>
+                          <span className={`${styles.confidenceBadge} ${getQualityStyle(lead.data_quality_score || 1)}`}>
+                            {lead.data_quality_score || 1}/5
+                          </span>
+                          <div className={styles.qualityStars}>
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`${styles.star} ${i < (lead.data_quality_score || 1) ? styles.starFilled : styles.starEmpty}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className={`${styles.tableCell} hidden lg:table-cell`}>
                         <ValidationIndicators lead={lead} />
                       </TableCell>
                       <TableCell className={`${styles.tableCell} hidden lg:table-cell`}>
-                        <span className={styles.industryBadge}>{lead.industry}</span>
+                        <span className={styles.industryBadge}>{lead.category || lead.industry || 'Sin categoría'}</span>
                       </TableCell>
                       <TableCell className={`${styles.tableCell} hidden xl:table-cell`}>
                         <div className={styles.locationInfo}>
                           <MapPin className={styles.locationIcon} />
-                          {lead.location}
+                          {lead.location || `${lead.state || ''}, ${lead.country || ''}`.replace(/^, |, $/, '') || 'Ubicación no disponible'}
                         </div>
                       </TableCell>
                       <TableCell className={`${styles.tableCell} text-center`}>
@@ -323,7 +345,7 @@ export function ResultsTableAdapter({
                     {selectedLeads.length}
                   </div>
                   <span className={styles.selectionText}>
-                    {selectedLeads.length === 1 ? "lead seleccionado" : "leads seleccionados"}
+                    {selectedLeads.length === 1 ? "empresa seleccionada" : "empresas seleccionadas"}
                   </span>
                 </div>
                 <div className={styles.selectionSubtext}>Listo para crear campaña de email</div>

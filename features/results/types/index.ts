@@ -1,5 +1,6 @@
 export interface Lead {
   id: string
+  // Legacy compatibility fields
   name: string
   company: string
   email: string
@@ -14,10 +15,26 @@ export interface Lead {
   confidence: number
   lastActivity: string
   notes: string
+  
+  // Real database fields (from Supabase schema)
+  company_name?: string
+  company_website?: string
+  activity?: string
+  description?: string
+  category?: string
+  address?: string
+  state?: string
+  country?: string
+  data_quality_score?: number
+  created_at?: string
+  updated_at?: string
+  last_contacted_at?: string
+  
   // New simplified validation status fields (boolean flags)
   verified_email: boolean
   verified_phone: boolean  
   verified_website: boolean
+  
   // Legacy compatibility for existing components
   hasWebsite: boolean
   websiteExists: boolean
@@ -186,26 +203,43 @@ export interface LeadSummary {
 // Transformation functions for backward compatibility
 export function normalizedToLead(normalized: NormalizedLead): Lead {
   return {
+    // Legacy compatibility fields (mapped from real data)
     id: normalized.id,
-    name: normalized.name || 'Unknown Contact',
+    name: `Contacto - ${normalized.company_name}`,
     company: normalized.company_name,
     email: normalized.email || '',
     website: normalized.company_website || '',
     phone: normalized.phone || '',
     position: inferPosition(normalized),
     location: createLocationString(normalized),
-    industry: normalized.industry || normalized.category || 'Other',
-    employees: normalized.estimated_employees || 'Unknown',
-    revenue: normalized.estimated_revenue || 'Unknown',
-    source: normalized.source_type || 'Web Scraping',
-    confidence: convertQualityScoreToConfidence(normalized.data_quality_score),
-    lastActivity: normalized.last_updated || normalized.created_at,
-    notes: createNotesFromNormalized(normalized),
-    // New boolean flags
+    industry: normalized.category || normalized.activity || 'Otros',
+    employees: 'No especificado',
+    revenue: 'No especificado',
+    source: getSourceDisplayName(normalized.source_type),
+    confidence: convertQualityScoreToConfidence(normalized.data_quality_score || 1),
+    lastActivity: normalized.updated_at || normalized.created_at,
+    notes: normalized.description || '',
+    
+    // Real database fields (direct mapping)
+    company_name: normalized.company_name,
+    company_website: normalized.company_website,
+    activity: normalized.activity,
+    description: normalized.description,
+    category: normalized.category,
+    address: normalized.address,
+    state: normalized.state,
+    country: normalized.country,
+    data_quality_score: normalized.data_quality_score || 1,
+    created_at: normalized.created_at,
+    updated_at: normalized.updated_at,
+    last_contacted_at: normalized.last_contacted_at,
+    
+    // Validation flags
     verified_email: normalized.verified_email,
     verified_phone: normalized.verified_phone,
     verified_website: normalized.verified_website,
-    // Legacy compatibility
+    
+    // Legacy compatibility flags
     hasWebsite: !!normalized.company_website,
     websiteExists: normalized.verified_website,
     emailValidated: normalized.verified_email
@@ -215,46 +249,57 @@ export function normalizedToLead(normalized: NormalizedLead): Lead {
 export function leadToNormalized(lead: Lead): Partial<NormalizedLead> {
   return {
     id: lead.id,
-    company_name: lead.company,
+    // Use real database fields if available, fallback to legacy
+    company_name: lead.company_name || lead.company,
     email: lead.email || undefined,
-    company_website: lead.website || undefined,
+    company_website: lead.company_website || lead.website || undefined,
     phone: lead.phone || undefined,
-    activity: lead.industry, // Map industry to activity
-    industry: lead.industry,
+    activity: lead.activity || lead.industry,
+    description: lead.description || lead.notes || undefined,
+    category: lead.category || lead.industry || undefined,
+    address: lead.address || undefined,
+    state: lead.state || extractStateFromLocation(lead.location),
+    country: lead.country || extractCountryFromLocation(lead.location),
+    data_quality_score: lead.data_quality_score || convertConfidenceToQualityScore(lead.confidence),
     verified_email: lead.verified_email || lead.emailValidated,
     verified_phone: lead.verified_phone || false,
     verified_website: lead.verified_website || lead.websiteExists,
-    data_quality_score: convertConfidenceToQualityScore(lead.confidence),
-    estimated_employees: lead.employees,
-    estimated_revenue: lead.revenue,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: lead.created_at || new Date().toISOString(),
+    updated_at: lead.updated_at || new Date().toISOString(),
+    last_contacted_at: lead.last_contacted_at || undefined
   }
 }
 
 // Helper functions
 function inferPosition(normalized: NormalizedLead): string {
-  if (normalized.legal_form?.includes('AUTONOMO')) return 'Owner'
-  if (normalized.legal_form?.includes('SOCIEDAD')) return 'CEO/Director'
-  if (normalized.cnae_code?.startsWith('62')) return 'CTO/Technical Director'
-  return 'Business Contact'
+  // Infer position based on available data
+  if (normalized.legal_form?.includes('AUTONOMO')) return 'Propietario'
+  if (normalized.legal_form?.includes('SOCIEDAD')) return 'Gerente/Director'
+  if (normalized.activity?.toLowerCase().includes('medic')) return 'Profesional Sanitario'
+  if (normalized.activity?.toLowerCase().includes('abogad')) return 'Abogado'
+  if (normalized.activity?.toLowerCase().includes('restaurant')) return 'Propietario/Gerente'
+  if (normalized.activity?.toLowerCase().includes('clinic')) return 'Director Médico'
+  if (normalized.activity?.toLowerCase().includes('taller')) return 'Propietario/Jefe de Taller'
+  return 'Contacto Comercial'
 }
 
 function createLocationString(normalized: NormalizedLead): string {
   const parts = []
-  if (normalized.city) parts.push(normalized.city)
-  if (normalized.state) parts.push(normalized.state)
-  if (normalized.country) parts.push(normalized.country)
-  return parts.join(', ') || normalized.address || 'Unknown Location'
+  if (normalized.state && normalized.state !== 'Sin Estado') parts.push(normalized.state)
+  if (normalized.country && normalized.country !== 'Sin País') parts.push(normalized.country)
+  return parts.join(', ') || 'Ubicación no disponible'
 }
 
-function createNotesFromNormalized(normalized: NormalizedLead): string {
-  const notes: string[] = []
-  if (normalized.description) notes.push(`Description: ${normalized.description}`)
-  if (normalized.activity) notes.push(`Activity: ${normalized.activity}`)
-  if (normalized.cif_nif) notes.push(`CIF/NIF: ${normalized.cif_nif}`)
-  if (normalized.legal_form) notes.push(`Legal Form: ${normalized.legal_form}`)
-  return notes.join(' | ')
+function extractStateFromLocation(location?: string): string | undefined {
+  if (!location) return undefined
+  const parts = location.split(',')
+  return parts[0]?.trim() || undefined
+}
+
+function extractCountryFromLocation(location?: string): string | undefined {
+  if (!location) return undefined
+  const parts = location.split(',')
+  return parts[1]?.trim() || undefined
 }
 
 function convertQualityScoreToConfidence(qualityScore: number): number {
@@ -265,4 +310,12 @@ function convertQualityScoreToConfidence(qualityScore: number): number {
 function convertConfidenceToQualityScore(confidence: number): number {
   // Convert 0-100 percentage to 1-5 scale
   return Math.round((confidence / 100) * 4) + 1
+}
+
+function getSourceDisplayName(sourceType?: string): string {
+  const sourceMap: Record<string, string> = {
+    'paginas_amarillas': 'Páginas Amarillas',
+    'axesor': 'Axesor',
+  }
+  return sourceMap[sourceType || ''] || 'RitterFinder Database'
 }

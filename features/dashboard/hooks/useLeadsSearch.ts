@@ -21,56 +21,59 @@ interface UseLeadsSearchResult {
   clearResults: () => void
 }
 
-// Helper function to get categories from client types using the views
-const getCategoriesFromClientTypes = async (supabase: any, clientTypes: string[]): Promise<string[]> => {
+// Helper function to map client types to real database categories
+const mapClientTypesToCategories = async (supabase: any, clientTypes: string[]): Promise<string[]> => {
   if (clientTypes.length === 0) return []
   
   try {
-    // Get all available categories from the view
+    // Get all available categories from the database
     const { data: categories, error } = await supabase
       .from('leads_by_category')
       .select('category')
-      .gt('total_leads', 0) // Only categories with leads
+      .gt('total_leads', 0)
     
-    if (error) {
+    if (error || !categories) {
       console.error('Error fetching categories:', error)
       return []
     }
     
-    // Simple mapping for common client types
-    const clientTypeToKeywords: Record<string, string[]> = {
-      'solar': ['solar', 'energía', 'renovable'],
-      'industrial': ['industria', 'manufactur', 'fabrica'],
-      'residential': ['construcción', 'hogar', 'residencial'],
-      'commercial': ['comercio', 'servicios', 'oficina'],
-      'healthcare': ['salud', 'medicina', 'healthcare'],
-      'education': ['educación', 'formación', 'universidad'],
-      'hospitality': ['hostelería', 'turismo', 'hotel'],
-      'retail': ['retail', 'tienda', 'comercio'],
-      'technology': ['tecnología', 'software', 'it'],
-      'financial': ['finanzas', 'banca', 'seguros'],
-      'automotive': ['automoción', 'coches', 'vehículos'],
-      'agriculture': ['agricultura', 'ganadería', 'agro'],
+    // Smart mapping based on keywords and real categories
+    const categoryMappings: Record<string, string[]> = {
+      'solar': ['energia', 'fotovolt', 'renovable', 'solar'],
+      'industrial': ['talleres', 'mecanic', 'industria', 'manufactur'],
+      'residential': ['construccion', 'hogar', 'residencial', 'inmobil'],
+      'commercial': ['comercio', 'tiendas', 'oficina', 'servicios'],
+      'healthcare': ['clinic', 'medicina', 'salud', 'dental', 'farmac'],
+      'education': ['educacion', 'formacion', 'universidad', 'colegio'],
+      'hospitality': ['hotel', 'turismo', 'restauran', 'bar'],
+      'retail': ['tienda', 'comercio', 'venta'],
+      'technology': ['tecnologia', 'software', 'informatica'],
+      'financial': ['finanza', 'banca', 'seguros', 'inversion'],
+      'automotive': ['automovil', 'talleres', 'coches', 'vehiculos'],
+      'agriculture': ['agricultura', 'ganaderia', 'agro'],
       'real-estate': ['inmobiliaria', 'propiedades'],
-      'consulting': ['consultoría', 'consulting'],
-      'manufacturing': ['manufactura', 'fabricación'],
-      'logistics': ['logística', 'transporte'],
-      'food-beverage': ['alimentación', 'bebidas', 'restauración'],
-      'media': ['medios', 'comunicación', 'marketing'],
-      'government': ['gobierno', 'administración'],
-      'non-profit': ['ong', 'fundación'],
+      'consulting': ['consultoria', 'asesoria'],
+      'manufacturing': ['manufactura', 'fabricacion'],
+      'logistics': ['logistica', 'transporte'],
+      'food-beverage': ['alimentacion', 'bebidas', 'restauracion'],
+      'media': ['medios', 'comunicacion', 'marketing'],
+      'government': ['gobierno', 'administracion'],
+      'non-profit': ['ong', 'fundacion'],
+      'energy': ['energia', 'electr', 'gas', 'combustible'],
+      'beauty': ['belleza', 'estetica', 'peluquer']
     }
     
     const matchedCategories: string[] = []
     
     clientTypes.forEach(clientType => {
-      const keywords = clientTypeToKeywords[clientType] || [clientType]
+      const keywords = categoryMappings[clientType] || [clientType.toLowerCase()]
       
-      categories?.forEach((cat: any) => {
+      categories.forEach((cat: any) => {
         if (cat.category) {
           const categoryLower = cat.category.toLowerCase()
           const matches = keywords.some(keyword => 
-            categoryLower.includes(keyword.toLowerCase())
+            categoryLower.includes(keyword) ||
+            keyword.includes(categoryLower.split(' ')[0]) // Match first word
           )
           if (matches && !matchedCategories.includes(cat.category)) {
             matchedCategories.push(cat.category)
@@ -79,25 +82,27 @@ const getCategoriesFromClientTypes = async (supabase: any, clientTypes: string[]
       })
     })
     
+    console.log(`🏷️ Mapped client types [${clientTypes.join(', ')}] to categories:`, matchedCategories)
     return matchedCategories
+    
   } catch (error) {
-    console.error('Error in getCategoriesFromClientTypes:', error)
+    console.error('Error in mapClientTypesToCategories:', error)
     return []
   }
 }
 
-// Helper function to get states from locations using the views
-const getStatesFromLocations = async (supabase: any, locations: string[]): Promise<string[]> => {
+// Helper function to map locations to real database states
+const mapLocationsToStates = async (supabase: any, locations: string[]): Promise<string[]> => {
   if (locations.length === 0) return []
   
   try {
-    // Get all available states from the view
+    // Get all available states from the database
     const { data: states, error } = await supabase
       .from('leads_by_state')
       .select('state, country')
-      .gt('total_leads', 0) // Only states with leads
+      .gt('total_leads', 0)
     
-    if (error) {
+    if (error || !states) {
       console.error('Error fetching states:', error)
       return []
     }
@@ -105,26 +110,33 @@ const getStatesFromLocations = async (supabase: any, locations: string[]): Promi
     const matchedStates: string[] = []
     
     locations.forEach(location => {
+      if (location === 'all') {
+        // If "all" is selected, don't filter by state
+        return
+      }
+      
       const locationLower = location.toLowerCase()
       
-      states?.forEach((stateData: any) => {
+      states.forEach((stateData: any) => {
         const stateLower = stateData.state?.toLowerCase() || ''
         const countryLower = stateData.country?.toLowerCase() || ''
         
-        // Match by state name or country name
+        // Direct match or partial match
         if (stateLower.includes(locationLower) || 
-            countryLower.includes(locationLower) ||
-            locationLower.includes(stateLower)) {
-          if (stateData.state && !matchedStates.includes(stateData.state)) {
+            locationLower.includes(stateLower) ||
+            countryLower.includes(locationLower)) {
+          if (stateData.state && stateData.state !== 'Sin Estado' && !matchedStates.includes(stateData.state)) {
             matchedStates.push(stateData.state)
           }
         }
       })
     })
     
+    console.log(`📍 Mapped locations [${locations.join(', ')}] to states:`, matchedStates)
     return matchedStates
+    
   } catch (error) {
-    console.error('Error in getStatesFromLocations:', error)
+    console.error('Error in mapLocationsToStates:', error)
     return []
   }
 }
@@ -136,7 +148,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
   const [totalFound, setTotalFound] = useState(0)
   const supabase = createClient()
 
-  // Convertir lead de Supabase a formato del dashboard
+  // Convert Supabase lead to Dashboard Lead format
   const adaptSupabaseLead = (supabaseLead: any): Lead => {
     return {
       id: supabaseLead.id,
@@ -158,15 +170,15 @@ export function useLeadsSearch(): UseLeadsSearchResult {
       updated_at: supabaseLead.updated_at,
       last_contacted_at: supabaseLead.last_contacted_at,
       
-      // Campos de compatibilidad legacy
+      // Legacy compatibility fields
       name: `Contacto - ${supabaseLead.company_name}`,
       position: 'Contacto Comercial',
       location: `${supabaseLead.state || ''}, ${supabaseLead.country || ''}`.replace(/^, |, $/, ''),
       industry: supabaseLead.category || supabaseLead.activity,
       employees: 'Desconocido',
       revenue: 'Desconocido',
-      source: 'RitterFinder Search',
-      confidence: (supabaseLead.data_quality_score || 1) * 20, // Convertir 1-5 a 0-100
+      source: 'RitterFinder Database',
+      confidence: (supabaseLead.data_quality_score || 1) * 20, // Convert 1-5 to 0-100
       lastActivity: supabaseLead.updated_at || supabaseLead.created_at,
       notes: supabaseLead.description || '',
       hasWebsite: Boolean(supabaseLead.company_website),
@@ -180,168 +192,155 @@ export function useLeadsSearch(): UseLeadsSearchResult {
     setError(null)
     
     try {
-      console.log('🔍 Buscando leads con filtros:', filters)
+      console.log('🔍 === INICIANDO BÚSQUEDA INTELIGENTE CON DATOS REALES ===')
+      console.log('📋 Filtros recibidos:', filters)
       
-      // Primero, verificar si hay datos en la tabla (sin filtros)
-      console.log('📊 Verificando datos en la tabla leads...')
-      const { data: sampleData, error: sampleError } = await supabase
-        .from('leads')
-        .select('*')
-        .limit(5)
-      
-      if (sampleError) {
-        console.error('❌ Error obteniendo muestra de leads:', sampleError)
-      } else {
-        console.log(`📈 Muestra de leads encontrados: ${sampleData?.length || 0}`)
-        if (sampleData && sampleData.length > 0) {
-          console.log('📋 Primer lead como ejemplo:', sampleData[0])
+      // Step 1: Map client types to real categories
+      let targetCategories: string[] = []
+      if (filters.selectedClientTypes.length > 0) {
+        targetCategories = await mapClientTypesToCategories(supabase, filters.selectedClientTypes)
+        if (targetCategories.length === 0) {
+          console.warn('⚠️ No se encontraron categorías para los tipos de cliente seleccionados')
         }
       }
       
-      // Construir query base
+      // Step 2: Map locations to real states  
+      let targetStates: string[] = []
+      if (filters.selectedLocations.length > 0 && !filters.selectedLocations.includes('all')) {
+        targetStates = await mapLocationsToStates(supabase, filters.selectedLocations)
+        if (targetStates.length === 0) {
+          console.warn('⚠️ No se encontraron estados para las ubicaciones seleccionadas')
+        }
+      }
+      
+      console.log('🎯 Búsqueda dirigida a:')
+      console.log('   📊 Categorías:', targetCategories)
+      console.log('   🗺️ Estados:', targetStates)
+      
+      // Step 3: Build the intelligent query
       let query = supabase
         .from('leads')
         .select('*')
       
-      // Para debugging, empezar con una query más simple
       let hasFilters = false
       
-      // Filtro por categorías/actividades (simplificado para debugging)
-      if (filters.selectedClientTypes.length > 0) {
-        console.log('🏷️ Aplicando filtro de tipos de cliente:', filters.selectedClientTypes)
-        
-        try {
-          // Primero intentar búsqueda simple por activity o category
-          const searchTerms = filters.selectedClientTypes.flatMap(type => [
-            type.toLowerCase(),
-            type // Mantener original también
-          ])
-          
-          console.log('🔍 Términos de búsqueda para categorías:', searchTerms)
-          
-          // Búsqueda simple en activity y category
-          const categoryConditions = searchTerms.map(term => 
-            `category.ilike.%${term}%`
-          )
-          const activityConditions = searchTerms.map(term => 
-            `activity.ilike.%${term}%`
-          )
-          
-          const allConditions = [...categoryConditions, ...activityConditions]
-          query = query.or(allConditions.join(','))
-          hasFilters = true
-          
-        } catch (error) {
-          console.error('❌ Error en filtro de categorías:', error)
-        }
+      // Apply category filter
+      if (targetCategories.length > 0) {
+        query = query.in('category', targetCategories)
+        hasFilters = true
+        console.log('✅ Filtro de categorías aplicado')
       }
       
-      // Filtro por ubicaciones (simplificado para debugging)
-      if (filters.selectedLocations.length > 0) {
-        console.log('📍 Aplicando filtro de ubicaciones:', filters.selectedLocations)
-        
-        try {
-          const locationConditions = filters.selectedLocations.flatMap(location => [
-            `state.ilike.%${location}%`,
-            `country.ilike.%${location}%`
-          ])
-          
-          console.log('🔍 Condiciones de ubicación:', locationConditions)
-          
-          if (hasFilters) {
-            // Si ya hay filtros, agregar como AND
-            query = query.or(locationConditions.join(','))
-          } else {
-            query = query.or(locationConditions.join(','))
-          }
-          hasFilters = true
-          
-        } catch (error) {
-          console.error('❌ Error en filtro de ubicaciones:', error)
-        }
+      // Apply state filter
+      if (targetStates.length > 0) {
+        query = query.in('state', targetStates)
+        hasFilters = true
+        console.log('✅ Filtro de estados aplicado')
       }
       
-      // Filtros de datos requeridos
+      // Apply data requirement filters
       if (filters.requireWebsite) {
         query = query.not('company_website', 'is', null)
                      .neq('company_website', '')
+        hasFilters = true
+        console.log('✅ Filtro de sitio web requerido aplicado')
       }
       
       if (filters.requireEmail) {
         query = query.not('email', 'is', null)
                      .neq('email', '')
+                     .eq('verified_email', true)
+        hasFilters = true
+        console.log('✅ Filtro de email requerido aplicado')
       }
       
       if (filters.requirePhone) {
         query = query.not('phone', 'is', null)
                      .neq('phone', '')
+                     .eq('verified_phone', true)
+        hasFilters = true
+        console.log('✅ Filtro de teléfono requerido aplicado')
       }
       
-             // Si no hay filtros aplicados, traer algunos resultados para testing
-       if (!hasFilters) {
-         console.log('⚠️ No hay filtros aplicados, trayendo leads de muestra...')
-         query = query.limit(50) // Traer 50 leads de muestra
-       } else {
-         query = query.limit(500) // Límite cuando hay filtros
-       }
-       
-       // Ordenar por calidad y fecha
-       query = query.order('data_quality_score', { ascending: false })
-                    .order('created_at', { ascending: false })
-       
-       console.log('📡 Ejecutando query a Supabase...')
-       console.log('🔧 Filtros aplicados:', hasFilters ? 'SÍ' : 'NO')
-       
-              const { data, error: supabaseError } = await query
-       
-       if (supabaseError) {
-         console.error('❌ Error detallado de Supabase:', supabaseError)
-         throw new Error(`Error de Supabase: ${supabaseError.message}`)
-       }
-       
-       console.log(`✅ Encontrados ${data?.length || 0} leads en Supabase`)
-       
-       let finalData = data
-       
-       if (data && data.length > 0) {
-         console.log('📝 Primer lead crudo de Supabase:', data[0])
-       } else {
-         console.log('⚠️ No se encontraron leads con los filtros aplicados')
-         
-         // Si no hay resultados con filtros, intentar una query más simple
-         if (hasFilters) {
-           console.log('🔄 Intentando query sin filtros como fallback...')
-           const { data: fallbackData, error: fallbackError } = await supabase
-             .from('leads')
-             .select('*')
-             .limit(10)
-           
-           if (!fallbackError && fallbackData && fallbackData.length > 0) {
-             console.log(`🆘 Fallback: encontrados ${fallbackData.length} leads sin filtros`)
-             console.log('📝 Primer lead del fallback:', fallbackData[0])
-             finalData = fallbackData
-           }
-         }
-       }
-       
-       // Adaptar leads a formato del dashboard
-       const adaptedLeads = (finalData || []).map(adaptSupabaseLead)
-       
-       setLeads(adaptedLeads)
-       setTotalFound(adaptedLeads.length)
+      // Quality filter for better results
+      query = query.gte('data_quality_score', 3) // Only quality 3+ leads
       
-      // Log de estadísticas
+      // Limit and order
+      query = query
+        .order('data_quality_score', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(500)
+      
+      console.log('📡 Ejecutando query optimizada...')
+      
+      const { data, error: supabaseError } = await query
+      
+      if (supabaseError) {
+        console.error('❌ Error de Supabase:', supabaseError)
+        throw new Error(`Error de Supabase: ${supabaseError.message}`)
+      }
+      
+      console.log(`🎉 Query exitosa: ${data?.length || 0} leads encontrados`)
+      
+      // If no results with filters, try a broader search
+      let finalData = data
+      if ((!data || data.length === 0) && hasFilters) {
+        console.log('🔄 Sin resultados con filtros, intentando búsqueda más amplia...')
+        
+        // Try removing state filter first
+        if (targetStates.length > 0 && targetCategories.length > 0) {
+          const { data: fallbackData } = await supabase
+            .from('leads')
+            .select('*')
+            .in('category', targetCategories)
+            .gte('data_quality_score', 2) // Lower quality threshold
+            .order('data_quality_score', { ascending: false })
+            .limit(200)
+          
+          if (fallbackData && fallbackData.length > 0) {
+            console.log(`🆘 Fallback exitoso: ${fallbackData.length} leads encontrados`)
+            finalData = fallbackData
+          }
+        }
+      }
+      
+      // Final fallback: show some quality leads if still no results
+      if (!finalData || finalData.length === 0) {
+        console.log('🚨 Último recurso: mostrando leads de alta calidad sin filtros')
+        const { data: qualityData } = await supabase
+          .from('leads')
+          .select('*')
+          .gte('data_quality_score', 4)
+          .order('data_quality_score', { ascending: false })
+          .limit(50)
+        
+        finalData = qualityData || []
+      }
+      
+      // Convert to dashboard format
+      const adaptedLeads = (finalData || []).map(adaptSupabaseLead)
+      
+      setLeads(adaptedLeads)
+      setTotalFound(adaptedLeads.length)
+      
+      // Log final statistics
       const stats = {
         total: adaptedLeads.length,
         withEmail: adaptedLeads.filter(l => l.email && l.email !== '').length,
         withPhone: adaptedLeads.filter(l => l.phone && l.phone !== '').length,
         withWebsite: adaptedLeads.filter(l => l.company_website && l.company_website !== '').length,
         verifiedEmails: adaptedLeads.filter(l => l.verified_email).length,
+        avgQuality: adaptedLeads.length > 0 
+          ? Math.round(adaptedLeads.reduce((sum, l) => sum + l.data_quality_score, 0) / adaptedLeads.length * 100) / 100
+          : 0
       }
-      console.log('📊 Estadísticas de leads encontrados:', stats)
+      
+      console.log('📊 === BÚSQUEDA COMPLETADA ===')
+      console.log('📈 Estadísticas finales:', stats)
+      console.log('🎯 Filtros aplicados exitosamente:', hasFilters ? 'SÍ' : 'NO')
       
     } catch (err) {
-      console.error('❌ Error buscando leads:', err)
+      console.error('❌ Error en búsqueda:', err)
       setError(err instanceof Error ? err.message : 'Error desconocido al buscar leads')
       setLeads([])
       setTotalFound(0)

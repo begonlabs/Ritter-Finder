@@ -2,17 +2,23 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Phone, MapPin, Users, Euro, Calendar, ExternalLink, Globe, Mail, CheckCircle, XCircle } from "lucide-react"
+import { Phone, MapPin, Building, Globe, Mail, CheckCircle, XCircle, Calendar, Star, Info } from "lucide-react"
 import type { LeadDetailsModalProps } from "../types"
 import styles from "../styles/LeadDetailsModal.module.css"
 
 export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProps) {
   if (!lead) return null
 
-  const getConfidenceColor = (confidence: number): string => {
-    if (confidence >= 90) return styles.confidenceHigh
-    if (confidence >= 80) return styles.confidenceMedium
+  const getQualityColor = (score: number): string => {
+    if (score >= 4) return styles.confidenceHigh
+    if (score >= 3) return styles.confidenceMedium
     return styles.confidenceLow
+  }
+
+  const getQualityLabel = (score: number): string => {
+    if (score >= 4) return "Alta Calidad"
+    if (score >= 3) return "Calidad Media"
+    return "Calidad Básica"
   }
 
   return (
@@ -23,55 +29,65 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
         </DialogHeader>
         
         <div className={styles.modalBody}>
-          {/* Contact Information */}
+          {/* Company Information */}
           <div className={styles.contactGrid}>
             <div className={styles.contactSection}>
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Contacto</label>
-                <p className={styles.fieldValue}>{lead.name}</p>
-                <p className={styles.fieldValueSecondary}>{lead.position}</p>
+                <label className={styles.fieldLabel}>Empresa</label>
+                <p className={styles.fieldValue}>{lead.company_name || lead.company}</p>
+                {lead.activity && (
+                  <p className={styles.fieldValueSecondary}>{lead.activity}</p>
+                )}
               </div>
               
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Email</label>
-                <p className={styles.fieldValueEmail}>{lead.email}</p>
-              </div>
+              {lead.company_website && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}>Sitio Web</label>
+                  <a
+                    href={lead.company_website.startsWith('http') ? lead.company_website : `https://${lead.company_website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.websiteLink}
+                  >
+                    {lead.company_website}
+                    <Globe className={styles.externalIcon} />
+                  </a>
+                </div>
+              )}
               
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Teléfono</label>
-                <p className={styles.contactInfo}>
-                  <Phone className={styles.contactIcon} />
-                  {lead.phone}
-                </p>
+                <label className={styles.fieldLabel}>Categoría</label>
+                <span className={styles.industryBadge}>{lead.category || lead.industry || 'Sin categoría'}</span>
               </div>
             </div>
             
             <div className={styles.contactSection}>
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Empresa</label>
-                <p className={styles.fieldValue}>{lead.company}</p>
-                <a
-                  href={`https://${lead.website}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.websiteLink}
-                >
-                  {lead.website}
-                  <ExternalLink className={styles.externalIcon} />
-                </a>
-              </div>
+              {lead.email && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}>Email</label>
+                  <p className={styles.fieldValueEmail}>{lead.email}</p>
+                </div>
+              )}
+              
+              {lead.phone && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}>Teléfono</label>
+                  <p className={styles.contactInfo}>
+                    <Phone className={styles.contactIcon} />
+                    {lead.phone}
+                  </p>
+                </div>
+              )}
               
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Ubicación</label>
                 <p className={styles.contactInfo}>
                   <MapPin className={styles.contactIcon} />
-                  {lead.location}
+                  {lead.location || `${lead.state || ''}, ${lead.country || ''}`.replace(/^, |, $/, '') || 'Ubicación no disponible'}
                 </p>
-              </div>
-              
-              <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Industria</label>
-                <span className={styles.industryBadge}>{lead.industry}</span>
+                {lead.address && (
+                  <p className={styles.fieldValueSecondary}>{lead.address}</p>
+                )}
               </div>
             </div>
           </div>
@@ -86,7 +102,7 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
                   <span className={styles.validationLabel}>Sitio Web</span>
                 </div>
                 <div className={styles.validationStatus}>
-                  {lead.website ? (
+                  {lead.company_website ? (
                     lead.verified_website ? (
                       <>
                         <CheckCircle className={styles.validationSuccess} />
@@ -113,15 +129,22 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
                   <span className={styles.validationLabel}>Email</span>
                 </div>
                 <div className={styles.validationStatus}>
-                  {lead.verified_email ? (
-                    <>
-                      <CheckCircle className={styles.validationSuccess} />
-                      <span className={styles.validationText}>Email verificado</span>
-                    </>
+                  {lead.email ? (
+                    lead.verified_email ? (
+                      <>
+                        <CheckCircle className={styles.validationSuccess} />
+                        <span className={styles.validationText}>Email verificado</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className={styles.validationError} />
+                        <span className={styles.validationText}>Email no verificado</span>
+                      </>
+                    )
                   ) : (
                     <>
                       <XCircle className={styles.validationError} />
-                      <span className={styles.validationText}>Email no verificado</span>
+                      <span className={styles.validationText}>Sin email</span>
                     </>
                   )}
                 </div>
@@ -156,46 +179,53 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
             </div>
           </div>
 
-          {/* Company Metrics */}
+          {/* Quality Score and Business Info */}
           <div className={styles.metricsGrid}>
             <div className={styles.metricItem}>
-              <label className={styles.fieldLabel}>Empleados</label>
+              <label className={styles.fieldLabel}>Calidad de Datos</label>
+              <div className={styles.qualityScore}>
+                <Star className={styles.metricIcon} />
+                <span className={`${styles.confidenceBadge} ${getQualityColor(lead.data_quality_score || 1)}`}>
+                  {lead.data_quality_score || 1}/5 - {getQualityLabel(lead.data_quality_score || 1)}
+                </span>
+              </div>
+            </div>
+            
+            <div className={styles.metricItem}>
+              <label className={styles.fieldLabel}>Tipo de Negocio</label>
               <p className={styles.metricValue}>
-                <Users className={styles.metricIcon} />
-                {lead.employees}
+                <Building className={styles.metricIcon} />
+                {lead.activity || 'No especificado'}
               </p>
             </div>
             
             <div className={styles.metricItem}>
-              <label className={styles.fieldLabel}>Ingresos</label>
+              <label className={styles.fieldLabel}>Fuente</label>
               <p className={styles.metricValue}>
-                <Euro className={styles.metricIcon} />
-                {lead.revenue}
+                <Info className={styles.metricIcon} />
+                {lead.source || 'RitterFinder Database'}
               </p>
-            </div>
-            
-            <div className={styles.metricItem}>
-              <label className={styles.fieldLabel}>Confianza</label>
-              <span className={`${styles.confidenceBadge} ${getConfidenceColor(lead.confidence)}`}>
-                {lead.confidence}%
-              </span>
             </div>
           </div>
 
-          {/* Notes */}
-          <div className={styles.notesSection}>
-            <label className={styles.fieldLabel}>Notas</label>
-            <p className={styles.notesContent}>{lead.notes}</p>
-          </div>
+          {/* Description */}
+          {lead.description && (
+            <div className={styles.notesSection}>
+              <label className={styles.fieldLabel}>Descripción del Negocio</label>
+              <p className={styles.notesContent}>{lead.description}</p>
+            </div>
+          )}
 
           {/* Footer with metadata */}
           <div className={styles.modalFooter}>
             <div className={styles.footerInfo}>
               <Calendar className={styles.footerIcon} />
-              <span>Última actividad: {new Date(lead.lastActivity).toLocaleDateString()}</span>
+              <span>
+                Última actualización: {lead.updated_at ? new Date(lead.updated_at).toLocaleDateString('es-ES') : 'No disponible'}
+              </span>
             </div>
             <div className={styles.footerSource}>
-              Fuente: {lead.source}
+              Agregado: {lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-ES') : 'No disponible'}
             </div>
           </div>
         </div>
