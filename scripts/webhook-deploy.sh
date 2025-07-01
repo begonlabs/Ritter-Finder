@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 WEBHOOK_SECRET="your-webhook-secret-here"  # Change this!
-PROJECT_DIR="/path/to/your/ritterfinder"   # Update this path
+PROJECT_DIR="/home/ritterfinder/Ritter-Finder"   # Update this path
 ALLOWED_BRANCH="main"
 LOG_FILE="/var/log/ritterfinder-webhook.log"
 

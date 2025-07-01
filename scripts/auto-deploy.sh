@@ -8,7 +8,7 @@ set -e  # Exit on any error
 echo "🚀 Starting auto-deployment process..."
 
 # Configuration
-PROJECT_DIR="/path/to/your/ritterfinder"  # Update this path
+PROJECT_DIR="/home/ritterfinder/Ritter-Finder"  # Update this path
 CONTAINER_NAME="ritterfinder_app"
 LOG_FILE="/var/log/ritterfinder-deploy.log"
 
