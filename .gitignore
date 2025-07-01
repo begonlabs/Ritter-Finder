@@ -18,6 +18,16 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
+!.env.production.example
+
+# Docker
+Dockerfile.dev
+.dockerignore
+
+# Deployment logs
+/var/log/ritterfinder*.log
+backups/
 
 # vercel
 .vercel
