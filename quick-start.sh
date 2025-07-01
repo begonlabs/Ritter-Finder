@@ -51,10 +51,10 @@ check_docker() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+    if ! docker compose version &> /dev/null && ! command -v docker compose &> /dev/null; then
         print_error "Docker Compose is not installed!"
         echo "Please install Docker Compose first:"
-        echo "sudo apt install -y docker-compose-plugin"
+        echo "sudo apt install -y docker compose-plugin"
         exit 1
     fi
     
@@ -148,8 +148,8 @@ test_docker() {
         exit 1
     fi
     
-    # Test docker-compose
-    if docker-compose version &> /dev/null || docker compose version &> /dev/null; then
+    # Test docker compose
+    if docker compose version &> /dev/null || docker compose version &> /dev/null; then
         print_status "Docker Compose is working"
     else
         print_error "Docker Compose is not working properly"
@@ -161,7 +161,7 @@ test_docker() {
 build_and_test() {
     print_info "Building Docker image (this may take a few minutes)..."
     
-    if docker-compose build; then
+    if docker compose build; then
         print_status "Docker image built successfully"
     else
         print_error "Failed to build Docker image"
@@ -170,7 +170,7 @@ build_and_test() {
     
     print_info "Starting application for testing..."
     
-    if docker-compose up -d; then
+    if docker compose up -d; then
         print_status "Application started"
         
         # Wait for app to be ready
@@ -184,7 +184,7 @@ build_and_test() {
                 sleep 2
                 if [[ $i -eq 30 ]]; then
                     print_error "Application failed to start properly"
-                    echo "Check logs with: docker-compose logs"
+                    echo "Check logs with: docker compose logs"
                     exit 1
                 fi
             fi

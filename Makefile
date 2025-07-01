@@ -12,46 +12,46 @@ help: ## Show this help message
 # Development commands
 build: ## Build Docker images
 	@echo "🔨 Building Docker images..."
-	docker-compose build
+	docker compose build
 
 dev: ## Start development environment
 	@echo "🚀 Starting development environment..."
-	docker-compose -f docker-compose.yml up --build
+	docker compose -f docker compose.yml up --build
 
 dev-bg: ## Start development environment in background
 	@echo "🚀 Starting development environment in background..."
-	docker-compose -f docker-compose.yml up -d --build
+	docker compose -f docker compose.yml up -d --build
 
 # Production commands
 prod: ## Start production environment
 	@echo "🚀 Starting production environment..."
-	docker-compose -f docker-compose.prod.yml up -d --build
+	docker compose -f docker compose.prod.yml up -d --build
 
 prod-logs: ## Show production logs
 	@echo "📋 Showing production logs..."
-	docker-compose -f docker-compose.prod.yml logs -f
+	docker compose -f docker compose.prod.yml logs -f
 
 # Container management
 up: ## Start containers
 	@echo "⬆️  Starting containers..."
-	docker-compose up -d
+	docker compose up -d
 
 down: ## Stop and remove containers
 	@echo "⬇️  Stopping containers..."
-	docker-compose down
+	docker compose down
 
 restart: ## Restart containers
 	@echo "🔄 Restarting containers..."
-	docker-compose restart
+	docker compose restart
 
 stop: ## Stop containers without removing them
 	@echo "🛑 Stopping containers..."
-	docker-compose stop
+	docker compose stop
 
 # Monitoring and debugging
 logs: ## Show container logs
 	@echo "📋 Showing logs..."
-	docker-compose logs -f
+	docker compose logs -f
 
 logs-app: ## Show only app container logs
 	@echo "📋 Showing app logs..."
@@ -59,7 +59,7 @@ logs-app: ## Show only app container logs
 
 health: ## Check container health
 	@echo "🏥 Checking container health..."
-	docker-compose ps
+	docker compose ps
 	@echo ""
 	@echo "🌐 Testing application response..."
 	@curl -f http://localhost:3000 > /dev/null 2>&1 && echo "✅ Application is responding" || echo "❌ Application is not responding"
@@ -71,7 +71,7 @@ shell: ## Access container shell
 # Cleanup commands
 clean: ## Remove all containers, images, and volumes
 	@echo "🧹 Cleaning up Docker resources..."
-	docker-compose down -v --rmi all
+	docker compose down -v --rmi all
 	docker system prune -f
 
 clean-images: ## Remove unused Docker images
@@ -96,7 +96,7 @@ deploy-webhook: ## Setup webhook deployment
 # Utility commands
 install: ## Install/update dependencies (if mounting node_modules)
 	@echo "📦 Installing dependencies in container..."
-	docker-compose exec ritterfinder pnpm install
+	docker compose exec ritterfinder pnpm install
 
 update: ## Pull latest changes and redeploy
 	@echo "📥 Pulling latest changes..."
@@ -127,7 +127,7 @@ status: ## Show detailed status
 	@echo "📊 RitterFinder Status"
 	@echo "====================="
 	@echo "🐳 Docker Containers:"
-	@docker-compose ps
+	@docker compose ps
 	@echo ""
 	@echo "💾 Docker Images:"
 	@docker images | grep ritterfinder || echo "No RitterFinder images found"

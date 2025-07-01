@@ -26,7 +26,7 @@ sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 
 # Instalar Docker Compose
-sudo apt install -y docker-compose-plugin
+sudo apt install -y docker compose-plugin
 
 # Reiniciar sesión para aplicar cambios de grupo
 newgrp docker
@@ -93,19 +93,19 @@ make prod
 ### Opción 2: Comandos Docker directos
 ```bash
 # Construir imagen
-docker-compose build
+docker compose build
 
 # Iniciar en producción
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 3. Verificar despliegue
 ```bash
 # Verificar contenedores
-docker-compose ps
+docker compose ps
 
 # Ver logs
-docker-compose logs -f
+docker compose logs -f
 
 # Probar health check
 curl http://localhost:3000/api/health
@@ -225,14 +225,14 @@ make status         # Estado detallado
 ### Comandos Docker manuales:
 ```bash
 # Ver logs
-docker-compose logs -f
+docker compose logs -f
 
 # Reiniciar aplicación
-docker-compose restart
+docker compose restart
 
 # Rebuild completo
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 
 # Limpiar espacio
 docker system prune -f
@@ -243,13 +243,13 @@ docker system prune -f
 ### 1. Contenedor no inicia
 ```bash
 # Ver logs detallados
-docker-compose logs ritterfinder
+docker compose logs ritterfinder
 
 # Verificar configuración
 make health
 
 # Verificar variables de entorno
-docker-compose config
+docker compose config
 ```
 
 ### 2. Aplicación no responde
@@ -261,7 +261,7 @@ netstat -tlnp | grep 3000
 curl -v http://localhost:3000/api/health
 
 # Reiniciar contenedor
-docker-compose restart ritterfinder
+docker compose restart ritterfinder
 ```
 
 ### 3. Auto-deploy no funciona
@@ -285,8 +285,8 @@ docker stats
 docker image prune -f
 
 # Reiniciar con límites de memoria
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 ```
 
 ## 🚨 Configuración de Alertas (Opcional)

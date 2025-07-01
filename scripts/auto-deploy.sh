@@ -61,7 +61,7 @@ fi
 
 # Stop existing containers
 log "🛑 Stopping existing containers..."
-docker-compose down || log "⚠️  No containers were running"
+docker compose down || log "⚠️  No containers were running"
 
 # Remove old images to free space (optional)
 log "🧹 Cleaning up old Docker images..."
@@ -69,7 +69,7 @@ docker image prune -f
 
 # Build and start new containers
 log "🔨 Building and starting new containers..."
-if docker-compose up -d --build; then
+if docker compose up -d --build; then
     log "✅ Successfully built and started containers"
 else
     log "❌ ERROR: Failed to build/start containers"
@@ -110,4 +110,4 @@ log "🎉 Deployment completed successfully!"
 
 # Optional: Show container status
 log "📊 Container status:"
-docker-compose ps | tee -a "$LOG_FILE" 
+docker compose ps | tee -a "$LOG_FILE" 
