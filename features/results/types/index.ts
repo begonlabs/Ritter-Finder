@@ -1,44 +1,54 @@
 export interface Lead {
   id: string
-  // Legacy compatibility fields
-  name: string
-  company: string
-  email: string
-  website: string
-  phone: string
-  position: string
-  location: string
-  industry: string
-  employees: string
-  revenue: string
-  source: string
-  confidence: number
-  lastActivity: string
-  notes: string
   
-  // Real database fields (from Supabase schema)
-  company_name?: string
-  company_website?: string
-  activity?: string
-  description?: string
-  category?: string
-  address?: string
-  state?: string
-  country?: string
-  data_quality_score?: number
+  // ✅ Primary database fields (matching Supabase schema)
+  // Contact Information
+  email?: string | null // Can be null in database
+  verified_email: boolean
+  phone?: string | null // Can be null in database
+  verified_phone: boolean
+  
+  // Company Information  
+  company_name: string // Required in database - NOT NULL
+  company_website?: string | null // Can be null in database
+  verified_website: boolean
+  
+  // Location Information
+  address?: string | null
+  state?: string | null
+  country?: string | null
+  
+  // Business Information
+  activity: string // Required in database - NOT NULL
+  description?: string | null
+  category?: string | null // Can be null in database
+  
+  // Data Quality Score (1-5 scale)
+  data_quality_score: number // 1-5 calculated from verifications
+  
+  // System fields
   created_at?: string
   updated_at?: string
   last_contacted_at?: string
   
-  // New simplified validation status fields (boolean flags)
-  verified_email: boolean
-  verified_phone: boolean  
-  verified_website: boolean
+  // ✅ Legacy compatibility fields (computed from primary fields)
+  name?: string // Can be derived from company contact
+  company?: string // Computed from company_name
+  website?: string // Computed from company_website
+  position?: string
+  location?: string // Can be derived from address/state/country
+  industry?: string // Can be derived from category
+  employees?: string
+  revenue?: string
+  source?: string
+  confidence?: number // Can be derived from data_quality_score
+  lastActivity?: string
+  notes?: string
   
-  // Legacy compatibility for existing components
-  hasWebsite: boolean
-  websiteExists: boolean
-  emailValidated: boolean
+  // Computed flags
+  hasWebsite?: boolean // Can be derived from company_website existence
+  websiteExists?: boolean // Can be derived from verified_website
+  emailValidated?: boolean // Can be derived from verified_email
 }
 
 export interface NormalizedLead {
@@ -260,7 +270,7 @@ export function leadToNormalized(lead: Lead): Partial<NormalizedLead> {
     address: lead.address || undefined,
     state: lead.state || extractStateFromLocation(lead.location),
     country: lead.country || extractCountryFromLocation(lead.location),
-    data_quality_score: lead.data_quality_score || convertConfidenceToQualityScore(lead.confidence),
+    data_quality_score: lead.data_quality_score || convertConfidenceToQualityScore(lead.confidence || 0),
     verified_email: lead.verified_email || lead.emailValidated,
     verified_phone: lead.verified_phone || false,
     verified_website: lead.verified_website || lead.websiteExists,

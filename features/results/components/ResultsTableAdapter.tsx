@@ -37,6 +37,8 @@ interface ResultsTableAdapterProps {
   onSelectAll: (select: boolean) => void
   onProceedToCampaign?: () => void
   showActions?: boolean
+  // ✅ New prop for showing no results with criteria message
+  noResultsWithCriteria?: boolean
 }
 
 export function ResultsTableAdapter({ 
@@ -45,7 +47,8 @@ export function ResultsTableAdapter({
   onSelectLead, 
   onSelectAll, 
   onProceedToCampaign,
-  showActions = true 
+  showActions = true,
+  noResultsWithCriteria = false
 }: ResultsTableAdapterProps) {
   const { t } = useLanguage()
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
@@ -252,7 +255,23 @@ export function ResultsTableAdapter({
                 {filteredLeads.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className={styles.emptyState}>
-                      <p className={styles.emptyStateText}>No se encontraron resultados.</p>
+                      {noResultsWithCriteria ? (
+                        <div className={styles.noResultsMessage}>
+                          <div className={styles.noResultsIcon}>🔍</div>
+                          <h3 className={styles.noResultsTitle}>No se encontraron resultados con los criterios especificados</h3>
+                          <p className={styles.noResultsText}>
+                            Los filtros aplicados son muy específicos. Intenta:
+                          </p>
+                          <ul className={styles.noResultsSuggestions}>
+                            <li>• Seleccionar una ubicación más amplia</li>
+                            <li>• Cambiar el tipo de cliente</li>
+                            <li>• Quitar algunos filtros de datos (email, teléfono, sitio web)</li>
+                            <li>• Intentar una búsqueda diferente</li>
+                          </ul>
+                        </div>
+                      ) : (
+                        <p className={styles.emptyStateText}>No se encontraron resultados.</p>
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : (

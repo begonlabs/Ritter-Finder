@@ -116,7 +116,7 @@ export function ValidationOptions({
                   </Label>
                 </div>
                 <p className={styles.optionDescription}>
-                  Filtrar solo empresas que tengan un sitio web registrado
+                  ✅ Filtrar solo empresas que tengan un sitio web registrado
                 </p>
               </div>
 
@@ -135,7 +135,7 @@ export function ValidationOptions({
                   </Label>
                 </div>
                 <p className={styles.optionDescription}>
-                  Filtrar solo empresas que tengan una dirección de email registrada
+                  ✅ Filtrar solo empresas que tengan una dirección de email registrada
                 </p>
               </div>
 
@@ -154,7 +154,7 @@ export function ValidationOptions({
                   </Label>
                 </div>
                 <p className={styles.optionDescription}>
-                  Filtrar solo empresas que tengan un número de teléfono registrado
+                  ✅ Filtrar solo empresas que tengan un número de teléfono registrado
                 </p>
               </div>
             </div>

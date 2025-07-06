@@ -20,31 +20,33 @@ export interface DashboardState {
   emailSent: boolean
   searchResults: SearchResults | null
   searchHistory: SearchHistoryItem[]
+  // ✅ New state for no results with criteria message
+  noResultsWithCriteria: boolean
 }
 
 export interface Lead {
   id: string
   
-  // Contact Information
-  email: string
+  // Contact Information - ✅ Fixed to match database schema (nullable fields)
+  email?: string | null // Can be null in database
   verified_email: boolean
-  phone: string
+  phone?: string | null // Can be null in database
   verified_phone: boolean
   
   // Company Information  
-  company_name: string // Updated field name to match schema
-  company_website: string // Updated field name to match schema
+  company_name: string // Required in database - NOT NULL
+  company_website?: string | null // Can be null in database
   verified_website: boolean
   
   // Location Information
-  address?: string
-  state?: string
-  country?: string
+  address?: string | null
+  state?: string | null
+  country?: string | null
   
   // New Fields from schema
-  activity: string
-  description?: string
-  category: string
+  activity: string // Required in database - NOT NULL
+  description?: string | null
+  category?: string | null // Can be null in database
   
   // Data Quality Score (1-5 scale)
   data_quality_score: number // 1-5 calculated from verifications
@@ -177,17 +179,17 @@ export interface LegacyLead {
   emailValidated: boolean
 }
 
-// Utility functions for Lead transformation
+// Utility functions for Lead transformation - ✅ Fixed null handling
 export const leadToLegacyFormat = (lead: Lead): LegacyLead => ({
   id: lead.id,
   name: lead.name || `Contact at ${lead.company_name}`,
   company: lead.company_name,
-  email: lead.email,
-  website: lead.company_website,
-  phone: lead.phone,
+  email: lead.email || '', // Handle null/undefined
+  website: lead.company_website || '', // Handle null/undefined
+  phone: lead.phone || '', // Handle null/undefined
   position: lead.position || 'Contact',
   location: lead.location || `${lead.state || ''}, ${lead.country || ''}`.trim(),
-  industry: lead.industry || lead.category,
+  industry: lead.industry || lead.category || '', // Handle null/undefined
   employees: lead.employees || 'Unknown',
   revenue: lead.revenue || 'Unknown',
   source: lead.source || 'RitterFinder Search',
@@ -201,19 +203,19 @@ export const leadToLegacyFormat = (lead: Lead): LegacyLead => ({
 
 export const legacyToLeadFormat = (legacy: LegacyLead): Lead => ({
   id: legacy.id,
-  email: legacy.email,
+  email: legacy.email || null, // Handle empty strings as null
   verified_email: legacy.emailValidated,
-  phone: legacy.phone,
+  phone: legacy.phone || null, // Handle empty strings as null
   verified_phone: Boolean(legacy.phone),
   company_name: legacy.company,
-  company_website: legacy.website,
+  company_website: legacy.website || null, // Handle empty strings as null
   verified_website: legacy.websiteExists,
-  address: '',
-  state: legacy.location.split(',')[1]?.trim() || '',
-  country: legacy.location.split(',')[0]?.trim() || '',
+  address: null,
+  state: legacy.location.split(',')[1]?.trim() || null,
+  country: legacy.location.split(',')[0]?.trim() || null,
   activity: legacy.industry,
-  description: legacy.notes,
-  category: legacy.industry,
+  description: legacy.notes || null,
+  category: legacy.industry || null,
   data_quality_score: Math.ceil((legacy.confidence || 0) / 20), // Convert 0-100 to 1-5 scale
   
   // Legacy compatibility fields

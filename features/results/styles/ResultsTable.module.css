@@ -417,6 +417,55 @@
   margin: 0;
 }
 
+/* ✅ No Results With Criteria Message */
+.noResultsMessage {
+  text-align: center;
+  padding: 3rem 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.noResultsIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.noResultsTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.noResultsText {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.noResultsSuggestions {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.noResultsSuggestions li {
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.noResultsSuggestions li:last-child {
+  margin-bottom: 0;
+}
+
 /* Action Bar */
 .actionBar {
   border: none;

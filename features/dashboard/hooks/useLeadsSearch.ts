@@ -19,6 +19,8 @@ interface UseLeadsSearchResult {
   totalFound: number
   searchLeads: (filters: LeadsSearchFilters) => Promise<void>
   clearResults: () => void
+  // ✅ New state for no results with criteria
+  noResultsWithCriteria: boolean
 }
 
 // Helper function to map client types to real database categories
@@ -146,31 +148,33 @@ export function useLeadsSearch(): UseLeadsSearchResult {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalFound, setTotalFound] = useState(0)
+  const [noResultsWithCriteria, setNoResultsWithCriteria] = useState(false)
   const supabase = createClient()
 
   // Convert Supabase lead to Dashboard Lead format
+  // ✅ Fixed adapter to properly handle null values from database
   const adaptSupabaseLead = (supabaseLead: any): Lead => {
     return {
       id: supabaseLead.id,
-      email: supabaseLead.email || '',
+      email: supabaseLead.email || null, // Keep null instead of empty string
       verified_email: supabaseLead.verified_email || false,
-      phone: supabaseLead.phone || '',
+      phone: supabaseLead.phone || null, // Keep null instead of empty string
       verified_phone: supabaseLead.verified_phone || false,
       company_name: supabaseLead.company_name,
-      company_website: supabaseLead.company_website || '',
+      company_website: supabaseLead.company_website || null, // Keep null instead of empty string
       verified_website: supabaseLead.verified_website || false,
-      address: supabaseLead.address,
-      state: supabaseLead.state,
-      country: supabaseLead.country,
+      address: supabaseLead.address || null,
+      state: supabaseLead.state || null,
+      country: supabaseLead.country || null,
       activity: supabaseLead.activity,
-      description: supabaseLead.description,
-      category: supabaseLead.category,
+      description: supabaseLead.description || null,
+      category: supabaseLead.category || null,
       data_quality_score: supabaseLead.data_quality_score || 1,
       created_at: supabaseLead.created_at,
       updated_at: supabaseLead.updated_at,
       last_contacted_at: supabaseLead.last_contacted_at,
       
-      // Legacy compatibility fields
+      // Legacy compatibility fields (use empty strings for display compatibility)
       name: `Contacto - ${supabaseLead.company_name}`,
       position: 'Contacto Comercial',
       location: `${supabaseLead.state || ''}, ${supabaseLead.country || ''}`.replace(/^, |, $/, ''),
@@ -190,6 +194,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
   const searchLeads = useCallback(async (filters: LeadsSearchFilters) => {
     setIsLoading(true)
     setError(null)
+    setNoResultsWithCriteria(false) // Reset state at start of search
     
     try {
       console.log('🔍 === INICIANDO BÚSQUEDA INTELIGENTE CON DATOS REALES ===')
@@ -238,7 +243,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
         console.log('✅ Filtro de estados aplicado')
       }
       
-      // Apply data requirement filters
+      // ✅ Apply data requirement filters (improved and fixed)
       if (filters.requireWebsite) {
         query = query.not('company_website', 'is', null)
                      .neq('company_website', '')
@@ -247,31 +252,47 @@ export function useLeadsSearch(): UseLeadsSearchResult {
       }
       
       if (filters.requireEmail) {
+        // ✅ Fixed: Only require email exists, not necessarily verified
         query = query.not('email', 'is', null)
                      .neq('email', '')
-                     .eq('verified_email', true)
         hasFilters = true
-        console.log('✅ Filtro de email requerido aplicado')
+        console.log('✅ Filtro de email requerido aplicado (solo existencia)')
       }
       
       if (filters.requirePhone) {
+        // ✅ Fixed: Only require phone exists, not necessarily verified
         query = query.not('phone', 'is', null)
                      .neq('phone', '')
-                     .eq('verified_phone', true)
         hasFilters = true
-        console.log('✅ Filtro de teléfono requerido aplicado')
+        console.log('✅ Filtro de teléfono requerido aplicado (solo existencia)')
       }
       
-      // Quality filter for better results
-      query = query.gte('data_quality_score', 3) // Only quality 3+ leads
+      // ✅ Removed strict quality filter - let users see all results
+      // Quality filter for better results (lowered threshold)
+      query = query.gte('data_quality_score', 1) // Show all leads with any quality score
       
-      // Limit and order
+      // ✅ Temporary limit for testing
+      // Order by quality and recency
       query = query
         .order('data_quality_score', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(500)
+        .limit(100) // Testing limit of 100 results
       
       console.log('📡 Ejecutando query optimizada...')
+      
+      // ✅ Debug: Log the actual query being executed
+      console.log('🔧 Query SQL construido:', {
+        table: 'leads',
+        filters: {
+          categories: targetCategories.length > 0 ? targetCategories : 'ninguno',
+          states: targetStates.length > 0 ? targetStates : 'ninguno',
+          requireWebsite: filters.requireWebsite,
+          requireEmail: filters.requireEmail,
+          requirePhone: filters.requirePhone,
+        },
+        ordering: 'data_quality_score DESC, created_at DESC',
+        limit: '100 resultados (para pruebas)'
+      })
       
       const { data, error: supabaseError } = await query
       
@@ -282,20 +303,41 @@ export function useLeadsSearch(): UseLeadsSearchResult {
       
       console.log(`🎉 Query exitosa: ${data?.length || 0} leads encontrados`)
       
-      // If no results with filters, try a broader search
+      // ✅ Improved fallback logic that respects user filters
       let finalData = data
       if ((!data || data.length === 0) && hasFilters) {
         console.log('🔄 Sin resultados con filtros, intentando búsqueda más amplia...')
         
-        // Try removing state filter first
+        // Try removing location filter first (keep other filters)
         if (targetStates.length > 0 && targetCategories.length > 0) {
-          const { data: fallbackData } = await supabase
+          console.log('📍 Intentando sin filtro de ubicación...')
+          
+          let fallbackQuery = supabase
             .from('leads')
             .select('*')
             .in('category', targetCategories)
-            .gte('data_quality_score', 2) // Lower quality threshold
-            .order('data_quality_score', { ascending: false })
-            .limit(200)
+            .gte('data_quality_score', 1) // Show all quality levels
+          
+          // ✅ Keep user's data requirements even in fallback
+          if (filters.requireWebsite) {
+            fallbackQuery = fallbackQuery.not('company_website', 'is', null)
+                                        .neq('company_website', '')
+          }
+          
+          if (filters.requireEmail) {
+            fallbackQuery = fallbackQuery.not('email', 'is', null)
+                                        .neq('email', '')
+          }
+          
+          if (filters.requirePhone) {
+            fallbackQuery = fallbackQuery.not('phone', 'is', null)
+                                        .neq('phone', '')
+          }
+          
+          fallbackQuery = fallbackQuery.order('data_quality_score', { ascending: false })
+                                        .limit(100) // Same limit for fallback
+          
+          const { data: fallbackData } = await fallbackQuery
           
           if (fallbackData && fallbackData.length > 0) {
             console.log(`🆘 Fallback exitoso: ${fallbackData.length} leads encontrados`)
@@ -304,17 +346,22 @@ export function useLeadsSearch(): UseLeadsSearchResult {
         }
       }
       
-      // Final fallback: show some quality leads if still no results
+      // ✅ Final fallback: only if no category restrictions and no data requirements
       if (!finalData || finalData.length === 0) {
-        console.log('🚨 Último recurso: mostrando leads de alta calidad sin filtros')
-        const { data: qualityData } = await supabase
-          .from('leads')
-          .select('*')
-          .gte('data_quality_score', 4)
-          .order('data_quality_score', { ascending: false })
-          .limit(50)
-        
-        finalData = qualityData || []
+        if (targetCategories.length === 0 && !filters.requireWebsite && !filters.requireEmail && !filters.requirePhone) {
+          console.log('🚨 Último recurso: mostrando leads de alta calidad sin filtros')
+          const { data: qualityData } = await supabase
+            .from('leads')
+            .select('*')
+            .gte('data_quality_score', 3)
+            .order('data_quality_score', { ascending: false })
+            .limit(100) // Testing limit
+          
+          finalData = qualityData || []
+        } else {
+          console.log('❌ No hay resultados que cumplan con los criterios especificados')
+          setNoResultsWithCriteria(true) // ✅ Set state for UI message
+        }
       }
       
       // Convert to dashboard format
@@ -323,13 +370,15 @@ export function useLeadsSearch(): UseLeadsSearchResult {
       setLeads(adaptedLeads)
       setTotalFound(adaptedLeads.length)
       
-      // Log final statistics
+      // ✅ Enhanced statistics and validation
       const stats = {
         total: adaptedLeads.length,
-        withEmail: adaptedLeads.filter(l => l.email && l.email !== '').length,
-        withPhone: adaptedLeads.filter(l => l.phone && l.phone !== '').length,
-        withWebsite: adaptedLeads.filter(l => l.company_website && l.company_website !== '').length,
+        withEmail: adaptedLeads.filter(l => l.email && l.email !== '' && l.email !== null).length,
+        withPhone: adaptedLeads.filter(l => l.phone && l.phone !== '' && l.phone !== null).length,
+        withWebsite: adaptedLeads.filter(l => l.company_website && l.company_website !== '' && l.company_website !== null).length,
         verifiedEmails: adaptedLeads.filter(l => l.verified_email).length,
+        verifiedPhones: adaptedLeads.filter(l => l.verified_phone).length,
+        verifiedWebsites: adaptedLeads.filter(l => l.verified_website).length,
         avgQuality: adaptedLeads.length > 0 
           ? Math.round(adaptedLeads.reduce((sum, l) => sum + l.data_quality_score, 0) / adaptedLeads.length * 100) / 100
           : 0
@@ -337,7 +386,32 @@ export function useLeadsSearch(): UseLeadsSearchResult {
       
       console.log('📊 === BÚSQUEDA COMPLETADA ===')
       console.log('📈 Estadísticas finales:', stats)
-      console.log('🎯 Filtros aplicados exitosamente:', hasFilters ? 'SÍ' : 'NO')
+      console.log('🎯 Filtros aplicados:', {
+        categorías: targetCategories.length > 0 ? 'SÍ' : 'NO',
+        ubicaciones: targetStates.length > 0 ? 'SÍ' : 'NO',
+        requiereWebsite: filters.requireWebsite ? 'SÍ' : 'NO',
+        requiereEmail: filters.requireEmail ? 'SÍ' : 'NO',
+        requierePhone: filters.requirePhone ? 'SÍ' : 'NO'
+      })
+      
+      // ✅ Validate filter compliance
+      if (filters.requireEmail && stats.withEmail < stats.total) {
+        console.warn('⚠️ POSIBLE PROBLEMA: Se requería email pero algunos leads no lo tienen')
+        console.log('📋 Primeros 3 leads sin email:', adaptedLeads.filter(l => !l.email || l.email === '').slice(0, 3).map(l => ({
+          id: l.id,
+          company_name: l.company_name,
+          email: l.email,
+          verified_email: l.verified_email
+        })))
+      }
+      
+      if (filters.requirePhone && stats.withPhone < stats.total) {
+        console.warn('⚠️ POSIBLE PROBLEMA: Se requería teléfono pero algunos leads no lo tienen')
+      }
+      
+      if (filters.requireWebsite && stats.withWebsite < stats.total) {
+        console.warn('⚠️ POSIBLE PROBLEMA: Se requería sitio web pero algunos leads no lo tienen')
+      }
       
     } catch (err) {
       console.error('❌ Error en búsqueda:', err)
@@ -353,6 +427,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
     setLeads([])
     setTotalFound(0)
     setError(null)
+    setNoResultsWithCriteria(false) // Reset no results state
   }, [])
 
   return {
@@ -362,5 +437,6 @@ export function useLeadsSearch(): UseLeadsSearchResult {
     totalFound,
     searchLeads,
     clearResults,
+    noResultsWithCriteria,
   }
 } 
