@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Search,
   Eye,
@@ -23,6 +24,8 @@ import {
   CheckCircle,
   XCircle,
   Phone,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import { useLanguage, formatMessage } from "@/lib/language-context"
 import { LeadDetailsModal } from "./LeadDetailsModal"
@@ -54,12 +57,35 @@ export function ResultsTableAdapter({
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   
+  // ✅ Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
+  
   const {
     filters,
     sorting,
     filteredLeads,
     actions,
   } = useResultsFiltering(leads, selectedLeads)
+
+  // ✅ Pagination logic
+  const totalPages = Math.ceil(filteredLeads.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedLeads = filteredLeads.slice(startIndex, endIndex)
+  
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filters.searchTerm, filteredLeads.length])
+
+  const formatMessage = (message: string, replacements: Record<string, any>) => {
+    let formatted = message
+    Object.entries(replacements).forEach(([key, value]) => {
+      formatted = formatted.replace(`{${key}}`, value.toString())
+    })
+    return formatted
+  }
 
   // Map quality score to CSS module classes
   const getQualityStyle = (score: number): string => {
@@ -173,7 +199,17 @@ export function ResultsTableAdapter({
     return null
   }
 
-  const allSelected = filteredLeads.length > 0 && filteredLeads.every((lead) => selectedLeads.includes(lead.id))
+  // ✅ Pagination functions
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  const handleItemsPerPageChange = (items: number) => {
+    setItemsPerPage(items)
+    setCurrentPage(1) // Reset to first page when changing items per page
+  }
+
+  const allSelected = paginatedLeads.length > 0 && paginatedLeads.every((lead) => selectedLeads.includes(lead.id))
 
   return (
     <div className={styles.tableContainer}>
@@ -184,8 +220,10 @@ export function ResultsTableAdapter({
             <div className={styles.headerInfo}>
               <CardTitle className={styles.headerTitle}>Resultados de Leads</CardTitle>
               <p className={styles.headerSubtitle}>
-                {formatMessage("Se encontraron {total} leads. {selected} seleccionados.", {
+                {formatMessage("Se encontraron {total} leads. Mostrando {start}-{end}. {selected} seleccionados.", {
                   total: filteredLeads.length,
+                  start: filteredLeads.length > 0 ? startIndex + 1 : 0,
+                  end: Math.min(endIndex, filteredLeads.length),
                   selected: selectedLeads.length,
                 })}
               </p>
@@ -252,7 +290,7 @@ export function ResultsTableAdapter({
                 </TableRow>
               </TableHeader>
               <TableBody className={styles.tableBody}>
-                {filteredLeads.length === 0 ? (
+                {paginatedLeads.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className={styles.emptyState}>
                       {noResultsWithCriteria ? (
@@ -275,7 +313,7 @@ export function ResultsTableAdapter({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredLeads.map((lead) => (
+                  paginatedLeads.map((lead) => (
                     <TableRow key={lead.id} className={styles.tableRow}>
                       <TableCell className={`${styles.tableCell} ${styles.checkboxCell}`}>
                         <Checkbox
@@ -352,6 +390,95 @@ export function ResultsTableAdapter({
           </div>
         </CardContent>
       </Card>
+
+      {/* ✅ Pagination Controls */}
+      {filteredLeads.length > 0 && (
+        <Card className={styles.paginationCard}>
+          <CardContent className={styles.paginationContent}>
+            <div className={styles.paginationContainer}>
+              {/* Items per page selector */}
+              <div className={styles.paginationLeft}>
+                <span className={styles.paginationLabel}>Mostrar:</span>
+                <Select value={itemsPerPage.toString()} onValueChange={(value) => handleItemsPerPageChange(Number(value))}>
+                  <SelectTrigger className={styles.paginationSelect}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="20">20 por página</SelectItem>
+                    <SelectItem value="50">50 por página</SelectItem>
+                    <SelectItem value="100">100 por página</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Page info */}
+              <div className={styles.paginationCenter}>
+                <span className={styles.paginationInfo}>
+                  Página {currentPage} de {totalPages} ({filteredLeads.length} total)
+                </span>
+              </div>
+
+              {/* Navigation buttons */}
+              <div className={styles.paginationRight}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={styles.paginationButton}
+                >
+                  <ChevronLeft className={styles.paginationIcon} />
+                  Anterior
+                </Button>
+
+                {/* ✅ Enhanced page numbers with total indicator */}
+                <div className={styles.paginationNumbers}>
+                  {/* Page number buttons */}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNumber
+                    if (totalPages <= 5) {
+                      pageNumber = i + 1
+                    } else if (currentPage <= 3) {
+                      pageNumber = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNumber = totalPages - 4 + i
+                    } else {
+                      pageNumber = currentPage - 2 + i
+                    }
+
+                    return (
+                      <Button
+                        key={pageNumber}
+                        variant={currentPage === pageNumber ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={styles.paginationNumberButton}
+                      >
+                        {pageNumber}
+                      </Button>
+                    )
+                  })}
+                  
+                  {/* Total pages indicator */}
+                  <span className={styles.paginationDivider}>/</span>
+                  <span className={styles.paginationTotal}>{totalPages}</span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={styles.paginationButton}
+                >
+                  Siguiente
+                  <ChevronRight className={styles.paginationIcon} />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Action Bar */}
       {showActions && selectedLeads.length > 0 && (

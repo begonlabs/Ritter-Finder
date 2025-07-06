@@ -63,20 +63,20 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
             
             <div className={styles.contactSection}>
               {lead.email && (
-                <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>Email</label>
-                  <p className={styles.fieldValueEmail}>{lead.email}</p>
-                </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Email</label>
+                <p className={styles.fieldValueEmail}>{lead.email}</p>
+              </div>
               )}
               
               {lead.phone && (
-                <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>Teléfono</label>
-                  <p className={styles.contactInfo}>
-                    <Phone className={styles.contactIcon} />
-                    {lead.phone}
-                  </p>
-                </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Teléfono</label>
+                <p className={styles.contactInfo}>
+                  <Phone className={styles.contactIcon} />
+                  {lead.phone}
+                </p>
+              </div>
               )}
               
               <div className={styles.fieldGroup}>
@@ -131,14 +131,14 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
                 <div className={styles.validationStatus}>
                   {lead.email ? (
                     lead.verified_email ? (
-                      <>
-                        <CheckCircle className={styles.validationSuccess} />
-                        <span className={styles.validationText}>Email verificado</span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className={styles.validationError} />
-                        <span className={styles.validationText}>Email no verificado</span>
+                    <>
+                      <CheckCircle className={styles.validationSuccess} />
+                      <span className={styles.validationText}>Email verificado</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className={styles.validationError} />
+                      <span className={styles.validationText}>Email no verificado</span>
                       </>
                     )
                   ) : (
@@ -210,10 +210,10 @@ export function LeadDetailsModal({ lead, isOpen, onClose }: LeadDetailsModalProp
 
           {/* Description */}
           {lead.description && (
-            <div className={styles.notesSection}>
+          <div className={styles.notesSection}>
               <label className={styles.fieldLabel}>Descripción del Negocio</label>
               <p className={styles.notesContent}>{lead.description}</p>
-            </div>
+          </div>
           )}
 
           {/* Footer with metadata */}

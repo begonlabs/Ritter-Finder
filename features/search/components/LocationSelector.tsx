@@ -102,12 +102,12 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
                       <div className={styles.commandItemContent}>
                         <div className={styles.commandItemHeader}>
                           <div className={styles.commandItemLabelSection}>
-                            <div className={styles.commandItemDetails}>
-                              <span className={styles.commandItemLabel}>
-                                {location.label}
-                              </span>
+                          <div className={styles.commandItemDetails}>
+                            <span className={styles.commandItemLabel}>
+                              {location.label}
+                            </span>
                               {location.region && (
-                                <div className={styles.commandItemRegion}>{location.region}</div>
+                              <div className={styles.commandItemRegion}>{location.region}</div>
                               )}
                             </div>
                             {location.stats && (

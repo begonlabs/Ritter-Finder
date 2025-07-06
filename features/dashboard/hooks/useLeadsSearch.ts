@@ -271,12 +271,12 @@ export function useLeadsSearch(): UseLeadsSearchResult {
       // Quality filter for better results (lowered threshold)
       query = query.gte('data_quality_score', 1) // Show all leads with any quality score
       
-      // ✅ Temporary limit for testing
+      // ✅ Increased limit for better pagination testing
       // Order by quality and recency
       query = query
         .order('data_quality_score', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(100) // Testing limit of 100 results
+        .limit(500) // Increased limit to test pagination properly
       
       console.log('📡 Ejecutando query optimizada...')
       
@@ -291,7 +291,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
           requirePhone: filters.requirePhone,
         },
         ordering: 'data_quality_score DESC, created_at DESC',
-        limit: '100 resultados (para pruebas)'
+        limit: '500 resultados (para pruebas de paginación)'
       })
       
       const { data, error: supabaseError } = await query
@@ -335,7 +335,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
           }
           
           fallbackQuery = fallbackQuery.order('data_quality_score', { ascending: false })
-                                        .limit(100) // Same limit for fallback
+                                        .limit(500) // Same limit for pagination testing
           
           const { data: fallbackData } = await fallbackQuery
           
@@ -355,7 +355,7 @@ export function useLeadsSearch(): UseLeadsSearchResult {
             .select('*')
             .gte('data_quality_score', 3)
             .order('data_quality_score', { ascending: false })
-            .limit(100) // Testing limit
+            .limit(500) // Pagination testing limit
           
           finalData = qualityData || []
         } else {

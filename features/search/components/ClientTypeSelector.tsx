@@ -96,9 +96,9 @@ export function ClientTypeSelector({ selectedClientTypes, setSelectedClientTypes
                       <div className={styles.commandItemContent}>
                         <div className={styles.commandItemHeader}>
                           <div className={styles.commandItemLabelSection}>
-                            <span className={styles.commandItemLabel}>
-                              {clientType.label}
-                            </span>
+                          <span className={styles.commandItemLabel}>
+                            {clientType.label}
+                          </span>
                             {clientType.stats && (
                               <div className={styles.commandItemStats}>
                                 <TrendingUp className={styles.statsIcon} />

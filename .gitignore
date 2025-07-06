@@ -23,7 +23,6 @@ yarn-error.log*
 
 # Docker
 Dockerfile.dev
-.dockerignore
 
 # Deployment logs
 /var/log/ritterfinder*.log
