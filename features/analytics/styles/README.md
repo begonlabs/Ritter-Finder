@@ -8,9 +8,7 @@ Este directorio contiene todos los estilos CSS modulares para el módulo de anal
 styles/
 ├── AnalyticsPage.module.css      # Página principal de analytics (layout)
 ├── DashboardStats.module.css     # Tarjetas de estadísticas del dashboard
-├── TrendChart.module.css         # Gráfico de tendencias y análisis temporal
-├── RecentActivity.module.css     # Lista de actividad reciente con timeline
-├── ScrapingStats.module.css      # Estadísticas de scraping con animaciones
+├── LeadStats.module.css          # Estadísticas de leads con vistas detalladas
 └── README.md                     # Esta documentación
 ```
 
@@ -70,42 +68,20 @@ Estilos para las tarjetas de estadísticas principales:
 }
 ```
 
-### TrendChart.module.css
-Estilos para el componente de tendencias:
-- Destacado del mes actual con gradiente dorado
-- Timeline histórico con puntos de estado
-- Quick stats con colores diferenciados
-- Responsive breakpoints para móvil
+### LeadStats.module.css
+Estilos para el componente de estadísticas de leads:
+- Lista de estadísticas con hover effects
+- Métricas destacadas con colores diferenciados
+- Estados de carga y error elegantes
+- Responsive design para diferentes tamaños de pantalla
 
 ```css
-.currentHighlight {
-  /* Gradiente dorado sutil con borde destacado */
-  background: linear-gradient(135deg, rgba(242, 183, 5, 0.1), rgba(242, 183, 5, 0.05));
-  border: 1px solid rgba(242, 183, 5, 0.2);
-}
-```
-
-### RecentActivity.module.css
-Estilos para la actividad reciente:
-- Timeline vertical con línea de conexión
-- Iconos circulares con colores temáticos
-- Efectos de hover con desplazamiento lateral
-- Estados vacíos elegantes
-
-```css
-.activityItem:hover {
+.statItem:hover {
   /* Desplazamiento sutil hacia la derecha */
   transform: translateX(4px);
   border-color: rgba(242, 183, 5, 0.2);
 }
 ```
-
-### ScrapingStats.module.css
-Estilos para estadísticas de scraping:
-- Animaciones de entrada desde diferentes direcciones
-- Progress bars con gradientes temáticos
-- Métricas destacadas con fondos de color
-- Estados de carga con spinner animado
 
 ## 🚀 Mejores Prácticas Implementadas
 

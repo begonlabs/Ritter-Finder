@@ -88,6 +88,24 @@
   flex-shrink: 0;
 }
 
+/* Success Alert */
+.successAlert {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  animation: fadeInScale 0.4s ease-out;
+}
+
+.successAlert .alertText {
+  color: #166534;
+}
+
+.successIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
 /* Search Button Container */
 .searchButtonContainer {
   display: flex;

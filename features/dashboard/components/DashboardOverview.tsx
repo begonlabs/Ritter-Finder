@@ -1,6 +1,6 @@
 "use client"
 
-import { DashboardStats, LeadStats, RecentActivity } from "@/features/analytics"
+import { DashboardStats, LeadStats } from "@/features/analytics"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sparkles, ArrowRight, History, Search } from "lucide-react"
@@ -17,9 +17,8 @@ export function DashboardOverview({ state, actions }: TabComponentProps) {
         <DashboardStats />
       </div>
 
-      <div className={`${styles.chartsGrid} grid gap-6 md:grid-cols-2`}>
+      <div className={`${styles.leadStatsSection} w-full`}>
         <LeadStats showHeader={true} compact={false} />
-        <RecentActivity showHeader={true} compact={false} maxItems={3} />
       </div>
 
       {/* Quick Actions */}

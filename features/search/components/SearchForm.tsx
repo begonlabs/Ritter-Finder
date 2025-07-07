@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Search } from "lucide-react"
+import { Search, CheckCircle } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { ClientTypeSelector } from "./ClientTypeSelector"
 import { LocationSelector } from "./LocationSelector"
@@ -15,9 +15,11 @@ interface SearchFormProps {
   state: SearchState
   actions: SearchActions
   canStartSearch: boolean
+  searchComplete?: boolean
+  currentSearchId?: string | null
 }
 
-export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) {
+export function SearchForm({ state, actions, canStartSearch, searchComplete, currentSearchId }: SearchFormProps) {
   const { t } = useLanguage()
 
   return (
@@ -56,6 +58,15 @@ export function SearchForm({ state, actions, canStartSearch }: SearchFormProps) 
         <Alert className={styles.alert}>
           <AlertDescription className={styles.alertText}>
             Selecciona al menos un tipo de cliente y una ubicación para comenzar la búsqueda.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {searchComplete && currentSearchId && (
+        <Alert className={`${styles.alert} ${styles.successAlert}`}>
+          <CheckCircle className={styles.successIcon} />
+          <AlertDescription className={styles.alertText}>
+            Búsqueda completada y guardada en el historial. ID: {currentSearchId.slice(-8)}
           </AlertDescription>
         </Alert>
       )}

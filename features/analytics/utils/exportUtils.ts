@@ -5,8 +5,7 @@ import type {
   LeadCategoryStats, 
   LeadCountryStats, 
   LeadStateStats, 
-  LeadSpainRegionStats,
-  ActivityItem 
+  LeadSpainRegionStats
 } from '../types'
 
 // ===================================
@@ -19,7 +18,6 @@ import type {
 export async function generatePDFReport(
   dashboardStats: DashboardStats,
   leadStats: any[],
-  recentActivity: ActivityItem[],
   viewType: string = 'category'
 ): Promise<void> {
   const doc = new jsPDF()
@@ -40,9 +38,6 @@ export async function generatePDFReport(
   
   // Lead Statistics Section
   yPosition = addLeadStatisticsSection(doc, leadStats, viewType, yPosition)
-  
-  // Recent Activity Section
-  yPosition = addRecentActivitySection(doc, recentActivity, yPosition)
   
   // Footer
   addFooter(doc)
@@ -146,52 +141,6 @@ function addLeadStatisticsSection(
 }
 
 /**
- * Add recent activity section to PDF
- */
-function addRecentActivitySection(
-  doc: jsPDF, 
-  activities: ActivityItem[], 
-  startY: number
-): number {
-  doc.setFontSize(16)
-  doc.setTextColor(26, 32, 44)
-  doc.text('Recent Activity', 20, startY)
-  
-  if (activities.length === 0) {
-    doc.setFontSize(12)
-    doc.setTextColor(100, 100, 100)
-    doc.text('No recent activity', 20, startY + 10)
-    return startY + 20
-  }
-  
-  const tableData = activities.slice(0, 10).map(activity => [
-    activity.type.toUpperCase(),
-    activity.title,
-    activity.description,
-    new Date(activity.date).toLocaleDateString('es-ES')
-  ])
-  
-  autoTable(doc, {
-    head: [['Type', 'Title', 'Description', 'Date']],
-    body: tableData,
-    startY: startY + 10,
-    styles: {
-      fontSize: 9,
-      cellPadding: 4
-    },
-    headStyles: {
-      fillColor: [242, 183, 5],
-      textColor: [26, 32, 44]
-    },
-    alternateRowStyles: {
-      fillColor: [248, 250, 252]
-    }
-  })
-  
-  return (doc as any).lastAutoTable.finalY + 20
-}
-
-/**
  * Add footer to PDF
  */
 function addFooter(doc: jsPDF): void {
@@ -212,7 +161,6 @@ function addFooter(doc: jsPDF): void {
 export function generateCSVReport(
   dashboardStats: DashboardStats,
   leadStats: any[],
-  recentActivity: ActivityItem[],
   viewType: string = 'category'
 ): void {
   const csvData: string[] = []
@@ -248,18 +196,6 @@ export function generateCSVReport(
     csvData.push('No data available')
   }
   csvData.push('')
-  
-  // Recent Activity
-  csvData.push('Recent Activity')
-  csvData.push('Type,Title,Description,Date')
-  
-  if (recentActivity.length > 0) {
-    recentActivity.slice(0, 10).forEach(activity => {
-      csvData.push(`"${activity.type.toUpperCase()}","${activity.title}","${activity.description}","${new Date(activity.date).toLocaleDateString('es-ES')}"`)
-    })
-  } else {
-    csvData.push('No recent activity')
-  }
   
   // Create and download CSV
   const csvContent = csvData.join('\n')
@@ -372,11 +308,10 @@ function getLeadStatsRow(item: any, viewType: string): string[] {
 export async function exportAnalyticsAsPDF(
   dashboardStats: DashboardStats,
   leadStats: any[],
-  recentActivity: ActivityItem[],
   viewType: string = 'category'
 ): Promise<void> {
   try {
-    await generatePDFReport(dashboardStats, leadStats, recentActivity, viewType)
+    await generatePDFReport(dashboardStats, leadStats, viewType)
   } catch (error) {
     console.error('Error generating PDF report:', error)
     throw new Error('Failed to generate PDF report')
@@ -389,11 +324,10 @@ export async function exportAnalyticsAsPDF(
 export function exportAnalyticsAsCSV(
   dashboardStats: DashboardStats,
   leadStats: any[],
-  recentActivity: ActivityItem[],
   viewType: string = 'category'
 ): void {
   try {
-    generateCSVReport(dashboardStats, leadStats, recentActivity, viewType)
+    generateCSVReport(dashboardStats, leadStats, viewType)
   } catch (error) {
     console.error('Error generating CSV report:', error)
     throw new Error('Failed to generate CSV report')

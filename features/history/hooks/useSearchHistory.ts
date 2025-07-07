@@ -18,14 +18,17 @@ const adaptSearchView = (view: SearchHistoryDetailedView): SearchHistoryItem => 
   const searchParams = view.search_parameters || {}
   const filtersApplied = view.filters_applied || {}
   
-  // Extract websites from search parameters
-  const websites = searchParams.websites || searchParams.sources || ['general']
+  // Extract client types from search parameters (new format)
+  const clientTypes = searchParams.selectedClientTypes || searchParams.websites || ['general']
+  
+  // Extract locations from search parameters (new format)
+  const locations = searchParams.selectedLocations || filtersApplied.location || []
   
   // Extract client type from filters or parameters
   const clientType = searchParams.client_type || 
                     filtersApplied.client_type || 
                     searchParams.category ||
-                    'general'
+                    (clientTypes.length > 0 ? clientTypes[0] : 'general')
 
   // Calculate search time in seconds
   const searchTime = view.duration_seconds || 
@@ -34,7 +37,7 @@ const adaptSearchView = (view: SearchHistoryDetailedView): SearchHistoryItem => 
   return {
     id: view.id,
     date: view.started_at,
-    websites: Array.isArray(websites) ? websites : [websites],
+    websites: Array.isArray(clientTypes) ? clientTypes : [clientTypes],
     clientType: clientType,
     leadsFound: view.total_results,
     leadsContacted: 0, // Not available in current schema
@@ -43,7 +46,7 @@ const adaptSearchView = (view: SearchHistoryDetailedView): SearchHistoryItem => 
     query: view.query_name,
     filters: {
       industry: filtersApplied.industry || [],
-      location: filtersApplied.location || [],
+      location: locations,
       companySize: filtersApplied.company_size || [],
       confidence: filtersApplied.confidence || searchParams.confidence || 80
     }
@@ -55,14 +58,17 @@ const adaptSearchRecord = (record: SearchHistoryRecord): SearchHistoryItem => {
   const searchParams = record.search_parameters || {}
   const filtersApplied = record.filters_applied || {}
   
-  // Extract websites from search parameters
-  const websites = searchParams.websites || searchParams.sources || ['general']
+  // Extract client types from search parameters (new format)
+  const clientTypes = searchParams.selectedClientTypes || searchParams.websites || ['general']
+  
+  // Extract locations from search parameters (new format)
+  const locations = searchParams.selectedLocations || filtersApplied.location || []
   
   // Extract client type from filters or parameters
   const clientType = searchParams.client_type || 
                     filtersApplied.client_type || 
                     searchParams.category ||
-                    'general'
+                    (clientTypes.length > 0 ? clientTypes[0] : 'general')
 
   // Calculate search time in seconds
   const searchTime = Math.round(record.execution_time_ms / 1000)
@@ -70,7 +76,7 @@ const adaptSearchRecord = (record: SearchHistoryRecord): SearchHistoryItem => {
   return {
     id: record.id,
     date: record.started_at,
-    websites: Array.isArray(websites) ? websites : [websites],
+    websites: Array.isArray(clientTypes) ? clientTypes : [clientTypes],
     clientType: clientType,
     leadsFound: record.total_results,
     leadsContacted: 0, // Not available in current schema
@@ -79,7 +85,7 @@ const adaptSearchRecord = (record: SearchHistoryRecord): SearchHistoryItem => {
     query: record.query_name,
     filters: {
       industry: filtersApplied.industry || [],
-      location: filtersApplied.location || [],
+      location: locations,
       companySize: filtersApplied.company_size || [],
       confidence: filtersApplied.confidence || searchParams.confidence || 80
     }
@@ -105,7 +111,7 @@ export function useSearchHistory() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
-  
+
   const supabase = createClient()
 
   // Get current user ID

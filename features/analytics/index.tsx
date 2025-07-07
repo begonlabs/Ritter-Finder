@@ -7,7 +7,6 @@ export { AnalyticsPage } from "./pages/AnalyticsPage"
 // Components
 export { DashboardStats } from "./components/DashboardStats"
 export { LeadStats } from "./components/LeadStats"
-export { RecentActivity } from "./components/RecentActivity"
 
 // Hooks
 export { useDashboardStats } from "./hooks/useDashboardStats"
@@ -57,7 +56,6 @@ export {
 export { default as AnalyticsPageStyles } from "./styles/AnalyticsPage.module.css"
 export { default as DashboardStatsStyles } from "./styles/DashboardStats.module.css"
 export { default as LeadStatsStyles } from "./styles/LeadStats.module.css"
-export { default as RecentActivityStyles } from "./styles/RecentActivity.module.css"
 
 // Types
 export type {
@@ -66,7 +64,6 @@ export type {
   TrendData,
   AnalyticsOverview,
   MonthlyTrend,
-  ActivityItem,
   KeyMetric,
   ChartDataPoint,
   PerformanceMetrics,

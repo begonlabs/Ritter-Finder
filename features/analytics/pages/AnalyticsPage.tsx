@@ -1,17 +1,13 @@
 "use client"
 
-
 import { Button } from "@/components/ui/button"
 import { Download, FileText, BarChart3 } from "lucide-react"
 import { DashboardStats } from "../components/DashboardStats"
 import { LeadStats } from "../components/LeadStats"
-import { RecentActivity } from "../components/RecentActivity"
 import { useDashboardStats } from "../hooks/useDashboardStats"
 import { useLeadStats } from "../hooks/useLeadStats"
-import { useActivityTimeline } from "../../history/hooks/useActivityTimeline"
 import { exportAnalyticsAsPDF, exportAnalyticsAsCSV } from "../utils/exportUtils"
-import type { AnalyticsTabProps, ActivityItem as AnalyticsActivityItem } from "../types"
-import type { ActivityItem as HistoryActivityItem } from "../../history/types"
+import type { AnalyticsTabProps } from "../types"
 import styles from "../styles/AnalyticsPage.module.css"
 
 interface AnalyticsPageProps extends AnalyticsTabProps {
@@ -27,24 +23,6 @@ export function AnalyticsPage({
   // Get data from hooks
   const { stats: dashboardStats, isLoading: statsLoading } = useDashboardStats()
   const { data: leadStats, isLoading: leadStatsLoading } = useLeadStats('category')
-  const { activities: recentActivity, isLoading: activityLoading } = useActivityTimeline()
-  
-  // Convert history activities to analytics format
-  const adaptHistoryToAnalytics = (historyActivities: HistoryActivityItem[]): AnalyticsActivityItem[] => {
-    return historyActivities.map(activity => ({
-      id: activity.id,
-      type: activity.type as 'search' | 'campaign' | 'export',
-      title: activity.title,
-      description: activity.description,
-      date: activity.timestamp,
-      metadata: {
-        leadsFound: activity.metadata?.leadsCount,
-        clientType: activity.metadata?.clientType,
-        recipients: activity.metadata?.recipients,
-        subject: activity.metadata?.subject
-      }
-    }))
-  }
   
   const handleExportData = async () => {
     try {
@@ -56,7 +34,6 @@ export function AnalyticsPage({
       exportAnalyticsAsCSV(
         dashboardStats,
         leadStats || [],
-        adaptHistoryToAnalytics(recentActivity || []),
         'category'
       )
     } catch (error) {
@@ -76,7 +53,6 @@ export function AnalyticsPage({
       await exportAnalyticsAsPDF(
         dashboardStats,
         leadStats || [],
-        adaptHistoryToAnalytics(recentActivity || []),
         'category'
       )
     } catch (error) {
@@ -127,14 +103,12 @@ export function AnalyticsPage({
         compact={!showDetailedView} 
       />
 
-      {/* Lead Statistics and Activity */}
+      {/* Lead Statistics */}
       {showDetailedView && (
-        <div className={styles.chartsGrid}>
+        <div className={styles.leadStatsContainer}>
           <LeadStats showHeader={true} compact={false} viewType="category" maxItems={5} />
-          <RecentActivity showHeader={true} compact={false} />
         </div>
       )}
-
 
     </div>
   )

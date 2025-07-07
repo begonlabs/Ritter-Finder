@@ -8,8 +8,7 @@ Este módulo proporciona análisis de métricas del dashboard y actividad para R
 features/analytics/
 ├── components/               # Componentes de UI
 │   ├── DashboardStats.tsx   # Estadísticas principales del dashboard (5 métricas)
-│   ├── LeadStats.tsx        # Estadísticas de leads desde vistas BD
-│   └── RecentActivity.tsx   # Actividad reciente del usuario
+│   └── LeadStats.tsx        # Estadísticas de leads desde vistas BD
 ├── hooks/                   # Hooks personalizados
 │   ├── useDashboardStats.ts # Métricas desde dashboard_overview
 │   └── useLeadStats.ts      # Estadísticas de leads desde vistas
@@ -49,7 +48,7 @@ import { DashboardStats } from "@/features/analytics"
 
 <DashboardStats 
   showRefreshButton={true} 
-  compact={false}  // true = solo 4 métricas, false = todas las 7
+  compact={false}  // true = solo 4 métricas, false = todas las 5
 />
 ```
 
@@ -59,24 +58,6 @@ import { DashboardStats } from "@/features/analytics"
 - Modo compacto para espacios reducidos
 - Actualización manual con botón de refresh
 - Loading states con skeleton animations
-
-#### RecentActivity
-```tsx
-import { RecentActivity } from "@/features/analytics"
-
-<RecentActivity 
-  showHeader={true}
-  compact={false}
-  maxItems={5} 
-/>
-```
-
-**Características:**
-- Integrado con módulo **history** para datos reales
-- Actividad desde tabla `activity_logs` vía `useActivityTimeline`
-- Tipos: búsquedas, campañas, exportaciones
-- Timestamps relativos en español
-- Estados de error y loading elegantes
 
 #### LeadStats
 ```tsx
@@ -204,7 +185,7 @@ import { exportAnalyticsAsPDF, exportAnalyticsAsCSV } from "@/features/analytics
 await exportAnalyticsAsPDF(
   dashboardStats,
   leadStats,
-  recentActivity,
+  [], // Sin actividad reciente
   'category'
 )
 
@@ -212,7 +193,7 @@ await exportAnalyticsAsPDF(
 exportAnalyticsAsCSV(
   dashboardStats,
   leadStats,
-  recentActivity,
+  [], // Sin actividad reciente
   'category'
 )
 ```
@@ -273,12 +254,11 @@ const qualityColors = {
 - **CSV Export**: Datos estructurados para análisis externo
 - **Dashboard Overview**: Métricas principales con tendencias
 - **Lead Statistics**: Estadísticas detalladas por categoría/región
-- **Recent Activity**: Timeline de actividades recientes
 
 ### Características de Exportación
 - **Branding RitterFinder**: Colores y logos corporativos
 - **Tablas Formateadas**: AutoTable para presentación profesional
-- **Múltiples Secciones**: Dashboard, Leads, Actividad
+- **Múltiples Secciones**: Dashboard y Leads
 - **Timestamps**: Fechas de generación automáticas
 - **Nombres de Archivo**: Con fecha para organización
 
@@ -287,9 +267,9 @@ const qualityColors = {
 // En AnalyticsPage.tsx
 const handleExportData = async (format: 'csv' | 'pdf') => {
   if (format === 'pdf') {
-    await exportAnalyticsAsPDF(dashboardStats, leadStats, recentActivity, 'category')
+    await exportAnalyticsAsPDF(dashboardStats, leadStats, [], 'category')
   } else {
-    exportAnalyticsAsCSV(dashboardStats, leadStats, recentActivity, 'category')
+    exportAnalyticsAsCSV(dashboardStats, leadStats, [], 'category')
   }
 }
 ```

@@ -12,7 +12,9 @@ export const SearchPage: React.FC = () => {
     canStartSearch,
     results, // Legacy format for compatibility
     searchResults, // New enhanced format
-    isSearching 
+    isSearching,
+    searchComplete,
+    currentSearchId
   } = useSearch()
 
   // Use enhanced results if available, fall back to legacy
@@ -30,6 +32,8 @@ export const SearchPage: React.FC = () => {
               state={state}
               actions={actions}
               canStartSearch={canStartSearch}
+              searchComplete={searchComplete}
+              currentSearchId={currentSearchId}
             />
           </SectionCard>
 

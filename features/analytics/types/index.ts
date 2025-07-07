@@ -38,7 +38,6 @@ export interface AnalyticsOverview {
   totalUsers: number
   averageLeadQuality: number
   monthlyTrends: MonthlyTrend[]
-  recentActivity: ActivityItem[]
   keyMetrics: KeyMetric[]
 }
 
@@ -48,24 +47,6 @@ export interface MonthlyTrend {
   leadsContacted: number
   campaigns: number
   searches: number
-}
-
-export interface ActivityItem {
-  id: string
-  type: 'search' | 'campaign' | 'export' | 'user_action' | 'system'
-  title: string
-  description: string
-  date: string
-  metadata: {
-    leadsFound?: number
-    clientType?: string
-    recipients?: number
-    subject?: string
-    resourceType?: string
-    resourceId?: string
-    executionTimeMs?: number
-    responseStatus?: number
-  }
 }
 
 export interface KeyMetric {

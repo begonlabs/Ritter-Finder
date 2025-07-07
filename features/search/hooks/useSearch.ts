@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from "react"
 import { mockLeads } from "@/lib/mock-data"
 import { useSearchConfig } from "./useSearchConfig"
-
+import { useSearchHistory } from "./useSearchHistory"
 
 import type { SearchState, SearchResults, SearchConfig, SearchActions, SearchLead, QualityDistribution } from "../types"
 import { searchLeadToLegacyLead } from "../types"
@@ -184,6 +184,7 @@ function calculateActivityBreakdown(leads: SearchLead[]): Record<string, number>
 
 export function useSearch() {
   const { config, actions: configActions, isValidConfig } = useSearchConfig()
+  const { saveSearchToHistory, updateSearchStatus } = useSearchHistory()
   
   const [searchState, setSearchState] = useState({
     isSearching: false,
@@ -193,8 +194,9 @@ export function useSearch() {
   })
 
   const [results, setResults] = useState<SearchResults | null>(null)
+  const [currentSearchId, setCurrentSearchId] = useState<string | null>(null)
 
-  const handleSearch = useCallback(() => {
+  const handleSearch = useCallback(async () => {
     if (!isValidConfig() || searchState.isSearching) {
       return
     }
@@ -208,57 +210,131 @@ export function useSearch() {
 
     setResults(null)
 
-    // Enhanced search process with more realistic steps
-    const steps = [
-      "Conectando a fuentes de datos...",
-      "Aplicando filtros de búsqueda...",
-      "Extrayendo información de contacto...",
-      "Verificando emails y sitios web...",
-      "Calculando puntuaciones de calidad...",
-      "Generando métricas de resultados...",
-      "Completando búsqueda...",
-    ]
+    // Create initial search history record
+    const searchStartTime = Date.now()
+    let searchId: string | null = null
 
-    let currentStepIndex = 0
-    const interval = setInterval(() => {
-      currentStepIndex++
-      const progress = (currentStepIndex / steps.length) * 100
-
-      setSearchState(prev => ({
-        ...prev,
-        searchProgress: progress,
-        currentStep: steps[currentStepIndex - 1] || "Procesando...",
-      }))
-
-      if (currentStepIndex >= steps.length) {
-        clearInterval(interval)
-        
-        // Complete the search with enhanced results
-        setTimeout(() => {
-          const searchLeads = generateSearchResults(config)
-          
-          const searchResults: SearchResults = {
-            leads: searchLeads,
-            totalFound: searchLeads.length,
-            searchTime: 5000 + Math.random() * 3000, // 5-8 seconds
-            searchId: Date.now().toString(),
-            // Enhanced search metadata
-            qualityDistribution: calculateQualityDistribution(searchLeads),
-            locationBreakdown: calculateLocationBreakdown(searchLeads),
-            activityBreakdown: calculateActivityBreakdown(searchLeads),
-          }
-
-          setResults(searchResults)
-          setSearchState({
-            isSearching: false,
-            searchComplete: true,
-            searchProgress: 100,
-            currentStep: `Búsqueda completada - ${searchLeads.length} leads encontrados`,
-          })
-        }, 500)
+    try {
+      // Create a temporary search record with 'running' status
+      const tempResults: SearchResults = {
+        leads: [],
+        totalFound: 0,
+        searchTime: 0,
+        searchId: Date.now().toString(),
+        qualityDistribution: { score1: 0, score2: 0, score3: 0, score4: 0, score5: 0 },
+        locationBreakdown: {},
+        activityBreakdown: {},
       }
-    }, 800) // Slower progression for more realistic feel
-  }, [config, isValidConfig, searchState.isSearching])
+
+      searchId = await saveSearchToHistory(
+        config,
+        tempResults,
+        0,
+        'running'
+      )
+      setCurrentSearchId(searchId)
+
+      // Enhanced search process with more realistic steps
+      const steps = [
+        "Conectando a fuentes de datos...",
+        "Aplicando filtros de búsqueda...",
+        "Extrayendo información de contacto...",
+        "Verificando emails y sitios web...",
+        "Calculando puntuaciones de calidad...",
+        "Generando métricas de resultados...",
+        "Completando búsqueda...",
+      ]
+
+      let currentStepIndex = 0
+      const interval = setInterval(async () => {
+        currentStepIndex++
+        const progress = (currentStepIndex / steps.length) * 100
+
+        setSearchState(prev => ({
+          ...prev,
+          searchProgress: progress,
+          currentStep: steps[currentStepIndex - 1] || "Procesando...",
+        }))
+
+        if (currentStepIndex >= steps.length) {
+          clearInterval(interval)
+          
+          // Complete the search with enhanced results
+          setTimeout(async () => {
+            try {
+              const searchLeads = generateSearchResults(config)
+              const searchTime = Date.now() - searchStartTime
+              
+              const searchResults: SearchResults = {
+                leads: searchLeads,
+                totalFound: searchLeads.length,
+                searchTime: searchTime,
+                searchId: Date.now().toString(),
+                // Enhanced search metadata
+                qualityDistribution: calculateQualityDistribution(searchLeads),
+                locationBreakdown: calculateLocationBreakdown(searchLeads),
+                activityBreakdown: calculateActivityBreakdown(searchLeads),
+              }
+
+              setResults(searchResults)
+              setSearchState({
+                isSearching: false,
+                searchComplete: true,
+                searchProgress: 100,
+                currentStep: `Búsqueda completada - ${searchLeads.length} leads encontrados`,
+              })
+
+              // Update search history with completed results
+              if (searchId) {
+                await saveSearchToHistory(
+                  config,
+                  searchResults,
+                  searchTime,
+                  'completed'
+                )
+              }
+            } catch (error) {
+              console.error('Error completing search:', error)
+              
+              setSearchState({
+                isSearching: false,
+                searchComplete: false,
+                searchProgress: 0,
+                currentStep: "Error en la búsqueda",
+              })
+
+              // Update search history with failed status
+              if (searchId) {
+                await updateSearchStatus(
+                  searchId,
+                  'failed',
+                  error instanceof Error ? error.message : 'Error desconocido'
+                )
+              }
+            }
+          }, 500)
+        }
+      }, 800) // Slower progression for more realistic feel
+    } catch (error) {
+      console.error('Error starting search:', error)
+      
+      setSearchState({
+        isSearching: false,
+        searchComplete: false,
+        searchProgress: 0,
+        currentStep: "Error al iniciar búsqueda",
+      })
+
+      // Update search history with failed status
+      if (searchId) {
+        await updateSearchStatus(
+          searchId,
+          'failed',
+          error instanceof Error ? error.message : 'Error al iniciar búsqueda'
+        )
+      }
+    }
+  }, [config, isValidConfig, searchState.isSearching, saveSearchToHistory, updateSearchStatus])
 
   const resetSearch = useCallback(() => {
     configActions.resetSearch()
@@ -269,6 +345,7 @@ export function useSearch() {
       currentStep: "",
     })
     setResults(null)
+    setCurrentSearchId(null)
   }, [configActions])
 
   const rerunSearch = useCallback((searchConfig: SearchConfig) => {
@@ -327,5 +404,6 @@ export function useSearch() {
     canStartSearch,
     isSearching: searchState.isSearching,
     searchComplete: searchState.searchComplete,
+    currentSearchId, // Expose current search ID for external use
   }
 } 
