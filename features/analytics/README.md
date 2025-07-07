@@ -196,6 +196,27 @@ const { data, isLoading, error, refreshStats } = useLeadStats('category')
 // - 'spain-region': leads_spain_by_region
 ```
 
+### Exportación de Reportes
+```tsx
+import { exportAnalyticsAsPDF, exportAnalyticsAsCSV } from "@/features/analytics"
+
+// Exportar como PDF
+await exportAnalyticsAsPDF(
+  dashboardStats,
+  leadStats,
+  recentActivity,
+  'category'
+)
+
+// Exportar como CSV
+exportAnalyticsAsCSV(
+  dashboardStats,
+  leadStats,
+  recentActivity,
+  'category'
+)
+```
+
 ## 🎨 Sistema de Design
 
 ### Colores por Métrica
@@ -244,6 +265,34 @@ const qualityColors = {
 - Refresh manual para control del usuario
 - No auto-polling para reducir carga del servidor
 - Error boundaries para manejo robusto
+
+## 📄 Exportación de Reportes
+
+### Funcionalidades Disponibles
+- **PDF Reports**: Reportes completos con tablas formateadas
+- **CSV Export**: Datos estructurados para análisis externo
+- **Dashboard Overview**: Métricas principales con tendencias
+- **Lead Statistics**: Estadísticas detalladas por categoría/región
+- **Recent Activity**: Timeline de actividades recientes
+
+### Características de Exportación
+- **Branding RitterFinder**: Colores y logos corporativos
+- **Tablas Formateadas**: AutoTable para presentación profesional
+- **Múltiples Secciones**: Dashboard, Leads, Actividad
+- **Timestamps**: Fechas de generación automáticas
+- **Nombres de Archivo**: Con fecha para organización
+
+### Uso en Componentes
+```tsx
+// En AnalyticsPage.tsx
+const handleExportData = async (format: 'csv' | 'pdf') => {
+  if (format === 'pdf') {
+    await exportAnalyticsAsPDF(dashboardStats, leadStats, recentActivity, 'category')
+  } else {
+    exportAnalyticsAsCSV(dashboardStats, leadStats, recentActivity, 'category')
+  }
+}
+```
 
 ## 🔧 Configuración y Setup
 

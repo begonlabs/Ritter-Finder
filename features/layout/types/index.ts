@@ -224,11 +224,9 @@ export interface LayoutState {
   sidebarCollapsed: boolean
   mobileMenuOpen: boolean
   theme: LayoutTheme
-  notifications: NotificationItem[]
   user: UserProfile | null
   
-  // New security and session management
-  securityAlerts: SecurityAlert[]
+  // Session management
   sessionExpiryWarning: boolean
   lastActivity: Date
 }
@@ -237,15 +235,10 @@ export interface LayoutActions {
   toggleSidebar: () => void
   toggleMobileMenu: () => void
   setTheme: (theme: LayoutTheme) => void
-  addNotification: (notification: NotificationItem) => void
-  markNotificationRead: (id: string) => void
-  clearNotifications: () => void
   setUser: (user: UserProfile | null) => void
   updateUserProfile: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>
   
-  // New security actions
-  addSecurityAlert: (alert: SecurityAlert) => void
-  dismissSecurityAlert: (id: string) => void
+  // Session management
   updateLastActivity: () => void
   triggerSessionWarning: (show: boolean) => void
 }

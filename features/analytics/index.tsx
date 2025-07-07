@@ -47,6 +47,12 @@ export {
   normalizeDashboardOverviewData
 } from "./utils/analyticsUtils"
 
+// Export utilities
+export {
+  exportAnalyticsAsPDF,
+  exportAnalyticsAsCSV
+} from "./utils/exportUtils"
+
 // Styles
 export { default as AnalyticsPageStyles } from "./styles/AnalyticsPage.module.css"
 export { default as DashboardStatsStyles } from "./styles/DashboardStats.module.css"

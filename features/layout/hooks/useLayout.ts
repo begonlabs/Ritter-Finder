@@ -196,35 +196,7 @@ const fetchUserProfileFromDatabase = async (authUser: any): Promise<UserProfile 
       permissionsCount: roleWithPermissions.permissions.length
     })
 
-    // Get notifications from database
-    const { data: notificationsData } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', authUser.id)
-      .eq('is_read', false)
-      .order('created_at', { ascending: false })
-      .limit(10)
 
-    const notifications: NotificationItem[] = (notificationsData || []).map(notification => ({
-      id: notification.id,
-      type: notification.type,
-      title: notification.title,
-      message: notification.message,
-      priority: notification.priority || 0,
-      isRead: notification.is_read,
-      readAt: notification.read_at ? new Date(notification.read_at) : undefined,
-      isArchived: notification.is_archived || false,
-      archivedAt: notification.archived_at ? new Date(notification.archived_at) : undefined,
-      actionUrl: notification.action_url,
-      actionText: notification.action_text,
-      actionData: notification.action_data || {},
-      relatedType: notification.related_type,
-      relatedId: notification.related_id,
-      createdAt: new Date(notification.created_at),
-      expiresAt: notification.expires_at ? new Date(notification.expires_at) : undefined
-    }))
-
-    console.log('📬 User notifications loaded:', notifications.length)
 
     const finalUserProfile: UserProfile = {
       id: profileData.id,
@@ -300,67 +272,6 @@ const createDefaultRole = (): Role => ({
   updatedAt: new Date()
 })
 
-// Fetch user notifications from database
-const fetchUserNotifications = async (userId: string): Promise<NotificationItem[]> => {
-  const supabase = createClient()
-  
-  try {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_archived', false)
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    if (error) {
-      console.error('Error fetching notifications:', error)
-      return getWelcomeNotification()
-    }
-
-    if (!data || data.length === 0) {
-      return getWelcomeNotification()
-    }
-
-    return data.map(notification => ({
-      id: notification.id,
-      type: notification.type,
-      title: notification.title,
-      message: notification.message,
-      priority: notification.priority,
-      isRead: notification.is_read,
-      readAt: notification.read_at ? new Date(notification.read_at) : undefined,
-      isArchived: notification.is_archived,
-      actionUrl: notification.action_url,
-      actionText: notification.action_text,
-      relatedType: notification.related_type,
-      relatedId: notification.related_id,
-      createdAt: new Date(notification.created_at)
-    }))
-
-  } catch (error) {
-    console.error('Error fetching notifications:', error)
-    return getWelcomeNotification()
-  }
-}
-
-// Fallback welcome notification for new users
-const getWelcomeNotification = (): NotificationItem[] => [
-  {
-    id: 'notif-welcome',
-    type: 'system',
-    title: '¡Bienvenido a RitterFinder!',
-    message: 'Tu cuenta ha sido configurada correctamente. Comienza buscando leads para tu negocio.',
-    priority: 1,
-    isRead: false,
-    isArchived: false,
-    actionUrl: '/dashboard?tab=search',
-    actionText: 'Iniciar búsqueda',
-    relatedType: 'onboarding',
-    createdAt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
-  }
-]
-
 export const useLayout = (): UseLayoutReturn => {
   const auth = useAuth()
   
@@ -368,9 +279,7 @@ export const useLayout = (): UseLayoutReturn => {
     sidebarCollapsed: false,
     mobileMenuOpen: false,
     theme: defaultTheme,
-    notifications: [],
     user: null,
-    securityAlerts: [],
     sessionExpiryWarning: false,
     lastActivity: new Date()
   })
@@ -391,13 +300,9 @@ export const useLayout = (): UseLayoutReturn => {
         // Fetch user profile from database
         const userProfile = await fetchUserProfileFromDatabase(auth.user)
         
-        // Fetch user notifications
-        const notifications = userProfile ? await fetchUserNotifications(auth.user.id) : []
-        
         setState(prev => ({
           ...prev,
-          user: userProfile,
-          notifications
+          user: userProfile
         }))
 
       } catch (error) {
@@ -405,8 +310,7 @@ export const useLayout = (): UseLayoutReturn => {
         // Set user to null if there's an error - the UI will handle this gracefully
         setState(prev => ({
           ...prev,
-          user: null,
-          notifications: getWelcomeNotification()
+          user: null
         }))
       }
     }
@@ -487,46 +391,7 @@ export const useLayout = (): UseLayoutReturn => {
     }))
   }, [])
 
-  const addNotification = useCallback((notification: NotificationItem) => {
-    setState(prev => ({
-      ...prev,
-      notifications: [notification, ...prev.notifications]
-    }))
-  }, [])
 
-  const markNotificationRead = useCallback(async (id: string) => {
-    setState(prev => ({
-      ...prev,
-      notifications: prev.notifications.map(notif =>
-        notif.id === id ? { 
-          ...notif, 
-          isRead: true, 
-          readAt: new Date() 
-        } : notif
-      )
-    }))
-
-    // Update in database
-    const supabase = createClient()
-    try {
-      await supabase
-        .from('notifications')
-        .update({ 
-          is_read: true, 
-          read_at: new Date().toISOString() 
-        })
-        .eq('id', id)
-    } catch (error) {
-      console.error('Error marking notification as read:', error)
-    }
-  }, [])
-
-  const clearNotifications = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      notifications: []
-    }))
-  }, [])
 
   const setUser = useCallback((user: UserProfile | null) => {
     setState(prev => ({
@@ -570,20 +435,7 @@ export const useLayout = (): UseLayoutReturn => {
     }
   }, [state.user, setUser])
 
-  // Security actions
-  const addSecurityAlert = useCallback((alert: SecurityAlert) => {
-    setState(prev => ({
-      ...prev,
-      securityAlerts: [alert, ...prev.securityAlerts]
-    }))
-  }, [])
 
-  const dismissSecurityAlert = useCallback((id: string) => {
-    setState(prev => ({
-      ...prev,
-      securityAlerts: prev.securityAlerts.filter(alert => alert.id !== id)
-    }))
-  }, [])
 
   const updateLastActivity = useCallback(() => {
     setState(prev => ({
@@ -603,13 +455,8 @@ export const useLayout = (): UseLayoutReturn => {
     toggleSidebar,
     toggleMobileMenu,
     setTheme,
-    addNotification,
-    markNotificationRead,
-    clearNotifications,
     setUser,
     updateUserProfile,
-    addSecurityAlert,
-    dismissSecurityAlert,
     updateLastActivity,
     triggerSessionWarning
   }

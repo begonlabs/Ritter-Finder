@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, Menu, User, UserCircle, LogOut, Shield, AlertTriangle } from "lucide-react"
+import { Menu, User, UserCircle, LogOut, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
@@ -29,26 +29,12 @@ interface DashboardHeaderProps extends Partial<HeaderProps> {
 export function DashboardHeader({ 
   onLogout,
   onProfileClick,
-  onNotificationClick,
-  onSecurityAlert,
-  showSecurityStatus = true,
   className = ""
 }: DashboardHeaderProps) {
   const { t } = useLanguage()
   const { state, actions } = useLayout()
 
-  const unreadCount = state.notifications.filter(n => !n.isRead).length
-  const criticalAlertsCount = state.securityAlerts.filter(a => a.severity === 'critical').length
   const userStatus = state.user?.status || 'active'
-
-  const handleNotificationClick = (notification: any) => {
-    actions.markNotificationRead(notification.id)
-    if (onNotificationClick) {
-      onNotificationClick(notification)
-    } else if (notification.actionUrl) {
-      window.location.href = notification.actionUrl
-    }
-  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -74,23 +60,7 @@ export function DashboardHeader({
     }
   }
 
-  const getPriorityColor = (priority: number) => {
-    switch (priority) {
-      case 3: return 'text-red-600' // urgent
-      case 2: return 'text-orange-600' // high
-      case 1: return 'text-blue-600' // medium
-      default: return 'text-gray-600' // low
-    }
-  }
 
-  const getPriorityText = (priority: number) => {
-    switch (priority) {
-      case 3: return 'Urgente'
-      case 2: return 'Alta'
-      case 1: return 'Media'
-      default: return 'Baja'
-    }
-  }
 
   return (
     <header className={`${styles.header} ${className}`}>
@@ -110,137 +80,6 @@ export function DashboardHeader({
         {/* Desktop Actions */}
         <div className={styles.desktopActions}>
           <LanguageSelector />
-
-          {/* Security Status */}
-          {showSecurityStatus && criticalAlertsCount > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className={`${styles.actionButton} ${styles.securityAlert}`}>
-                  <Shield className={styles.actionIcon} />
-                  <div className={`${styles.notificationBadge} ${styles.criticalBadge}`}>
-                    {criticalAlertsCount}
-                  </div>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className={styles.dropdownContent}>
-                <div className={styles.dropdownHeader}>
-                  <h3 className={styles.dropdownTitle}>Alertas de Seguridad</h3>
-                </div>
-                <DropdownMenuSeparator />
-                <div className={styles.notificationList}>
-                  {state.securityAlerts.map((alert) => (
-                    <div 
-                      key={alert.id}
-                      className={`${styles.notificationItem} ${styles.securityAlertItem}`}
-                      onClick={() => onSecurityAlert?.(alert)}
-                    >
-                      <div className={styles.notificationHeader}>
-                        <AlertTriangle className="h-4 w-4 text-red-500" />
-                        <span className={styles.notificationTitle}>
-                          {alert.type === 'new_device' ? 'Nuevo Dispositivo' :
-                           alert.type === 'suspicious_activity' ? 'Actividad Sospechosa' :
-                           alert.type === 'location_change' ? 'Cambio de Ubicación' :
-                           'Intentos Fallidos'}
-                        </span>
-                        <Badge className={`${styles.severityBadge} severity-${alert.severity}`}>
-                          {alert.severity === 'critical' ? 'Crítico' :
-                           alert.severity === 'high' ? 'Alto' :
-                           alert.severity === 'medium' ? 'Medio' : 'Bajo'}
-                        </Badge>
-                      </div>
-                      <p className={styles.notificationDescription}>
-                        {alert.message}
-                      </p>
-                      <p className={styles.notificationTime}>
-                        {formatDistanceToNow(alert.timestamp, { 
-                          addSuffix: true, 
-                          locale: es 
-                        })}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
-          {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className={styles.actionButton}>
-                <Bell className={styles.actionIcon} />
-                {unreadCount > 0 && (
-                  <div className={styles.notificationBadge}>
-                    {unreadCount}
-                  </div>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={styles.dropdownContent}>
-              <div className={styles.dropdownHeader}>
-                <h3 className={styles.dropdownTitle}>Notificaciones</h3>
-                {unreadCount > 0 && (
-                  <button
-                    onClick={() => state.notifications.forEach(n => !n.isRead && actions.markNotificationRead(n.id))}
-                    className={styles.markAllButton}
-                  >
-                    Marcar todas
-                  </button>
-                )}
-              </div>
-              <DropdownMenuSeparator />
-              <div className={styles.notificationList}>
-                {state.notifications.length > 0 ? (
-                  state.notifications.map((notification) => (
-                    <div 
-                      key={notification.id}
-                      className={styles.notificationItem}
-                      onClick={() => handleNotificationClick(notification)}
-                    >
-                      <div className={styles.notificationHeader}>
-                        <span className={`${styles.notificationTitle} ${!notification.isRead ? styles.unread : ''}`}>
-                          {notification.title}
-                        </span>
-                        <div className={styles.notificationMeta}>
-                          <span className={`${styles.priorityBadge} ${getPriorityColor(notification.priority)}`}>
-                            {getPriorityText(notification.priority)}
-                          </span>
-                          {!notification.isRead && (
-                            <div className={styles.unreadIndicator} />
-                          )}
-                        </div>
-                      </div>
-                      <p className={styles.notificationDescription}>
-                        {notification.message}
-                      </p>
-                      <div className={styles.notificationFooter}>
-                        <p className={styles.notificationTime}>
-                          {formatDistanceToNow(notification.createdAt, { 
-                            addSuffix: true, 
-                            locale: es 
-                          })}
-                        </p>
-                        {notification.relatedType && (
-                          <Badge variant="outline" className={styles.typeBadge}>
-                            {notification.type === 'lead' ? 'Lead' :
-                             notification.type === 'campaign' ? 'Campaña' :
-                             notification.type === 'system' ? 'Sistema' :
-                             notification.type === 'security' ? 'Seguridad' : 'Otro'}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className={styles.emptyNotifications}>
-                    <p className={styles.emptyNotificationsText}>
-                      No hay notificaciones
-                    </p>
-                  </div>
-                )}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
           {/* Profile */}
           <DropdownMenu>
@@ -312,22 +151,6 @@ export function DashboardHeader({
               <div className={styles.mobileActions}>
                 <div className={styles.mobileActionGroup}>
                   <LanguageSelector />
-                  <button className={styles.actionButton}>
-                    <Bell className={styles.actionIcon} />
-                    {unreadCount > 0 && (
-                      <div className={styles.notificationBadge}>
-                        {unreadCount}
-                      </div>
-                    )}
-                  </button>
-                  {criticalAlertsCount > 0 && (
-                    <button className={`${styles.actionButton} ${styles.securityAlert}`}>
-                      <Shield className={styles.actionIcon} />
-                      <div className={`${styles.notificationBadge} ${styles.criticalBadge}`}>
-                        {criticalAlertsCount}
-                      </div>
-                    </button>
-                  )}
                   <button className={styles.actionButton} onClick={onProfileClick}>
                     <User className={styles.actionIcon} />
                   </button>
