@@ -22,6 +22,7 @@ import {
 import { useActivityTimeline } from "../hooks/useActivityTimeline"
 import type { ActivityTimelineProps, ActivityItem } from "../types"
 import styles from "../styles/ActivityTimeline.module.css"
+import { memo, useMemo } from "react"
 
 interface ActivityTimelineComponentProps extends Omit<ActivityTimelineProps, 'activities'> {
   onViewDetails: (activityId: string) => void
@@ -30,6 +31,227 @@ interface ActivityTimelineComponentProps extends Omit<ActivityTimelineProps, 'ac
   compact?: boolean
   groupByDate?: boolean
 }
+
+// Move helper functions outside component to prevent recreation on each render
+const getActivityIcon = (type: string, status: string) => {
+  const iconClass = `${styles.activityIconSvg} ${
+    status === 'error' ? styles.error : 
+    status === 'success' ? styles.success : 
+    styles.search
+  }`
+
+  switch (type) {
+    case 'search':
+      return <Search className={iconClass} />
+    case 'campaign':
+      return <Mail className={iconClass} />
+    case 'export':
+      return <Download className={iconClass} />
+    case 'import':
+      return <Upload className={iconClass} />
+    case 'lead_update':
+      return <UserCheck className={iconClass} />
+    default:
+      return <Clock className={iconClass} />
+  }
+}
+
+const getActivityIconClass = (type: string, status: string) => {
+  let baseClass = `${styles.activityIcon}`
+  
+  switch (type) {
+    case 'search':
+      baseClass += ` ${styles.search}`
+      break
+    case 'campaign':
+      baseClass += ` ${styles.campaign}`
+      break
+    case 'export':
+      baseClass += ` ${styles.export}`
+      break
+    case 'import':
+      baseClass += ` ${styles.import}`
+      break
+    case 'lead_update':
+      baseClass += ` ${styles.leadUpdate}`
+      break
+    default:
+      baseClass += ` ${styles.system}`
+  }
+
+  if (status === 'error') baseClass += ` ${styles.error}`
+  if (status === 'success') baseClass += ` ${styles.success}`
+
+  return baseClass
+}
+
+const getActivityMarkerClass = (type: string, status: string) => {
+  let baseClass = `${styles.activityMarker}`
+  
+  switch (type) {
+    case 'search':
+      baseClass += ` ${styles.search}`
+      break
+    case 'campaign':
+      baseClass += ` ${styles.campaign}`
+      break
+    case 'export':
+      baseClass += ` ${styles.export}`
+      break
+    case 'import':
+      baseClass += ` ${styles.import}`
+      break
+    case 'lead_update':
+      baseClass += ` ${styles.leadUpdate}`
+      break
+    default:
+      baseClass += ` ${styles.system}`
+  }
+
+  if (status === 'error') baseClass += ` ${styles.error}`
+
+  return baseClass
+}
+
+const getActivityTypeText = (type: string) => {
+  switch (type) {
+    case 'search':
+      return 'Búsqueda'
+    case 'campaign':
+      return 'Campaña'
+    case 'export':
+      return 'Exportación'
+    case 'import':
+      return 'Importación'
+    case 'lead_update':
+      return 'Actualización'
+    default:
+      return type
+  }
+}
+
+const getActivityTypeBadgeClass = (type: string) => {
+  switch (type) {
+    case 'search':
+      return `${styles.activityTypeBadge} ${styles.search}`
+    case 'campaign':
+      return `${styles.activityTypeBadge} ${styles.campaign}`
+    case 'export':
+      return `${styles.activityTypeBadge} ${styles.export}`
+    case 'import':
+      return `${styles.activityTypeBadge} ${styles.import}`
+    case 'lead_update':
+      return `${styles.activityTypeBadge} ${styles.leadUpdate}`
+    default:
+      return styles.activityTypeBadge
+  }
+}
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case 'success':
+      return <CheckCircle className={styles.activityStatusIcon} />
+    case 'error':
+      return <AlertCircle className={styles.activityStatusIcon} />
+    case 'pending':
+      return <Clock className={styles.activityStatusIcon} />
+    default:
+      return <Clock className={styles.activityStatusIcon} />
+  }
+}
+
+// Memoized activity item component to prevent unnecessary re-renders
+const ActivityItemComponent = memo(({ 
+  activity, 
+  onViewDetails 
+}: { 
+  activity: ActivityItem
+  onViewDetails: (activityId: string) => void 
+}) => (
+  <div className={styles.activityItem}>
+    {/* Activity Marker */}
+    <div className={getActivityMarkerClass(activity.type, activity.status)}></div>
+
+    {/* Activity Icon */}
+    <div className={getActivityIconClass(activity.type, activity.status)}>
+      {getActivityIcon(activity.type, activity.status)}
+    </div>
+
+    {/* Activity Content */}
+    <div className={styles.activityContent}>
+      <div className={styles.activityHeader}>
+        <div>
+          <div className={styles.activityTitle}>
+            {activity.title}
+          </div>
+          
+          <p className={styles.activityDescription}>
+            {activity.description}
+          </p>
+
+          {/* Activity Badges */}
+          <div className={styles.activityBadges}>
+            <div className={getActivityTypeBadgeClass(activity.type)}>
+              {getActivityTypeText(activity.type)}
+            </div>
+            {getStatusIcon(activity.status)}
+          </div>
+
+          {/* Activity Metadata */}
+          {activity.metadata && Object.keys(activity.metadata).length > 0 && (
+            <div className={styles.activityMetadata}>
+              {activity.metadata.leadsCount && (
+                <span className={styles.metadataTag}>
+                  {activity.metadata.leadsCount} leads
+                </span>
+              )}
+              {activity.metadata.duration && (
+                <span className={styles.metadataTag}>
+                  {activity.metadata.duration}s
+                </span>
+              )}
+              {activity.metadata.exportFormat && (
+                <span className={styles.metadataTag}>
+                  {activity.metadata.exportFormat.toUpperCase()}
+                </span>
+              )}
+              {activity.metadata.errorMessage && (
+                <span className={`${styles.metadataTag} ${styles.error}`}>
+                  {activity.metadata.errorMessage}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Activity Footer */}
+          <div className={styles.activityFooter}>
+            <div className={styles.activityTime}>
+              <span className={styles.activityTimestamp}>
+                {formatDistanceToNow(new Date(activity.timestamp), { 
+                  addSuffix: true, 
+                  locale: es 
+                })}
+              </span>
+              <span>
+                {format(new Date(activity.timestamp), "h:mm a")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* View Details Button */}
+        <button
+          onClick={() => onViewDetails(activity.id)}
+          className={styles.viewDetailsButton}
+        >
+          <Eye className={styles.viewDetailsIcon} />
+        </button>
+      </div>
+    </div>
+  </div>
+))
+
+ActivityItemComponent.displayName = 'ActivityItemComponent'
 
 export function ActivityTimeline({
   onViewDetails,
@@ -40,226 +262,44 @@ export function ActivityTimeline({
 }: ActivityTimelineComponentProps) {
   const timeline = useActivityTimeline(maxItems)
 
-  const getActivityIcon = (type: string, status: string) => {
-    const iconClass = `${styles.activityIconSvg} ${
-      status === 'error' ? styles.error : 
-      status === 'success' ? styles.success : 
-      styles.search
-    }`
-
-    switch (type) {
-      case 'search':
-        return <Search className={iconClass} />
-      case 'campaign':
-        return <Mail className={iconClass} />
-      case 'export':
-        return <Download className={iconClass} />
-      case 'import':
-        return <Upload className={iconClass} />
-      case 'lead_update':
-        return <UserCheck className={iconClass} />
-      default:
-        return <Clock className={iconClass} />
-    }
-  }
-
-  const getActivityIconClass = (type: string, status: string) => {
-    let baseClass = `${styles.activityIcon}`
-    
-    switch (type) {
-      case 'search':
-        baseClass += ` ${styles.search}`
-        break
-      case 'campaign':
-        baseClass += ` ${styles.campaign}`
-        break
-      case 'export':
-        baseClass += ` ${styles.export}`
-        break
-      case 'import':
-        baseClass += ` ${styles.import}`
-        break
-      case 'lead_update':
-        baseClass += ` ${styles.leadUpdate}`
-        break
-      default:
-        baseClass += ` ${styles.system}`
-    }
-
-    if (status === 'error') baseClass += ` ${styles.error}`
-    if (status === 'success') baseClass += ` ${styles.success}`
-
-    return baseClass
-  }
-
-  const getActivityMarkerClass = (type: string, status: string) => {
-    let baseClass = `${styles.activityMarker}`
-    
-    switch (type) {
-      case 'search':
-        baseClass += ` ${styles.search}`
-        break
-      case 'campaign':
-        baseClass += ` ${styles.campaign}`
-        break
-      case 'export':
-        baseClass += ` ${styles.export}`
-        break
-      case 'import':
-        baseClass += ` ${styles.import}`
-        break
-      case 'lead_update':
-        baseClass += ` ${styles.leadUpdate}`
-        break
-      default:
-        baseClass += ` ${styles.system}`
-    }
-
-    if (status === 'error') baseClass += ` ${styles.error}`
-
-    return baseClass
-  }
-
-  const getActivityTypeText = (type: string) => {
-    switch (type) {
-      case 'search':
-        return 'Búsqueda'
-      case 'campaign':
-        return 'Campaña'
-      case 'export':
-        return 'Exportación'
-      case 'import':
-        return 'Importación'
-      case 'lead_update':
-        return 'Actualización'
-      default:
-        return type
-    }
-  }
-
-  const getActivityTypeBadgeClass = (type: string) => {
-    switch (type) {
-      case 'search':
-        return `${styles.activityTypeBadge} ${styles.search}`
-      case 'campaign':
-        return `${styles.activityTypeBadge} ${styles.campaign}`
-      case 'export':
-        return `${styles.activityTypeBadge} ${styles.export}`
-      case 'import':
-        return `${styles.activityTypeBadge} ${styles.import}`
-      case 'lead_update':
-        return `${styles.activityTypeBadge} ${styles.leadUpdate}`
-      default:
-        return styles.activityTypeBadge
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <CheckCircle className={styles.activityStatusIcon} />
-      case 'error':
-        return <AlertCircle className={styles.activityStatusIcon} />
-      case 'pending':
-        return <Clock className={styles.activityStatusIcon} />
-      default:
-        return <Clock className={styles.activityStatusIcon} />
-    }
-  }
-
-  const ActivityItemComponent = ({ activity }: { activity: ActivityItem }) => (
-    <div className={styles.activityItem}>
-      {/* Activity Marker */}
-      <div className={getActivityMarkerClass(activity.type, activity.status)}></div>
-
-      {/* Activity Icon */}
-      <div className={getActivityIconClass(activity.type, activity.status)}>
-        {getActivityIcon(activity.type, activity.status)}
-      </div>
-
-      {/* Activity Content */}
-      <div className={styles.activityContent}>
-        <div className={styles.activityHeader}>
-          <div>
-            <div className={styles.activityTitle}>
-              {activity.title}
-            </div>
-            
-            <p className={styles.activityDescription}>
-              {activity.description}
-            </p>
-
-            {/* Activity Badges */}
-            <div className={styles.activityBadges}>
-              <div className={getActivityTypeBadgeClass(activity.type)}>
-                {getActivityTypeText(activity.type)}
-              </div>
-              {getStatusIcon(activity.status)}
-            </div>
-
-            {/* Activity Metadata */}
-            {activity.metadata && Object.keys(activity.metadata).length > 0 && (
-              <div className={styles.activityMetadata}>
-                {activity.metadata.leadsCount && (
-                  <span className={styles.metadataTag}>
-                    {activity.metadata.leadsCount} leads
-                  </span>
-                )}
-                {activity.metadata.duration && (
-                  <span className={styles.metadataTag}>
-                    {activity.metadata.duration}s
-                  </span>
-                )}
-                {activity.metadata.exportFormat && (
-                  <span className={styles.metadataTag}>
-                    {activity.metadata.exportFormat.toUpperCase()}
-                  </span>
-                )}
-                {activity.metadata.errorMessage && (
-                  <span className={`${styles.metadataTag} ${styles.error}`}>
-                    {activity.metadata.errorMessage}
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Activity Footer */}
-            <div className={styles.activityFooter}>
-              <div className={styles.activityTime}>
-                <span className={styles.activityTimestamp}>
-                  {formatDistanceToNow(new Date(activity.timestamp), { 
-                    addSuffix: true, 
-                    locale: es 
-                  })}
-                </span>
-                <span>
-                  {format(new Date(activity.timestamp), "h:mm a")}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* View Details Button */}
-          <button
-            onClick={() => onViewDetails(activity.id)}
-            className={styles.viewDetailsButton}
-          >
-            <Eye className={styles.viewDetailsIcon} />
-          </button>
-        </div>
+  // Memoize loading state to prevent unnecessary re-renders
+  const loadingContent = useMemo(() => (
+    <div className={styles.activityTimeline}>
+      <div className={styles.loadingState}>
+        <div className={styles.loadingSpinner}></div>
+        <span className={styles.loadingText}>Cargando actividad...</span>
       </div>
     </div>
-  )
+  ), [])
 
-  if (timeline.isLoading) {
-    return (
-      <div className={styles.activityTimeline}>
-        <div className={styles.loadingState}>
-          <div className={styles.loadingSpinner}></div>
-          <span className={styles.loadingText}>Cargando actividad...</span>
-        </div>
+  // Memoize empty states to prevent unnecessary re-renders
+  const emptyStates = useMemo(() => ({
+    noActivity: (
+      <div className={styles.emptyState}>
+        <Clock className={styles.emptyStateIcon} />
+        <h3 className={styles.emptyStateTitle}>
+          No hay actividad reciente
+        </h3>
+        <p className={styles.emptyStateDescription}>
+          Comienza a usar la plataforma para ver tu actividad aquí
+        </p>
+      </div>
+    ),
+    noFilteredResults: (
+      <div className={styles.emptyState}>
+        <Filter className={styles.emptyStateIcon} />
+        <h3 className={styles.emptyStateTitle}>
+          No hay actividad que coincida
+        </h3>
+        <p className={styles.emptyStateDescription}>
+          Intenta ajustar tus filtros
+        </p>
       </div>
     )
+  }), [])
+
+  if (timeline.isLoading) {
+    return loadingContent
   }
 
   return (
@@ -308,27 +348,8 @@ export function ActivityTimeline({
       </div>
 
       <div className={`${styles.content} ${compact ? styles.compact : ''}`}>
-        {!timeline.hasActivities ? (
-          <div className={styles.emptyState}>
-            <Clock className={styles.emptyStateIcon} />
-            <h3 className={styles.emptyStateTitle}>
-              No hay actividad reciente
-            </h3>
-            <p className={styles.emptyStateDescription}>
-              Comienza a usar la plataforma para ver tu actividad aquí
-            </p>
-          </div>
-        ) : !timeline.hasFilteredResults ? (
-          <div className={styles.emptyState}>
-            <Filter className={styles.emptyStateIcon} />
-            <h3 className={styles.emptyStateTitle}>
-              No hay actividad que coincida
-            </h3>
-            <p className={styles.emptyStateDescription}>
-              Intenta ajustar tus filtros
-            </p>
-          </div>
-        ) : (
+        {!timeline.hasActivities ? emptyStates.noActivity : 
+         !timeline.hasFilteredResults ? emptyStates.noFilteredResults : (
           <div className={styles.timelineContainer}>
             {groupByDate ? (
               /* Grouped by Date */
@@ -346,7 +367,11 @@ export function ActivityTimeline({
                   
                   <div className={styles.activityList}>
                     {activities.map((activity) => (
-                      <ActivityItemComponent key={activity.id} activity={activity} />
+                      <ActivityItemComponent 
+                        key={activity.id} 
+                        activity={activity} 
+                        onViewDetails={onViewDetails}
+                      />
                     ))}
                   </div>
                 </div>
@@ -356,7 +381,10 @@ export function ActivityTimeline({
               <div className={styles.simpleList}>
                 {timeline.activities.map((activity) => (
                   <div key={activity.id} className={styles.simpleListItem}>
-                    <ActivityItemComponent activity={activity} />
+                    <ActivityItemComponent 
+                      activity={activity} 
+                      onViewDetails={onViewDetails}
+                    />
                   </div>
                 ))}
               </div>

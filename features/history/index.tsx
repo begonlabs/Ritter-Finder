@@ -14,6 +14,14 @@ export { SearchHistory } from "./components/SearchHistory"
 export { CampaignHistory } from "./components/CampaignHistory"
 export { ActivityTimeline } from "./components/ActivityTimeline"
 
+// Utils
+export { 
+  exportHistoryToExcel, 
+  exportSearchHistory, 
+  exportCampaignHistory, 
+  exportActivityTimeline 
+} from "./utils/exportUtils"
+
 // Styles
 export { default as HistoryPageStyles } from "./styles/HistoryPage.module.css"
 export { default as SearchHistoryStyles } from "./styles/SearchHistory.module.css"

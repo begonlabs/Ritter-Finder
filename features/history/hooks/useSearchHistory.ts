@@ -1,86 +1,103 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
-import type { SearchHistoryItem, HistoryFilters } from "../types"
+import { createClient } from "@/utils/supabase/client"
+import type { 
+  SearchHistoryItem, 
+  SearchHistoryDetailedView, 
+  SearchHistoryRecord, 
+  HistoryFilters 
+} from "../types"
 
-// Mock data - in real app this would come from API
-const mockSearchHistory: SearchHistoryItem[] = [
-  {
-    id: "search-1",
-    date: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    websites: ["solarinstallers.com", "greenenergyfirms.net"],
-    clientType: "residential",
-    leadsFound: 24,
-    leadsContacted: 18,
-    searchTime: 45,
-    status: "completed",
-    query: "solar panel installers",
+// Fixed UUID for anonymous users (from previous conversation)
+const ANONYMOUS_USER_ID = "550e8400-e29b-41d4-a716-446655440000"
+
+// Data adapter functions
+const adaptSearchView = (view: SearchHistoryDetailedView): SearchHistoryItem => {
+  // Parse search parameters to extract useful information
+  const searchParams = view.search_parameters || {}
+  const filtersApplied = view.filters_applied || {}
+  
+  // Extract websites from search parameters
+  const websites = searchParams.websites || searchParams.sources || ['general']
+  
+  // Extract client type from filters or parameters
+  const clientType = searchParams.client_type || 
+                    filtersApplied.client_type || 
+                    searchParams.category ||
+                    'general'
+
+  // Calculate search time in seconds
+  const searchTime = view.duration_seconds || 
+                    (view.execution_time_ms ? Math.round(view.execution_time_ms / 1000) : 0)
+
+  return {
+    id: view.id,
+    date: view.started_at,
+    websites: Array.isArray(websites) ? websites : [websites],
+    clientType: clientType,
+    leadsFound: view.total_results,
+    leadsContacted: 0, // Not available in current schema
+    searchTime: searchTime,
+    status: mapSearchStatus(view.status),
+    query: view.query_name,
     filters: {
-      industry: ["renewable_energy"],
-      confidence: 85
-    }
-  },
-  {
-    id: "search-2", 
-    date: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(), // 8 hours ago
-    websites: ["renewableenergy.com", "eco-consultants.org"],
-    clientType: "commercial",
-    leadsFound: 31,
-    leadsContacted: 25,
-    searchTime: 62,
-    status: "completed",
-    query: "commercial energy consultants",
-    filters: {
-      industry: ["consulting", "renewable_energy"],
-      confidence: 90
-    }
-  },
-  {
-    id: "search-3",
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    websites: ["sustainablesolutions.co"],
-    clientType: "industrial", 
-    leadsFound: 15,
-    leadsContacted: 12,
-    searchTime: 38,
-    status: "completed",
-    query: "sustainable energy solutions",
-    filters: {
-      industry: ["manufacturing", "renewable_energy"],
-      confidence: 80
-    }
-  },
-  {
-    id: "search-4",
-    date: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-    websites: ["solarinstallers.com"],
-    clientType: "residential",
-    leadsFound: 0,
-    leadsContacted: 0,
-    searchTime: 12,
-    status: "failed",
-    query: "residential solar contractors",
-    filters: {
-      industry: ["renewable_energy"],
-      confidence: 75
-    }
-  },
-  {
-    id: "search-5",
-    date: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
-    websites: ["greenenergyfirms.net", "renewableenergy.com"],
-    clientType: "energy",
-    leadsFound: 42,
-    leadsContacted: 35,
-    searchTime: 78,
-    status: "completed",
-    query: "green energy consultants",
-    filters: {
-      industry: ["consulting", "renewable_energy"],
-      confidence: 88
+      industry: filtersApplied.industry || [],
+      location: filtersApplied.location || [],
+      companySize: filtersApplied.company_size || [],
+      confidence: filtersApplied.confidence || searchParams.confidence || 80
     }
   }
-]
+}
+
+const adaptSearchRecord = (record: SearchHistoryRecord): SearchHistoryItem => {
+  // Parse search parameters to extract useful information
+  const searchParams = record.search_parameters || {}
+  const filtersApplied = record.filters_applied || {}
+  
+  // Extract websites from search parameters
+  const websites = searchParams.websites || searchParams.sources || ['general']
+  
+  // Extract client type from filters or parameters
+  const clientType = searchParams.client_type || 
+                    filtersApplied.client_type || 
+                    searchParams.category ||
+                    'general'
+
+  // Calculate search time in seconds
+  const searchTime = Math.round(record.execution_time_ms / 1000)
+
+  return {
+    id: record.id,
+    date: record.started_at,
+    websites: Array.isArray(websites) ? websites : [websites],
+    clientType: clientType,
+    leadsFound: record.total_results,
+    leadsContacted: 0, // Not available in current schema
+    searchTime: searchTime,
+    status: mapSearchStatus(record.status),
+    query: record.query_name,
+    filters: {
+      industry: filtersApplied.industry || [],
+      location: filtersApplied.location || [],
+      companySize: filtersApplied.company_size || [],
+      confidence: filtersApplied.confidence || searchParams.confidence || 80
+    }
+  }
+}
+
+const mapSearchStatus = (dbStatus: string): 'completed' | 'failed' | 'cancelled' => {
+  switch (dbStatus) {
+    case 'completed':
+      return 'completed'
+    case 'failed':
+      return 'failed'
+    case 'cancelled':
+      return 'cancelled'
+    default:
+      return 'failed'
+  }
+}
 
 export function useSearchHistory() {
   const [history, setHistory] = useState<SearchHistoryItem[]>([])
@@ -88,22 +105,76 @@ export function useSearchHistory() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
+  
+  const supabase = createClient()
 
-  // Load history data
+  // Get current user ID
+  const getCurrentUserId = async (): Promise<string> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      return user?.id || ANONYMOUS_USER_ID
+    } catch (error) {
+      console.warn('Could not get user, using anonymous ID:', error)
+      return ANONYMOUS_USER_ID
+    }
+  }
+
+  // Load history data from Supabase
   const loadHistory = useCallback(async () => {
     setIsLoading(true)
     setError(null)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800))
-      setHistory(mockSearchHistory)
+      const userId = await getCurrentUserId()
+      console.log('🔄 Loading search history for user:', userId)
+
+      // First try to use the search_history_detailed view
+      let { data, error: viewError } = await supabase
+        .from('search_history_detailed')
+        .select('*')
+        .eq('user_id', userId)
+        .order('started_at', { ascending: false })
+        .limit(100) // Get a reasonable number of searches
+
+      if (viewError) {
+        console.warn('📊 Search history detailed view not available, falling back to search_history table:', viewError.message)
+        
+        // Fallback to direct search_history table
+        const { data: fallbackData, error: tableError } = await supabase
+          .from('search_history')
+          .select('*')
+          .eq('user_id', userId)
+          .order('started_at', { ascending: false })
+          .limit(100)
+
+        if (tableError) {
+          throw new Error(`Failed to load search history: ${tableError.message}`)
+        }
+
+        console.log(`✅ Loaded ${fallbackData?.length || 0} search records from search_history table`)
+
+        // Convert search_history records to frontend format
+        const adaptedHistory = (fallbackData || []).map(adaptSearchRecord)
+        setHistory(adaptedHistory)
+        return
+      }
+
+      console.log(`✅ Loaded ${data?.length || 0} search records from search_history_detailed view`)
+
+      // Convert database view records to frontend format
+      const adaptedHistory = (data || []).map(adaptSearchView)
+      setHistory(adaptedHistory)
+
     } catch (err) {
+      console.error('❌ Error loading search history:', err)
       setError(err instanceof Error ? err.message : 'Failed to load search history')
+      
+      // Set empty array on error rather than keeping old data
+      setHistory([])
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [supabase])
 
   // Filter history based on search term and status
   const filteredHistory = useMemo(() => {
@@ -130,22 +201,35 @@ export function useSearchHistory() {
 
   // Delete search record
   const deleteSearch = useCallback(async (searchId: string) => {
-    setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      setIsLoading(true)
+
+      const { error } = await supabase
+        .from('search_history')
+        .delete()
+        .eq('id', searchId)
+
+      if (error) {
+        throw new Error(`Failed to delete search: ${error.message}`)
+      }
+
+      // Remove from local state
       setHistory(prev => prev.filter(item => item.id !== searchId))
+      
+      console.log('Search deleted successfully:', searchId)
     } catch (err) {
+      console.error('Error deleting search:', err)
       setError(err instanceof Error ? err.message : 'Failed to delete search')
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [supabase])
 
   // Rerun search
   const rerunSearch = useCallback(async (searchData: SearchHistoryItem) => {
     console.log('Rerunning search:', searchData)
     // In real app, this would trigger a new search with the same parameters
+    // For now, we'll just log the action
     return Promise.resolve()
   }, [])
 

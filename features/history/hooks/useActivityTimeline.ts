@@ -1,143 +1,85 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
-import type { ActivityItem } from "../types"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
+import { createClient } from "@/utils/supabase/client"
+import type { 
+  ActivityItem, 
+  ComprehensiveActivityHistoryView, 
+  ActivityLogRecord 
+} from "../types"
 
-// Mock data - in real app this would come from API
-const mockActivityData: ActivityItem[] = [
-  {
-    id: "activity-1",
-    type: "search",
-    title: "Búsqueda de Leads Completada",
-    description: "Búsqueda de instaladores solares residenciales en 2 sitios web",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString(), // 1 hour ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      searchId: "search-1",
-      leadsCount: 24,
-      duration: 45
-    }
-  },
-  {
-    id: "activity-2",
-    type: "campaign",
-    title: "Campaña de Email Enviada",
-    description: "Oferta especial de energía solar enviada a 18 contactos",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), // 3 hours ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      campaignId: "campaign-1",
-      leadsCount: 18
-    }
-  },
-  {
-    id: "activity-3",
-    type: "export",
-    title: "Leads Exportados",
-    description: "Lista de 31 leads exportada en formato CSV",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      leadsCount: 31,
-      exportFormat: "csv"
-    }
-  },
-  {
-    id: "activity-4",
-    type: "search",
-    title: "Búsqueda de Leads Iniciada",
-    description: "Búsqueda de consultores energéticos comerciales en progreso",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(), // 8 hours ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      searchId: "search-2",
-      leadsCount: 31,
-      duration: 62
-    }
-  },
-  {
-    id: "activity-5",
-    type: "campaign",
-    title: "Campaña de Seguimiento",
-    description: "Email de información sobre paneles solares enviado",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(), // 12 hours ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      campaignId: "campaign-2",
-      leadsCount: 25
-    }
-  },
-  {
-    id: "activity-6",
-    type: "search",
-    title: "Búsqueda Fallida",
-    description: "Error al conectar con solarinstallers.com",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    userId: "user-1",
-    status: "error",
-    metadata: {
-      searchId: "search-4",
-      errorMessage: "Connection timeout",
-      duration: 12
-    }
-  },
-  {
-    id: "activity-7",
-    type: "export",
-    title: "Exportación PDF",
-    description: "Reporte de leads exportado en formato PDF",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 30).toISOString(), // 30 hours ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      leadsCount: 42,
-      exportFormat: "pdf"
-    }
-  },
-  {
-    id: "activity-8",
-    type: "campaign",
-    title: "Newsletter Enviada",
-    description: "Tendencias en Energía Verde enviada a 156 suscriptores",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      campaignId: "campaign-5",
-      leadsCount: 156
-    }
-  },
-  {
-    id: "activity-9",
-    type: "lead_update",
-    title: "Leads Actualizados",
-    description: "15 leads marcados como contactados",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 60).toISOString(), // 60 hours ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      leadsCount: 15
-    }
-  },
-  {
-    id: "activity-10",
-    type: "import",
-    title: "Importación de Contactos",
-    description: "Lista de contactos importada desde archivo CSV",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
-    userId: "user-1",
-    status: "success",
-    metadata: {
-      leadsCount: 128,
-      exportFormat: "csv"
-    }
+// Fixed UUID for anonymous users (from previous conversation)
+const ANONYMOUS_USER_ID = "550e8400-e29b-41d4-a716-446655440000"
+
+// Create a stable supabase client instance
+const supabaseClient = createClient()
+
+// Data adapter functions
+const adaptActivityView = (view: ComprehensiveActivityHistoryView): ActivityItem => {
+  // Parse changes to extract metadata
+  const changes = view.changes || {}
+  const metadata: any = {
+    ...changes,
+    ip_address: view.ip_address,
+    user_agent: view.user_agent
   }
-]
+
+  // Extract specific metadata based on activity type
+  if (view.resource_type === 'search_history') {
+    metadata.searchId = view.resource_id
+    metadata.duration = changes.execution_time_ms ? Math.round(changes.execution_time_ms / 1000) : undefined
+    metadata.leadsCount = changes.total_results || changes.valid_results
+  } else if (view.resource_type === 'campaigns') {
+    metadata.campaignId = view.resource_id
+    metadata.leadsCount = changes.total_recipients || changes.emails_sent
+  } else if (view.activity_type === 'export') {
+    metadata.exportFormat = changes.format || 'csv'
+    metadata.leadsCount = changes.count || changes.records_count
+  }
+
+  // Determine status from activity type and action
+  let status: 'success' | 'error' | 'pending' = 'success'
+  if (view.action.includes('failed') || view.action.includes('error')) {
+    status = 'error'
+    metadata.errorMessage = changes.error_message || view.description
+  } else if (view.action.includes('started') || view.action.includes('pending')) {
+    status = 'pending'
+  }
+
+  return {
+    id: view.id,
+    type: view.activity_type as any,
+    title: generateActivityTitle(view.activity_type, view.action, view.resource_type),
+    description: view.description,
+    timestamp: view.timestamp,
+    userId: view.user_id,
+    metadata,
+    status
+  }
+}
+
+const generateActivityTitle = (activityType: string, action: string, resourceType: string): string => {
+  switch (activityType) {
+    case 'search':
+      if (action.includes('completed')) return 'Búsqueda de Leads Completada'
+      if (action.includes('started')) return 'Búsqueda de Leads Iniciada'
+      if (action.includes('failed')) return 'Búsqueda Fallida'
+      return 'Búsqueda de Leads'
+    case 'campaign':
+      if (action.includes('sent')) return 'Campaña de Email Enviada'
+      if (action.includes('created')) return 'Campaña Creada'
+      if (action.includes('completed')) return 'Campaña Completada'
+      return 'Campaña de Email'
+    case 'export':
+      return 'Leads Exportados'
+    case 'import':
+      return 'Importación de Contactos'
+    case 'lead_update':
+      return 'Leads Actualizados'
+    default:
+      return action.charAt(0).toUpperCase() + action.slice(1)
+  }
+}
 
 export function useActivityTimeline(maxItems: number = 50) {
   const [activities, setActivities] = useState<ActivityItem[]>([])
@@ -146,21 +88,105 @@ export function useActivityTimeline(maxItems: number = 50) {
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
 
-  // Load activity data
+  // Use ref to track if component is mounted to prevent state updates on unmounted component
+  const isMountedRef = useRef(true)
+  
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  // Get current user ID (memoized to prevent recreation)
+  const getCurrentUserId = useCallback(async (): Promise<string> => {
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser()
+      return user?.id || ANONYMOUS_USER_ID
+    } catch (error) {
+      console.warn('Could not get user, using anonymous ID:', error)
+      return ANONYMOUS_USER_ID
+    }
+  }, [])
+
+  // Load activity data from Supabase (stable dependencies)
   const loadActivities = useCallback(async () => {
+    if (isLoading) return // Prevent multiple simultaneous requests
+    
     setIsLoading(true)
     setError(null)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 600))
-      setActivities(mockActivityData)
+      const userId = await getCurrentUserId()
+      console.log('🔄 Loading activity timeline for user:', userId)
+
+      // First try to use the comprehensive_activity_history view
+      let { data, error: viewError } = await supabaseClient
+        .from('comprehensive_activity_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('timestamp', { ascending: false })
+        .limit(maxItems * 2) // Get more to account for filtering
+
+      if (viewError) {
+        console.warn('📊 View not available, falling back to activity_logs table:', viewError.message)
+        
+        // Fallback to direct activity_logs table
+        const { data: fallbackData, error: tableError } = await supabaseClient
+          .from('activity_logs')
+          .select('*')
+          .eq('user_id', userId)
+          .order('timestamp', { ascending: false })
+          .limit(maxItems * 2)
+
+        if (tableError) {
+          throw new Error(`Failed to load activity data: ${tableError.message}`)
+        }
+
+        // Convert activity_logs records to view format
+        data = fallbackData?.map((record: ActivityLogRecord) => ({
+          id: record.id,
+          user_id: record.user_id,
+          user_name: undefined,
+          user_email: undefined,
+          activity_type: record.activity_type,
+          action: record.action,
+          description: record.description,
+          resource_type: record.resource_type,
+          resource_id: record.resource_id,
+          timestamp: record.timestamp,
+          ip_address: record.ip_address,
+          user_agent: record.user_agent,
+          before_data: record.before_data,
+          after_data: record.after_data,
+          changes: record.changes
+        } as ComprehensiveActivityHistoryView)) || []
+      }
+
+      console.log(`✅ Loaded ${data?.length || 0} activity records from database`)
+
+      // Convert database records to frontend format
+      const adaptedActivities = (data || []).map(adaptActivityView)
+      
+      // Only update state if component is still mounted
+      if (isMountedRef.current) {
+        setActivities(adaptedActivities)
+      }
+
     } catch (err) {
+      console.error('❌ Error loading activity timeline:', err)
+      
+      if (isMountedRef.current) {
       setError(err instanceof Error ? err.message : 'Failed to load activity timeline')
+        // Set empty array on error rather than keeping old data
+        setActivities([])
+      }
     } finally {
+      if (isMountedRef.current) {
       setIsLoading(false)
+      }
     }
-  }, [])
+  }, [maxItems, getCurrentUserId, isLoading])
 
   // Filter and sort activities
   const filteredActivities = useMemo(() => {
@@ -176,11 +202,10 @@ export function useActivityTimeline(maxItems: number = 50) {
       filtered = filtered.filter(activity => activity.status === statusFilter)
     }
 
-    // Sort by timestamp (newest first)
-    filtered = filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-
-    // Limit to maxItems
-    return filtered.slice(0, maxItems)
+    // Sort by timestamp (newest first) and limit
+    return filtered
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, maxItems)
   }, [activities, typeFilter, statusFilter, maxItems])
 
   // Group activities by date
@@ -227,10 +252,19 @@ export function useActivityTimeline(maxItems: number = 50) {
     }
   }, [activities])
 
-  // Auto-load on mount
+  // Auto-load on mount only (remove loadActivities dependency to prevent infinite loop)
   useEffect(() => {
     loadActivities()
-  }, [loadActivities])
+  }, []) // Only run on mount
+
+  // Create stable filter setters to prevent unnecessary re-renders
+  const stableSetTypeFilter = useCallback((value: string) => {
+    setTypeFilter(value)
+  }, [])
+
+  const stableSetStatusFilter = useCallback((value: string) => {
+    setStatusFilter(value)
+  }, [])
 
   return {
     // State
@@ -244,8 +278,8 @@ export function useActivityTimeline(maxItems: number = 50) {
     stats,
 
     // Actions
-    setTypeFilter,
-    setStatusFilter,
+    setTypeFilter: stableSetTypeFilter,
+    setStatusFilter: stableSetStatusFilter,
     loadActivities,
     getActivityDetails,
 
