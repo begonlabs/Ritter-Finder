@@ -23,27 +23,34 @@ export async function generatePDFReport(
   const doc = new jsPDF()
   
   // Add header
-  doc.setFontSize(20)
-  doc.setTextColor(242, 183, 5) // ritter-gold
+  addHeader(doc)
+  
+  let currentY = 40
+  
+  // Add dashboard overview section
+  currentY = addDashboardOverviewSection(doc, dashboardStats, currentY)
+  
+  // Add lead statistics section
+  currentY = addLeadStatisticsSection(doc, leadStats, viewType, currentY)
+  
+  // Add footer
+  addFooter(doc)
+  
+  // Save PDF
+  doc.save(`ritterfinder-analytics-${new Date().toISOString().split('T')[0]}.pdf`)
+}
+
+/**
+ * Add header to PDF
+ */
+function addHeader(doc: jsPDF): void {
+  doc.setFontSize(24)
+  doc.setTextColor(26, 32, 44)
   doc.text('RitterFinder Analytics Report', 20, 20)
   
   doc.setFontSize(12)
   doc.setTextColor(100, 100, 100)
   doc.text(`Generated on: ${new Date().toLocaleDateString('es-ES')}`, 20, 30)
-  
-  let yPosition = 50
-  
-  // Dashboard Overview Section
-  yPosition = addDashboardOverviewSection(doc, dashboardStats, yPosition)
-  
-  // Lead Statistics Section
-  yPosition = addLeadStatisticsSection(doc, leadStats, viewType, yPosition)
-  
-  // Footer
-  addFooter(doc)
-  
-  // Save the PDF
-  doc.save(`ritterfinder-analytics-${new Date().toISOString().split('T')[0]}.pdf`)
 }
 
 /**
@@ -55,22 +62,16 @@ function addDashboardOverviewSection(
   startY: number
 ): number {
   doc.setFontSize(16)
-  doc.setTextColor(26, 32, 44) // ritter-dark
+  doc.setTextColor(26, 32, 44)
   doc.text('Dashboard Overview', 20, startY)
   
   const tableData = [
-    ['Metric', 'Value', 'Trend'],
-    ['Total Leads', stats.totalLeads.toLocaleString(), 
-     stats.trendsFromLastMonth.leads.positive ? '+' : '-' + 
-     stats.trendsFromLastMonth.leads.percentage + '%'],
-    ['Total Campaigns', stats.totalCampaigns.toLocaleString(),
-     stats.trendsFromLastMonth.campaigns.positive ? '+' : '-' + 
-     stats.trendsFromLastMonth.campaigns.percentage + '%'],
-    ['Total Searches', stats.totalSearches.toLocaleString(),
-     stats.trendsFromLastMonth.searches.positive ? '+' : '-' + 
-     stats.trendsFromLastMonth.searches.percentage + '%'],
-    ['Active Users', stats.totalUsers.toLocaleString(), '-'],
-    ['Avg Lead Quality', stats.averageLeadQuality.toFixed(1) + '%', '-']
+    ['Metric', 'Value'],
+    ['Total Leads', stats.totalLeads.toLocaleString()],
+    ['Total Campaigns', stats.totalCampaigns.toLocaleString()],
+    ['Total Searches', stats.totalSearches.toLocaleString()],
+    ['Active Users', stats.totalUsers.toLocaleString()],
+    ['Avg Lead Quality', stats.averageLeadQuality.toFixed(1) + '%']
   ]
   
   autoTable(doc, {
@@ -172,12 +173,12 @@ export function generateCSVReport(
   
   // Dashboard Overview
   csvData.push('Dashboard Overview')
-  csvData.push('Metric,Value,Trend')
-  csvData.push(`Total Leads,${dashboardStats.totalLeads.toLocaleString()},${dashboardStats.trendsFromLastMonth.leads.positive ? '+' : '-'}${dashboardStats.trendsFromLastMonth.leads.percentage}%`)
-  csvData.push(`Total Campaigns,${dashboardStats.totalCampaigns.toLocaleString()},${dashboardStats.trendsFromLastMonth.campaigns.positive ? '+' : '-'}${dashboardStats.trendsFromLastMonth.campaigns.percentage}%`)
-  csvData.push(`Total Searches,${dashboardStats.totalSearches.toLocaleString()},${dashboardStats.trendsFromLastMonth.searches.positive ? '+' : '-'}${dashboardStats.trendsFromLastMonth.searches.percentage}%`)
-  csvData.push(`Active Users,${dashboardStats.totalUsers.toLocaleString()},-`)
-  csvData.push(`Avg Lead Quality,${dashboardStats.averageLeadQuality.toFixed(1)}%,-`)
+  csvData.push('Metric,Value')
+  csvData.push(`Total Leads,${dashboardStats.totalLeads.toLocaleString()}`)
+  csvData.push(`Total Campaigns,${dashboardStats.totalCampaigns.toLocaleString()}`)
+  csvData.push(`Total Searches,${dashboardStats.totalSearches.toLocaleString()}`)
+  csvData.push(`Active Users,${dashboardStats.totalUsers.toLocaleString()}`)
+  csvData.push(`Avg Lead Quality,${dashboardStats.averageLeadQuality.toFixed(1)}%`)
   csvData.push('')
   
   // Lead Statistics

@@ -17,11 +17,6 @@ export interface DashboardStats {
   totalSearches: number
   totalUsers: number
   averageLeadQuality: number
-  trendsFromLastMonth: {
-    leads: TrendData
-    campaigns: TrendData
-    searches: TrendData
-  }
 }
 
 export interface TrendData {

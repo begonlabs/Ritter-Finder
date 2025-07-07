@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { createClient } from "../../../utils/supabase/client"
 import type { 
   DashboardStats, 
-  TrendData, 
   DashboardOverviewRecord, 
   DashboardSummaryRecord,
   DailyDashboardStatsRecord,
@@ -25,27 +24,7 @@ const adaptDashboardOverview: DashboardOverviewAdapter = (record: DashboardOverv
     totalCampaigns: record.total_campaigns,
     totalSearches: record.total_searches,
     totalUsers: record.total_users,
-    averageLeadQuality: record.avg_lead_quality,
-    trendsFromLastMonth: {
-      leads: {
-        value: record.total_leads,
-        percentage: 0, // Will be calculated if summary data available
-        positive: true,
-        label: "total actual"
-      },
-      campaigns: {
-        value: record.total_campaigns,
-        percentage: 0,
-        positive: true,
-        label: "total actual"
-      },
-      searches: {
-        value: record.total_searches,
-        percentage: 0,
-        positive: true,
-        label: "total actual"
-      }
-    }
+    averageLeadQuality: record.avg_lead_quality
   }
 }
 
@@ -56,27 +35,7 @@ const adaptDashboardSummary: DashboardSummaryAdapter = (record: DashboardSummary
     totalCampaigns: record.total_campaigns,
     totalSearches: record.total_searches,
     totalUsers: record.active_users,
-    averageLeadQuality: record.avg_lead_quality,
-    trendsFromLastMonth: {
-      leads: {
-        value: record.total_leads,
-        percentage: Math.abs(record.leads_growth_rate),
-        positive: record.leads_growth_rate >= 0,
-        label: "desde período anterior"
-      },
-      campaigns: {
-        value: record.total_campaigns,
-        percentage: Math.abs(record.campaigns_growth_rate),
-        positive: record.campaigns_growth_rate >= 0,
-        label: "desde período anterior"
-      },
-      searches: {
-        value: record.total_searches,
-        percentage: Math.abs(record.searches_growth_rate),
-        positive: record.searches_growth_rate >= 0,
-        label: "desde período anterior"
-      }
-    }
+    averageLeadQuality: record.avg_lead_quality
   }
 }
 
@@ -86,27 +45,7 @@ const createMockDashboardStats = (): DashboardStats => ({
   totalCampaigns: 45,
   totalSearches: 89,
   totalUsers: 12,
-  averageLeadQuality: 87.2,
-  trendsFromLastMonth: {
-    leads: {
-      value: 1234,
-      percentage: 12,
-      positive: true,
-      label: "desde mes anterior"
-    },
-    campaigns: {
-      value: 45,
-      percentage: 7,
-      positive: true,
-      label: "desde mes anterior"
-    },
-    searches: {
-      value: 89,
-      percentage: 5,
-      positive: true,
-      label: "desde mes anterior"
-    }
-  }
+  averageLeadQuality: 87.2
 })
 
 export function useDashboardStats() {
@@ -215,8 +154,7 @@ export function useDashboardStats() {
         totalCampaigns: 0,
         totalSearches: 0,
         totalUsers: 0,
-        averageLeadQuality: 0,
-        trends: null
+        averageLeadQuality: 0
       }
     }
 
@@ -225,8 +163,7 @@ export function useDashboardStats() {
       totalCampaigns: stats.totalCampaigns,
       totalSearches: stats.totalSearches,
       totalUsers: stats.totalUsers,
-      averageLeadQuality: stats.averageLeadQuality,
-      trends: stats.trendsFromLastMonth
+      averageLeadQuality: stats.averageLeadQuality
     }
   }, [stats])
 

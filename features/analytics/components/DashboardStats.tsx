@@ -14,15 +14,10 @@ interface StatsCardProps {
   value: string
   description: string
   icon: ReactNode
-  trend?: {
-    value: string
-    label: string
-    positive: boolean
-  }
   isLoading?: boolean
 }
 
-function StatsCard({ title, value, description, icon, trend, isLoading }: StatsCardProps) {
+function StatsCard({ title, value, description, icon, isLoading }: StatsCardProps) {
   return (
     <Card className={`${styles.statCard} border-0 shadow-sm hover:shadow-md transition-shadow`}>
       <CardHeader className={`${styles.cardHeader} flex flex-row items-center justify-between pb-2`}>
@@ -40,20 +35,6 @@ function StatsCard({ title, value, description, icon, trend, isLoading }: StatsC
           )}
         </div>
         <p className={`${styles.cardDescription} text-xs text-muted-foreground`}>{description}</p>
-        {trend && !isLoading && (
-          <div className={`${styles.trendIndicator} mt-2 flex items-center text-xs`}>
-            <span
-              className={`${styles.trendBadge} ${
-                trend.positive 
-                  ? `${styles.positive} text-green-600 bg-green-100 px-1 rounded` 
-                  : `${styles.negative} text-red-600 bg-red-100 px-1 rounded`
-              }`}
-            >
-              {trend.positive ? "↑" : "↓"} {trend.value}
-            </span>
-            <span className={`${styles.trendLabel} ml-1 text-muted-foreground`}>{trend.label}</span>
-          </div>
-        )}
       </CardContent>
     </Card>
   )
@@ -72,7 +53,6 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
     totalSearches,
     totalUsers,
     averageLeadQuality,
-    trends,
     isLoading,
     refreshStats,
     lastUpdated
@@ -84,47 +64,30 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
       value: totalLeads.toLocaleString(),
       description: t("dashboard.stats.leads.desc") || "Leads generados",
       icon: <Users className="h-4 w-4 text-ritter-gold" />,
-      trend: trends ? {
-        value: `${trends.leads.percentage}%`,
-        label: trends.leads.label,
-        positive: trends.leads.positive,
-      } : undefined,
     },
     {
       title: t("dashboard.stats.campaigns") || "Campañas",
       value: totalCampaigns.toString(),
       description: t("dashboard.stats.campaigns.desc") || "Campañas creadas",
       icon: <Mail className="h-4 w-4 text-ritter-gold" />,
-      trend: trends ? {
-        value: `${trends.campaigns.percentage}%`,
-        label: trends.campaigns.label,
-        positive: trends.campaigns.positive,
-      } : undefined,
     },
     {
       title: t("dashboard.stats.searches") || "Búsquedas",
       value: totalSearches.toString(),
       description: t("dashboard.stats.searches.desc") || "Búsquedas realizadas",
       icon: <Search className="h-4 w-4 text-ritter-gold" />,
-      trend: trends ? {
-        value: `${trends.searches.percentage}%`,
-        label: trends.searches.label,
-        positive: trends.searches.positive,
-      } : undefined,
     },
     {
       title: "Usuarios Activos",
       value: totalUsers.toString(),
       description: "Usuarios registrados",
       icon: <Users className="h-4 w-4 text-ritter-gold" />,
-      trend: undefined, // No trend data for users yet
     },
     {
       title: "Calidad de Leads",
       value: `${averageLeadQuality.toFixed(1)}%`,
       description: "Puntuación promedio de calidad",
       icon: <Award className="h-4 w-4 text-ritter-gold" />,
-      trend: undefined, // No trend data for lead quality yet
     },
   ]
 
@@ -164,7 +127,6 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
             value={card.value}
             description={card.description}
             icon={card.icon}
-            trend={card.trend}
             isLoading={isLoading}
           />
         ))}
