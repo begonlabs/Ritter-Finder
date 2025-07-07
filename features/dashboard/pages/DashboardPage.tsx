@@ -12,7 +12,7 @@ import { SearchTab } from "../components/SearchTab"
 import { ResultsTab } from "../components/ResultsTab"
 import { CampaignTab } from "../components/CampaignTab"
 import { HistoryTab } from "../components/HistoryTab"
-import { ScrapingTab } from "../components/ScrapingTab"
+
 import { AnalyticsTab } from "../components/AnalyticsTab"
 import styles from "../styles/DashboardPage.module.css"
 
@@ -150,8 +150,7 @@ export function DashboardPage() {
         return <CampaignTab state={state} actions={actions} selectedLeadsData={selectedLeadsData} />
       case "history":
         return <HistoryTab state={state} actions={actions} />
-      case "scraping":
-        return <ScrapingTab state={state} actions={actions} />
+
       case "analytics":
         return <AnalyticsTab state={state} actions={actions} />
       case "admin":

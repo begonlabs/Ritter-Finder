@@ -15,12 +15,12 @@ export interface DashboardStats {
   totalLeads: number
   totalCampaigns: number
   totalSearches: number
-  averageOpenRate: number
+  totalUsers: number
+  averageLeadQuality: number
   trendsFromLastMonth: {
     leads: TrendData
     campaigns: TrendData
     searches: TrendData
-    openRate: TrendData
   }
 }
 
@@ -31,35 +31,12 @@ export interface TrendData {
   label: string
 }
 
-export interface ScrapingStats {
-  sitesReviewed: number
-  leadsObtained: number
-  moneySaved: number
-  avgLeadsPerSite: number
-  successRate: number
-  lastUpdate: string
-  dailyStats: DailyScrapingStats[]
-  topSources: SourceStats[]
-}
-
-export interface DailyScrapingStats {
-  date: string
-  sites: number
-  leads: number
-  savings: number
-}
-
-export interface SourceStats {
-  website: string
-  leads: number
-  percentage: number
-}
-
 export interface AnalyticsOverview {
   totalLeads: number
   totalCampaigns: number
   totalSearches: number
-  averageOpenRate: number
+  totalUsers: number
+  averageLeadQuality: number
   monthlyTrends: MonthlyTrend[]
   recentActivity: ActivityItem[]
   keyMetrics: KeyMetric[]
@@ -133,7 +110,6 @@ export interface AnalyticsActions {
 
 export interface AnalyticsState {
   dashboardStats: DashboardStats | null
-  scrapingStats: ScrapingStats | null
   analyticsOverview: AnalyticsOverview | null
   performanceMetrics: PerformanceMetrics | null
   isLoading: boolean
@@ -148,67 +124,112 @@ export interface AnalyticsTabProps {
   period?: 'week' | 'month' | 'quarter' | 'year'
 }
 
-// Database-aligned interfaces
-export interface DashboardMetrics {
-  id: string
-  date: string
-  periodType: 'daily' | 'weekly' | 'monthly' | 'yearly'
-  totalLeads: number
-  totalCampaigns: number
-  totalSearches: number
-  averageOpenRate: number
-  leadsQualityScore: number
-  campaignSuccessRate: number
-  searchEfficiency: number
-  costPerLead: number
-  roiPercentage: number
-  leadsTrendPercentage: number
-  campaignsTrendPercentage: number
-  searchesTrendPercentage: number
-  openRateTrendPercentage: number
-  estimatedMoneySaved: number
-  costSavingsPercentage: number
-  calculatedAt: string
+// Database record interfaces (matching dashboard.sql schema)
+export interface DashboardOverviewRecord {
+  section: string
+  total_leads: number
+  total_campaigns: number
+  total_searches: number
+  total_users: number
+  avg_lead_quality: number
 }
 
-export interface WebsiteSource {
-  id: string
-  websiteUrl: string
-  websiteName: string
-  domain: string
-  totalLeadsFound: number
-  totalSearches: number
-  successRate: number
-  averageLeadsPerSearch: number
-  leadQualityScore: number
-  validationSuccessRate: number
-  averageResponseTimeMs: number
-  errorRate: number
-  lastSuccessfulScrape?: string
-  isActive: boolean
-  isBlocked: boolean
-  blockedReason?: string
-  blockedUntil?: string
-  lastUsedAt?: string
-  monthlyUsageCount: number
-  totalUsageCount: number
-  createdAt: string
-  updatedAt: string
+export interface DashboardSummaryRecord {
+  total_leads: number
+  total_campaigns: number
+  total_searches: number
+  active_users: number
+  avg_lead_quality: number
+  leads_growth_rate: number
+  campaigns_growth_rate: number
+  searches_growth_rate: number
 }
 
-export interface AnalyticsDataPoint {
+export interface DailyDashboardStatsRecord {
+  stats_date: string
+  total_leads: number
+  total_campaigns: number
+  total_searches: number
+  active_users: number
+  avg_lead_quality: number
+}
+
+export interface RecentActivityFeedRecord {
   id: string
-  date: string
-  metricType: string
-  metricName: string
-  countValue: number
-  sumValue: number
-  avgValue: number
-  minValue: number
-  maxValue: number
-  userId?: string
-  campaignId?: string
-  searchHistoryId?: string
-  dimensions: Record<string, any>
-  createdAt: string
+  user_id: string
+  user_name: string
+  activity_type: string
+  action: string
+  description: string
+  resource_type: string
+  resource_id: string
+  timestamp: string
+  ip_address: string
+}
+
+// Data adapter function types
+export type DashboardOverviewAdapter = (record: DashboardOverviewRecord) => DashboardStats
+export type DashboardSummaryAdapter = (record: DashboardSummaryRecord) => DashboardStats
+
+// Lead Statistics Types (replacing TrendChart)
+export interface LeadCategoryStats {
+  category: string
+  total_leads: number
+  verified_emails: number
+  verified_phones: number
+  verified_websites: number
+  avg_quality_score: number
+  latest_lead_date: string
+}
+
+export interface LeadCountryStats {
+  country: string
+  total_leads: number
+  avg_quality_score: number
+  high_quality_leads: number
+  high_quality_percentage: number
+  verified_emails: number
+  verified_phones: number
+  email_verification_rate: number
+  phone_verification_rate: number
+  top_categories: string
+  first_lead_date: string
+  latest_lead_date: string
+}
+
+export interface LeadStateStats {
+  country: string
+  state: string
+  total_leads: number
+  avg_quality_score: number
+  high_quality_leads: number
+  high_quality_percentage: number
+  verified_emails: number
+  verified_phones: number
+  leads_with_phone: number
+  leads_with_email: number
+  contactable_percentage: number
+  top_activities: string
+  leads_last_30_days: number
+}
+
+export interface LeadSpainRegionStats {
+  comunidad_autonoma: string
+  total_leads: number
+  calidad_promedio: number
+  leads_alta_calidad: number
+  telefonos_verificados: number
+  emails_verificados: number
+  con_website: number
+  contactabilidad_porcentaje: number
+  categoria_principal: string
+  primer_lead: string
+  ultimo_lead: string
+}
+
+export interface LeadStatsProps {
+  showHeader?: boolean
+  compact?: boolean
+  viewType?: 'category' | 'country' | 'state' | 'spain-region'
+  maxItems?: number
 }

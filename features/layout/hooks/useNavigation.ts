@@ -166,15 +166,7 @@ export const useNavigation = ({
       dataOnboarding: "history",
       requiredPermissions: ["leads:read", "campaigns:read"]
     },
-    {
-      id: "scraping",
-      label: "Scraping",
-      icon: Zap,
-      disabled: false,
-      badge: null,
-      dataOnboarding: "scraping",
-      requiredPermissions: ["leads:search", "leads:create"]
-    },
+
     {
       id: "analytics",
       label: "Analytics",
@@ -245,7 +237,7 @@ export const useNavigation = ({
   
   // Main navigation items (commonly used)
   const navigationItems = useMemo(() => {
-    const mainItemIds = ["dashboard", "search", "results", "campaign", "history", "scraping", "analytics", "admin"]
+    const mainItemIds = ["dashboard", "search", "results", "campaign", "history", "analytics", "admin"]
     return availableItems.filter(item => mainItemIds.includes(item.id))
   }, [availableItems])
   

@@ -268,7 +268,7 @@ export default function TestAuthPage() {
                 <div>
                   <h4 className="font-medium mb-2">Test de acceso directo:</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {['dashboard', 'search', 'results', 'campaign', 'history', 'scraping', 'analytics', 'admin'].map((itemId) => {
+                    {['dashboard', 'search', 'results', 'campaign', 'history', 'analytics', 'admin'].map((itemId) => {
                       const access = hasAccess(itemId)
                       return (
                         <div key={itemId} className="flex items-center gap-2 text-sm">

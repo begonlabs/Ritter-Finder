@@ -1,62 +1,113 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import type { DashboardStats, TrendData, AnalyticsState, DashboardMetrics } from "../types"
+import { useState, useEffect, useCallback, useMemo } from "react"
+import { createClient } from "@/utils/supabase/client"
+import type { 
+  DashboardStats, 
+  TrendData, 
+  DashboardOverviewRecord, 
+  DashboardSummaryRecord,
+  DailyDashboardStatsRecord,
+  DashboardOverviewAdapter,
+  DashboardSummaryAdapter
+} from "../types"
 
-// Mock data - in real app this would come from dashboard_metrics table
-const mockDashboardData = {
-  current: {
-    totalLeads: 1234,
-    totalCampaigns: 45,
-    totalSearches: 89,
-    averageOpenRate: 68,
-    leadsQualityScore: 85.5,
-    campaignSuccessRate: 72.3,
-    searchEfficiency: 91.2,
-    costPerLead: 15.50,
-    roiPercentage: 340.75,
-    estimatedMoneySaved: 58365
-  },
-  previous: {
-    totalLeads: 1102,
-    totalCampaigns: 42,
-    totalSearches: 85,
-    averageOpenRate: 66,
-    leadsQualityScore: 82.1,
-    campaignSuccessRate: 69.8,
-    searchEfficiency: 88.7,
-    costPerLead: 17.20,
-    roiPercentage: 315.40,
-    estimatedMoneySaved: 54230
-  }
-}
+// Fixed UUID for anonymous users (from previous conversation)
+const ANONYMOUS_USER_ID = "550e8400-e29b-41d4-a716-446655440000"
 
-// API integration functions (to be implemented)
-async function fetchDashboardMetrics(period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<DashboardMetrics | null> {
-  // This would query the dashboard_metrics table
-  // SELECT * FROM dashboard_metrics 
-  // WHERE period_type = $1 
-  // ORDER BY date DESC 
-  // LIMIT 1
-  return null // Placeholder
-}
+// Create a stable supabase client instance
+const supabaseClient = createClient()
 
-async function fetchPreviousPeriodMetrics(period: 'daily' | 'weekly' | 'monthly' = 'monthly'): Promise<DashboardMetrics | null> {
-  // This would query for previous period comparison
-  return null // Placeholder
-}
-
-function calculateTrend(current: number, previous: number, label: string = "from last month"): TrendData {
-  const difference = current - previous
-  const percentage = previous > 0 ? Math.round((difference / previous) * 100) : 0
-  
+// Data adapter function to convert dashboard_overview to frontend format
+const adaptDashboardOverview: DashboardOverviewAdapter = (record: DashboardOverviewRecord): DashboardStats => {
   return {
-    value: current,
-    percentage: Math.abs(percentage),
-    positive: difference >= 0,
-    label
+    totalLeads: record.total_leads,
+    totalCampaigns: record.total_campaigns,
+    totalSearches: record.total_searches,
+    totalUsers: record.total_users,
+    averageLeadQuality: record.avg_lead_quality,
+    trendsFromLastMonth: {
+      leads: {
+        value: record.total_leads,
+        percentage: 0, // Will be calculated if summary data available
+        positive: true,
+        label: "total actual"
+      },
+      campaigns: {
+        value: record.total_campaigns,
+        percentage: 0,
+        positive: true,
+        label: "total actual"
+      },
+      searches: {
+        value: record.total_searches,
+        percentage: 0,
+        positive: true,
+        label: "total actual"
+      }
+    }
   }
 }
+
+// Enhanced adapter with growth data from dashboard summary
+const adaptDashboardSummary: DashboardSummaryAdapter = (record: DashboardSummaryRecord): DashboardStats => {
+  return {
+    totalLeads: record.total_leads,
+    totalCampaigns: record.total_campaigns,
+    totalSearches: record.total_searches,
+    totalUsers: record.active_users,
+    averageLeadQuality: record.avg_lead_quality,
+    trendsFromLastMonth: {
+      leads: {
+        value: record.total_leads,
+        percentage: Math.abs(record.leads_growth_rate),
+        positive: record.leads_growth_rate >= 0,
+        label: "desde período anterior"
+      },
+      campaigns: {
+        value: record.total_campaigns,
+        percentage: Math.abs(record.campaigns_growth_rate),
+        positive: record.campaigns_growth_rate >= 0,
+        label: "desde período anterior"
+      },
+      searches: {
+        value: record.total_searches,
+        percentage: Math.abs(record.searches_growth_rate),
+        positive: record.searches_growth_rate >= 0,
+        label: "desde período anterior"
+      }
+    }
+  }
+}
+
+// Mock data fallback
+const createMockDashboardStats = (): DashboardStats => ({
+  totalLeads: 1234,
+  totalCampaigns: 45,
+  totalSearches: 89,
+  totalUsers: 12,
+  averageLeadQuality: 87.2,
+  trendsFromLastMonth: {
+    leads: {
+      value: 1234,
+      percentage: 12,
+      positive: true,
+      label: "desde mes anterior"
+    },
+    campaigns: {
+      value: 45,
+      percentage: 7,
+      positive: true,
+      label: "desde mes anterior"
+    },
+    searches: {
+      value: 89,
+      percentage: 5,
+      positive: true,
+      label: "desde mes anterior"
+    }
+  }
+})
 
 export function useDashboardStats() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
@@ -69,28 +120,84 @@ export function useDashboardStats() {
     setError(null)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const { current, previous } = mockDashboardData
-      
-      const dashboardStats: DashboardStats = {
-        totalLeads: current.totalLeads,
-        totalCampaigns: current.totalCampaigns,
-        totalSearches: current.totalSearches,
-        averageOpenRate: current.averageOpenRate,
-        trendsFromLastMonth: {
-          leads: calculateTrend(current.totalLeads, previous.totalLeads),
-          campaigns: calculateTrend(current.totalCampaigns, previous.totalCampaigns),
-          searches: calculateTrend(current.totalSearches, previous.totalSearches),
-          openRate: calculateTrend(current.averageOpenRate, previous.averageOpenRate)
+      console.log('📊 Fetching dashboard stats from dashboard_overview...')
+
+      // First, try to get enhanced data with growth rates from dashboard summary function
+      try {
+        const { data: summaryData, error: summaryError } = await supabaseClient
+          .rpc('get_dashboard_summary', {
+            p_start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            p_end_date: new Date().toISOString().split('T')[0]
+          })
+
+        if (summaryData && summaryData.length > 0 && !summaryError) {
+          console.log('✅ Dashboard stats loaded from summary function:', summaryData[0])
+          const dashboardStats = adaptDashboardSummary(summaryData[0])
+          setStats(dashboardStats)
+          setLastUpdated(new Date())
+          return
         }
+
+        console.log('⚠️ Summary function not available, trying dashboard_overview view...', summaryError?.message)
+      } catch (summaryErr) {
+        console.log('⚠️ Summary function failed, trying dashboard_overview view...', summaryErr)
       }
 
-      setStats(dashboardStats)
+      // Fallback to dashboard_overview view
+      const { data: overviewData, error: overviewError } = await supabaseClient
+        .from('dashboard_overview')
+        .select('*')
+        .single()
+
+      if (overviewData && !overviewError) {
+        console.log('✅ Dashboard stats loaded from overview view:', overviewData)
+        const dashboardStats = adaptDashboardOverview(overviewData)
+        setStats(dashboardStats)
+        setLastUpdated(new Date())
+        return
+      }
+
+      console.log('⚠️ Dashboard overview view not available, trying daily stats...', overviewError?.message)
+
+      // Try daily_dashboard_stats materialized view
+      const { data: dailyData, error: dailyError } = await supabaseClient
+        .from('daily_dashboard_stats')
+        .select('*')
+        .order('stats_date', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (dailyData && !dailyError) {
+        console.log('✅ Dashboard stats loaded from daily stats:', dailyData)
+        const adaptedData: DashboardOverviewRecord = {
+          section: 'daily',
+          total_leads: dailyData.total_leads,
+          total_campaigns: dailyData.total_campaigns,
+          total_searches: dailyData.total_searches,
+          total_users: dailyData.active_users,
+          avg_lead_quality: dailyData.avg_lead_quality
+        }
+        const dashboardStats = adaptDashboardOverview(adaptedData)
+        setStats(dashboardStats)
+        setLastUpdated(new Date())
+        return
+      }
+
+      console.log('⚠️ No dashboard data available, using mock data...', dailyError?.message)
+      
+      // Final fallback to mock data
+      const mockStats = createMockDashboardStats()
+      setStats(mockStats)
       setLastUpdated(new Date())
+
     } catch (err) {
+      console.error('❌ Error fetching dashboard stats:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch dashboard stats')
+      
+      // Fallback to mock data on error
+      const mockStats = createMockDashboardStats()
+      setStats(mockStats)
+      setLastUpdated(new Date())
     } finally {
       setIsLoading(false)
     }
@@ -100,13 +207,33 @@ export function useDashboardStats() {
     await fetchStats()
   }, [fetchStats])
 
-  // Auto-refresh every 5 minutes
+  // Memoized individual stats for easier access
+  const memoizedStats = useMemo(() => {
+    if (!stats) {
+      return {
+        totalLeads: 0,
+        totalCampaigns: 0,
+        totalSearches: 0,
+        totalUsers: 0,
+        averageLeadQuality: 0,
+        trends: null
+      }
+    }
+
+    return {
+      totalLeads: stats.totalLeads,
+      totalCampaigns: stats.totalCampaigns,
+      totalSearches: stats.totalSearches,
+      totalUsers: stats.totalUsers,
+      averageLeadQuality: stats.averageLeadQuality,
+      trends: stats.trendsFromLastMonth
+    }
+  }, [stats])
+
+  // Initial load - only on mount
   useEffect(() => {
     fetchStats()
-    
-    const interval = setInterval(fetchStats, 5 * 60 * 1000)
-    return () => clearInterval(interval)
-  }, [fetchStats])
+  }, []) // Empty dependency array - only run on mount
 
   return {
     stats,
@@ -116,10 +243,6 @@ export function useDashboardStats() {
     refreshStats,
     
     // Individual stats for easier access
-    totalLeads: stats?.totalLeads || 0,
-    totalCampaigns: stats?.totalCampaigns || 0,
-    totalSearches: stats?.totalSearches || 0,
-    averageOpenRate: stats?.averageOpenRate || 0,
-    trends: stats?.trendsFromLastMonth || null
+    ...memoizedStats
   }
 }

@@ -6,29 +6,58 @@ export { AnalyticsPage } from "./pages/AnalyticsPage"
 
 // Components
 export { DashboardStats } from "./components/DashboardStats"
-export { ScrapingStats } from "./components/ScrapingStats"
-export { TrendChart } from "./components/TrendChart"
+export { LeadStats } from "./components/LeadStats"
 export { RecentActivity } from "./components/RecentActivity"
 
 // Hooks
 export { useDashboardStats } from "./hooks/useDashboardStats"
-export { useScrapingStats, formatCurrency } from "./hooks/useScrapingStats"
+export { useLeadStats } from "./hooks/useLeadStats"
+
+// Utils
+export {
+  // Trend calculations
+  calculateTrend,
+  calculatePercentageChange,
+  calculateGrowthRate,
+  
+  // Dashboard overview metrics
+  calculateLeadGenEfficiency,
+  calculateCampaignEffectiveness,
+  getLeadQualityCategory,
+  calculateUserEngagement,
+  
+  // Performance metrics
+  calculateSuccessRate,
+  calculateCostPerLead,
+  calculateROI,
+  
+  // Time utilities
+  getDateRange,
+  formatAnalyticsDate,
+  formatRelativeTime,
+  
+  // Formatting utilities
+  formatAnalyticsCurrency,
+  formatAnalyticsNumber,
+  formatPercentage,
+  formatDuration,
+  
+  // Data validation
+  validateDashboardOverviewData,
+  normalizeDashboardOverviewData
+} from "./utils/analyticsUtils"
 
 // Styles
 export { default as AnalyticsPageStyles } from "./styles/AnalyticsPage.module.css"
 export { default as DashboardStatsStyles } from "./styles/DashboardStats.module.css"
-export { default as TrendChartStyles } from "./styles/TrendChart.module.css"
+export { default as LeadStatsStyles } from "./styles/LeadStats.module.css"
 export { default as RecentActivityStyles } from "./styles/RecentActivity.module.css"
-export { default as ScrapingStatsStyles } from "./styles/ScrapingStats.module.css"
 
 // Types
 export type {
   StatsCard,
   DashboardStats as DashboardStatsType,
   TrendData,
-  ScrapingStats as ScrapingStatsType,
-  DailyScrapingStats,
-  SourceStats,
   AnalyticsOverview,
   MonthlyTrend,
   ActivityItem,
@@ -38,5 +67,14 @@ export type {
   AnalyticsFilters,
   AnalyticsActions,
   AnalyticsState,
-  AnalyticsTabProps
+  AnalyticsTabProps,
+  DashboardOverviewRecord,
+  DashboardSummaryRecord,
+  DailyDashboardStatsRecord,
+  RecentActivityFeedRecord,
+  LeadCategoryStats,
+  LeadCountryStats,
+  LeadStateStats,
+  LeadSpainRegionStats,
+  LeadStatsProps
 } from "./types"

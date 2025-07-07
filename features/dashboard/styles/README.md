@@ -45,10 +45,7 @@ Estilos para la pestaña de historial:
 - **History Container**: Contenedor del historial
 - **Animation Entry**: Animaciones de entrada simples
 
-### ⚙️ ScrapingTab.module.css
-Estilos para la pestaña de scraping:
-- **Scraping Container**: Contenedor de estadísticas de scraping
-- **Stats Integration**: Integración con componentes de analytics
+
 
 ### 📊 AnalyticsTab.module.css
 Estilos para la pestaña de analytics:
@@ -140,6 +137,11 @@ export function Component() {
 }
 ```
 
+### Analytics Integration
+- Los tabs de Analytics integran componentes del módulo analytics
+- Mantienen estilos consistentes con el dashboard
+- Usan contenedores específicos para coherencia visual
+
 ## Estados y Interacciones
 
 ### Loading States
@@ -200,10 +202,7 @@ export function Component() {
 
 ## Integración con Otros Módulos
 
-### Analytics Integration
-- Los tabs de Analytics y Scraping integran componentes del módulo analytics
-- Mantienen estilos consistentes con el dashboard
-- Usan contenedores específicos para coherencia visual
+
 
 ### Campaigns Integration
 - CampaignTab integra completamente el EmailComposer

@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Mail, Search, BarChart3, RefreshCw, Clock } from "lucide-react"
+import { Users, Mail, Search, BarChart3, RefreshCw, Clock, Target, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useDashboardStats } from "../hooks/useDashboardStats"
@@ -69,8 +69,9 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
   const { 
     totalLeads, 
     totalCampaigns, 
-    totalSearches, 
-    averageOpenRate, 
+    totalSearches,
+    totalUsers,
+    averageLeadQuality,
     trends,
     isLoading,
     refreshStats,
@@ -79,9 +80,9 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
 
   const statsCards = [
     {
-      title: t("dashboard.stats.leads"),
+      title: t("dashboard.stats.leads") || "Total Leads",
       value: totalLeads.toLocaleString(),
-      description: t("dashboard.stats.leads.desc"),
+      description: t("dashboard.stats.leads.desc") || "Leads generados",
       icon: <Users className="h-4 w-4 text-ritter-gold" />,
       trend: trends ? {
         value: `${trends.leads.percentage}%`,
@@ -90,9 +91,9 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
       } : undefined,
     },
     {
-      title: t("dashboard.stats.campaigns"),
+      title: t("dashboard.stats.campaigns") || "Campañas",
       value: totalCampaigns.toString(),
-      description: t("dashboard.stats.campaigns.desc"),
+      description: t("dashboard.stats.campaigns.desc") || "Campañas creadas",
       icon: <Mail className="h-4 w-4 text-ritter-gold" />,
       trend: trends ? {
         value: `${trends.campaigns.percentage}%`,
@@ -101,9 +102,9 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
       } : undefined,
     },
     {
-      title: t("dashboard.stats.searches"),
+      title: t("dashboard.stats.searches") || "Búsquedas",
       value: totalSearches.toString(),
-      description: t("dashboard.stats.searches.desc"),
+      description: t("dashboard.stats.searches.desc") || "Búsquedas realizadas",
       icon: <Search className="h-4 w-4 text-ritter-gold" />,
       trend: trends ? {
         value: `${trends.searches.percentage}%`,
@@ -112,17 +113,23 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
       } : undefined,
     },
     {
-      title: t("dashboard.stats.openrate"),
-      value: `${averageOpenRate}%`,
-      description: t("dashboard.stats.openrate.desc"),
-      icon: <BarChart3 className="h-4 w-4 text-ritter-gold" />,
-      trend: trends ? {
-        value: `${trends.openRate.percentage}%`,
-        label: trends.openRate.label,
-        positive: trends.openRate.positive,
-      } : undefined,
+      title: "Usuarios Activos",
+      value: totalUsers.toString(),
+      description: "Usuarios registrados",
+      icon: <Users className="h-4 w-4 text-ritter-gold" />,
+      trend: undefined, // No trend data for users yet
+    },
+    {
+      title: "Calidad de Leads",
+      value: `${averageLeadQuality.toFixed(1)}%`,
+      description: "Puntuación promedio de calidad",
+      icon: <Award className="h-4 w-4 text-ritter-gold" />,
+      trend: undefined, // No trend data for lead quality yet
     },
   ]
+
+  // Filter cards based on compact mode
+  const displayCards = compact ? statsCards.slice(0, 4) : statsCards
 
   return (
     <div className={`${styles.dashboardStats} space-y-4`}>
@@ -149,8 +156,8 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
         </div>
       )}
       
-      <div className={`${styles.statsGrid} ${compact ? styles.compact : ''} grid gap-4 ${compact ? 'md:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-4'}`}>
-        {statsCards.map((card, index) => (
+      <div className={`${styles.statsGrid} ${compact ? styles.compact : ''} grid gap-4 ${compact ? 'md:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'}`}>
+        {displayCards.map((card, index) => (
           <StatsCard
             key={index}
             title={card.title}
