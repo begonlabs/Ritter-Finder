@@ -30,8 +30,11 @@ export async function generatePDFReport(
   // Add dashboard overview section
   currentY = addDashboardOverviewSection(doc, dashboardStats, currentY)
   
-  // Add lead statistics section
-  currentY = addLeadStatisticsSection(doc, leadStats, viewType, currentY)
+  // Add lead statistics summary section
+  currentY = addLeadStatisticsSummarySection(doc, leadStats, viewType, currentY)
+  
+  // Add complete lead statistics section (all data)
+  currentY = addCompleteLeadStatisticsSection(doc, leadStats, viewType, currentY)
   
   // Add footer
   addFooter(doc)
@@ -95,9 +98,9 @@ function addDashboardOverviewSection(
 }
 
 /**
- * Add lead statistics section to PDF
+ * Add lead statistics summary section to PDF
  */
-function addLeadStatisticsSection(
+function addLeadStatisticsSummarySection(
   doc: jsPDF, 
   leadStats: any[], 
   viewType: string, 
@@ -107,7 +110,7 @@ function addLeadStatisticsSection(
   doc.setTextColor(26, 32, 44)
   
   const viewTitle = getViewTitle(viewType)
-  doc.text(`Lead Statistics - ${viewTitle}`, 20, startY)
+  doc.text(`Lead Statistics Summary - ${viewTitle}`, 20, startY)
   
   if (leadStats.length === 0) {
     doc.setFontSize(12)
@@ -116,18 +119,26 @@ function addLeadStatisticsSection(
     return startY + 20
   }
   
-  const headers = getLeadStatsHeaders(viewType)
-  const tableData = leadStats.slice(0, 10).map(item => 
-    getLeadStatsRow(item, viewType)
-  )
+  // Calculate summary statistics
+  const totalLeads = leadStats.reduce((sum, item) => sum + (item.total_leads || 0), 0)
+  const avgQuality = leadStats.reduce((sum, item) => sum + (item.avg_quality_score || item.calidad_promedio || 0), 0) / leadStats.length
+  const topItems = leadStats.slice(0, 5) // Top 5 items for summary
+  
+  const summaryData = [
+    ['Summary Metric', 'Value'],
+    ['Total Records', leadStats.length.toString()],
+    ['Total Leads', totalLeads.toLocaleString()],
+    ['Average Quality Score', avgQuality.toFixed(2)],
+    ['Top Items Count', '5']
+  ]
   
   autoTable(doc, {
-    head: [headers],
-    body: tableData,
+    head: [summaryData[0]],
+    body: summaryData.slice(1),
     startY: startY + 10,
     styles: {
-      fontSize: 9,
-      cellPadding: 4
+      fontSize: 10,
+      cellPadding: 5
     },
     headStyles: {
       fillColor: [242, 183, 5],
@@ -142,6 +153,60 @@ function addLeadStatisticsSection(
 }
 
 /**
+ * Add complete lead statistics section to PDF (all data)
+ */
+function addCompleteLeadStatisticsSection(
+  doc: jsPDF, 
+  leadStats: any[], 
+  viewType: string, 
+  startY: number
+): number {
+  doc.setFontSize(16)
+  doc.setTextColor(26, 32, 44)
+  
+  const viewTitle = getViewTitle(viewType)
+  doc.text(`Complete Lead Statistics - ${viewTitle} (All Data)`, 20, startY)
+  
+  if (leadStats.length === 0) {
+    doc.setFontSize(12)
+    doc.setTextColor(100, 100, 100)
+    doc.text('No data available', 20, startY + 10)
+    return startY + 20
+  }
+  
+  const headers = getCompleteLeadStatsHeaders(viewType)
+  const tableData = leadStats.map(item => 
+    getCompleteLeadStatsRow(item, viewType)
+  )
+  
+  autoTable(doc, {
+    head: [headers],
+    body: tableData,
+    startY: startY + 10,
+    styles: {
+      fontSize: 8,
+      cellPadding: 3
+    },
+    headStyles: {
+      fillColor: [242, 183, 5],
+      textColor: [26, 32, 44]
+    },
+    alternateRowStyles: {
+      fillColor: [248, 250, 252]
+    },
+    didDrawPage: function (data) {
+      // Add page numbers
+      const pageCount = doc.getNumberOfPages()
+      doc.setFontSize(10)
+      doc.setTextColor(100, 100, 100)
+      doc.text(`Page ${data.pageNumber} of ${pageCount}`, 20, doc.internal.pageSize.height - 10)
+    }
+  })
+  
+  return (doc as any).lastAutoTable.finalY + 20
+}
+
+/**
  * Add footer to PDF
  */
 function addFooter(doc: jsPDF): void {
@@ -149,7 +214,7 @@ function addFooter(doc: jsPDF): void {
   doc.setFontSize(10)
   doc.setTextColor(100, 100, 100)
   doc.text('RitterFinder Analytics Report', 20, pageHeight - 20)
-  doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, 20, pageHeight - 15)
+  doc.text(`Generated on: ${new Date().toLocaleDateString('es-ES')}`, 20, pageHeight - 15)
 }
 
 // ===================================
@@ -181,16 +246,33 @@ export function generateCSVReport(
   csvData.push(`Avg Lead Quality,${dashboardStats.averageLeadQuality.toFixed(1)}%`)
   csvData.push('')
   
-  // Lead Statistics
+  // Lead Statistics Summary
   const viewTitle = getViewTitle(viewType)
-  csvData.push(`Lead Statistics - ${viewTitle}`)
+  csvData.push(`Lead Statistics Summary - ${viewTitle}`)
   
   if (leadStats.length > 0) {
-    const headers = getLeadStatsHeaders(viewType)
+    const totalLeads = leadStats.reduce((sum, item) => sum + (item.total_leads || 0), 0)
+    const avgQuality = leadStats.reduce((sum, item) => sum + (item.avg_quality_score || item.calidad_promedio || 0), 0) / leadStats.length
+    
+    csvData.push('Summary Metric,Value')
+    csvData.push(`Total Records,${leadStats.length}`)
+    csvData.push(`Total Leads,${totalLeads.toLocaleString()}`)
+    csvData.push(`Average Quality Score,${avgQuality.toFixed(2)}`)
+    csvData.push('')
+  } else {
+    csvData.push('No data available')
+    csvData.push('')
+  }
+  
+  // Complete Lead Statistics (all data)
+  csvData.push(`Complete Lead Statistics - ${viewTitle} (All Data)`)
+  
+  if (leadStats.length > 0) {
+    const headers = getCompleteLeadStatsHeaders(viewType)
     csvData.push(headers.join(','))
     
-    leadStats.slice(0, 10).forEach(item => {
-      const row = getLeadStatsRow(item, viewType)
+    leadStats.forEach(item => {
+      const row = getCompleteLeadStatsRow(item, viewType)
       csvData.push(row.join(','))
     })
   } else {
@@ -234,7 +316,117 @@ function getViewTitle(viewType: string): string {
 }
 
 /**
- * Get headers for lead statistics table based on view type
+ * Get headers for complete lead statistics table based on view type
+ */
+function getCompleteLeadStatsHeaders(viewType: string): string[] {
+  switch (viewType) {
+    case 'category':
+      return [
+        'Category', 'Total Leads', 'Verified Emails', 'Verified Phones', 
+        'Verified Websites', 'Avg Quality Score', 'Latest Lead Date'
+      ]
+    case 'country':
+      return [
+        'Country', 'Total Leads', 'High Quality Leads', 'High Quality %', 
+        'Verified Emails', 'Verified Phones', 'Email Verification Rate %',
+        'Phone Verification Rate %', 'Top Categories', 'Avg Quality Score',
+        'First Lead Date', 'Latest Lead Date'
+      ]
+    case 'state':
+      return [
+        'State', 'Country', 'Total Leads', 'High Quality Leads', 'High Quality %',
+        'Verified Emails', 'Verified Phones', 'Leads with Phone', 'Leads with Email',
+        'Contactable %', 'Top Activities', 'Leads Last 30 Days', 'Avg Quality Score'
+      ]
+    case 'spain-region':
+      return [
+        'Comunidad Autónoma', 'Total Leads', 'Leads Alta Calidad', 'Calidad Promedio',
+        'Teléfonos Verificados', 'Emails Verificados', 'Con Website', 
+        'Contactabilidad %', 'Categoría Principal', 'Primer Lead', 'Último Lead'
+      ]
+    default:
+      return [
+        'Category', 'Total Leads', 'Verified Emails', 'Verified Phones', 
+        'Verified Websites', 'Avg Quality Score', 'Latest Lead Date'
+      ]
+  }
+}
+
+/**
+ * Get row data for complete lead statistics table based on view type
+ */
+function getCompleteLeadStatsRow(item: any, viewType: string): string[] {
+  switch (viewType) {
+    case 'category':
+      return [
+        item.category || '',
+        (item.total_leads || 0).toString(),
+        (item.verified_emails || 0).toString(),
+        (item.verified_phones || 0).toString(),
+        (item.verified_websites || 0).toString(),
+        (item.avg_quality_score || 0).toString(),
+        item.latest_lead_date || ''
+      ]
+    case 'country':
+      return [
+        item.country || '',
+        (item.total_leads || 0).toString(),
+        (item.high_quality_leads || 0).toString(),
+        (item.high_quality_percentage || 0).toString() + '%',
+        (item.verified_emails || 0).toString(),
+        (item.verified_phones || 0).toString(),
+        (item.email_verification_rate || 0).toString() + '%',
+        (item.phone_verification_rate || 0).toString() + '%',
+        item.top_categories || '',
+        (item.avg_quality_score || 0).toString(),
+        item.first_lead_date || '',
+        item.latest_lead_date || ''
+      ]
+    case 'state':
+      return [
+        item.state || '',
+        item.country || '',
+        (item.total_leads || 0).toString(),
+        (item.high_quality_leads || 0).toString(),
+        (item.high_quality_percentage || 0).toString() + '%',
+        (item.verified_emails || 0).toString(),
+        (item.verified_phones || 0).toString(),
+        (item.leads_with_phone || 0).toString(),
+        (item.leads_with_email || 0).toString(),
+        (item.contactable_percentage || 0).toString() + '%',
+        item.top_activities || '',
+        (item.leads_last_30_days || 0).toString(),
+        (item.avg_quality_score || 0).toString()
+      ]
+    case 'spain-region':
+      return [
+        item.comunidad_autonoma || '',
+        (item.total_leads || 0).toString(),
+        (item.leads_alta_calidad || 0).toString(),
+        (item.calidad_promedio || 0).toString(),
+        (item.telefonos_verificados || 0).toString(),
+        (item.emails_verificados || 0).toString(),
+        (item.con_website || 0).toString(),
+        (item.contactabilidad_porcentaje || 0).toString() + '%',
+        item.categoria_principal || '',
+        item.primer_lead || '',
+        item.ultimo_lead || ''
+      ]
+    default:
+      return [
+        item.category || '',
+        (item.total_leads || 0).toString(),
+        (item.verified_emails || 0).toString(),
+        (item.verified_phones || 0).toString(),
+        (item.verified_websites || 0).toString(),
+        (item.avg_quality_score || 0).toString(),
+        item.latest_lead_date || ''
+      ]
+  }
+}
+
+/**
+ * Get headers for lead statistics table based on view type (legacy function)
  */
 function getLeadStatsHeaders(viewType: string): string[] {
   switch (viewType) {
@@ -252,7 +444,7 @@ function getLeadStatsHeaders(viewType: string): string[] {
 }
 
 /**
- * Get row data for lead statistics table based on view type
+ * Get row data for lead statistics table based on view type (legacy function)
  */
 function getLeadStatsRow(item: any, viewType: string): string[] {
   switch (viewType) {

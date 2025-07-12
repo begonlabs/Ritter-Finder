@@ -234,55 +234,55 @@ export function useSearch() {
       )
       setCurrentSearchId(searchId)
 
-      // Enhanced search process with more realistic steps
-      const steps = [
-        "Conectando a fuentes de datos...",
-        "Aplicando filtros de búsqueda...",
-        "Extrayendo información de contacto...",
-        "Verificando emails y sitios web...",
-        "Calculando puntuaciones de calidad...",
-        "Generando métricas de resultados...",
-        "Completando búsqueda...",
-      ]
+    // Enhanced search process with more realistic steps
+    const steps = [
+      "Conectando a fuentes de datos...",
+      "Aplicando filtros de búsqueda...",
+      "Extrayendo información de contacto...",
+      "Verificando emails y sitios web...",
+      "Calculando puntuaciones de calidad...",
+      "Generando métricas de resultados...",
+      "Completando búsqueda...",
+    ]
 
-      let currentStepIndex = 0
+    let currentStepIndex = 0
       const interval = setInterval(async () => {
-        currentStepIndex++
-        const progress = (currentStepIndex / steps.length) * 100
+      currentStepIndex++
+      const progress = (currentStepIndex / steps.length) * 100
 
-        setSearchState(prev => ({
-          ...prev,
-          searchProgress: progress,
-          currentStep: steps[currentStepIndex - 1] || "Procesando...",
-        }))
+      setSearchState(prev => ({
+        ...prev,
+        searchProgress: progress,
+        currentStep: steps[currentStepIndex - 1] || "Procesando...",
+      }))
 
-        if (currentStepIndex >= steps.length) {
-          clearInterval(interval)
-          
-          // Complete the search with enhanced results
+      if (currentStepIndex >= steps.length) {
+        clearInterval(interval)
+        
+        // Complete the search with enhanced results
           setTimeout(async () => {
             try {
-              const searchLeads = generateSearchResults(config)
+          const searchLeads = generateSearchResults(config)
               const searchTime = Date.now() - searchStartTime
-              
-              const searchResults: SearchResults = {
-                leads: searchLeads,
-                totalFound: searchLeads.length,
+          
+          const searchResults: SearchResults = {
+            leads: searchLeads,
+            totalFound: searchLeads.length,
                 searchTime: searchTime,
-                searchId: Date.now().toString(),
-                // Enhanced search metadata
-                qualityDistribution: calculateQualityDistribution(searchLeads),
-                locationBreakdown: calculateLocationBreakdown(searchLeads),
-                activityBreakdown: calculateActivityBreakdown(searchLeads),
-              }
+            searchId: Date.now().toString(),
+            // Enhanced search metadata
+            qualityDistribution: calculateQualityDistribution(searchLeads),
+            locationBreakdown: calculateLocationBreakdown(searchLeads),
+            activityBreakdown: calculateActivityBreakdown(searchLeads),
+          }
 
-              setResults(searchResults)
-              setSearchState({
-                isSearching: false,
-                searchComplete: true,
-                searchProgress: 100,
-                currentStep: `Búsqueda completada - ${searchLeads.length} leads encontrados`,
-              })
+          setResults(searchResults)
+          setSearchState({
+            isSearching: false,
+            searchComplete: true,
+            searchProgress: 100,
+            currentStep: `Búsqueda completada - ${searchLeads.length} leads encontrados`,
+          })
 
               // Update search history with completed results
               if (searchId) {
@@ -312,9 +312,9 @@ export function useSearch() {
                 )
               }
             }
-          }, 500)
-        }
-      }, 800) // Slower progression for more realistic feel
+        }, 500)
+      }
+    }, 800) // Slower progression for more realistic feel
     } catch (error) {
       console.error('Error starting search:', error)
       

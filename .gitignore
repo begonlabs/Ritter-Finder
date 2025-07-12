@@ -35,3 +35,4 @@ backups/
 *.tsbuildinfo
 next-env.d.ts
 /models
+scripts/node_modules

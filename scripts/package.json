@@ -1,0 +1,24 @@
+{
+  "name": "ritterfinder-campaign-tests",
+  "version": "1.0.0",
+  "description": "Test scripts for RitterFinder email campaigns using Mailjet",
+  "main": "test-mailjet-campaign.js",
+  "scripts": {
+    "test:campaign": "node test-mailjet-campaign.js",
+    "test:dry-run": "node test-mailjet-campaign.js --dry-run"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "node-mailjet": "^6.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "email",
+    "campaign",
+    "mailjet",
+    "ritterfinder",
+    "test"
+  ],
+  "author": "RitterFinder Team",
+  "license": "MIT"
+} 

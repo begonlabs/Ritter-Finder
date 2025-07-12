@@ -3,28 +3,28 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Download, FileText, BarChart3, Globe, MapPin, Building2, Flag } from "lucide-react"
+import { Download, BarChart3, PieChart, TrendingUp, Globe, MapPin, Building2, Flag } from "lucide-react"
 import { DashboardStats } from "../components/DashboardStats"
 import { LeadStats } from "../components/LeadStats"
-import { BarChart, PieChart, DoughnutChart, QualityScoreChart } from "../components/ChartComponents"
+import { BarChart, PieChart as PieChartComponent, DoughnutChart, QualityScoreChart } from "../components/ChartComponents"
 import { useDashboardStats } from "../hooks/useDashboardStats"
 import { useLeadStats } from "../hooks/useLeadStats"
 import { exportAnalyticsAsPDF, exportAnalyticsAsCSV } from "../utils/exportUtils"
 import type { AnalyticsTabProps } from "../types"
-import styles from "../styles/AnalyticsPage.module.css"
+import styles from "../styles/AnalyticsChartsPage.module.css"
 
-interface AnalyticsPageProps extends AnalyticsTabProps {
+interface AnalyticsChartsPageProps extends AnalyticsTabProps {
   showDetailedView?: boolean
 }
 
 type ViewType = 'category' | 'country' | 'state' | 'spain-region'
 type ChartType = 'bar' | 'pie' | 'doughnut'
 
-export function AnalyticsPage({ 
+export function AnalyticsChartsPage({ 
   showDetailed = true, 
   period = 'month',
   showDetailedView = true 
-}: AnalyticsPageProps) {
+}: AnalyticsChartsPageProps) {
   
   const [selectedView, setSelectedView] = useState<ViewType>('category')
   const [selectedChartType, setSelectedChartType] = useState<ChartType>('bar')
@@ -39,8 +39,6 @@ export function AnalyticsPage({
         console.error('Dashboard stats not available')
         return
       }
-      
-      console.log(`📊 Exporting CSV with ${leadStats?.length || 0} total records for ${selectedView} view`)
       
       exportAnalyticsAsCSV(
         dashboardStats,
@@ -58,8 +56,6 @@ export function AnalyticsPage({
         console.error('Dashboard stats not available')
         return
       }
-      
-      console.log(`📊 Generating PDF report with ${leadStats?.length || 0} total records for ${selectedView} view`)
       
       await exportAnalyticsAsPDF(
         dashboardStats,
@@ -137,17 +133,17 @@ export function AnalyticsPage({
             viewType={selectedView}
             chartType="bar"
             title={chartTitle}
-            height={300}
+            height={400}
           />
         )
       case 'pie':
         return (
-          <PieChart
+          <PieChartComponent
             data={leadStats}
             viewType={selectedView}
             chartType="pie"
             title={chartTitle}
-            height={300}
+            height={400}
           />
         )
       case 'doughnut':
@@ -157,7 +153,7 @@ export function AnalyticsPage({
             viewType={selectedView}
             chartType="doughnut"
             title={chartTitle}
-            height={300}
+            height={400}
           />
         )
       default:
@@ -167,53 +163,28 @@ export function AnalyticsPage({
             viewType={selectedView}
             chartType="bar"
             title={chartTitle}
-            height={300}
+            height={400}
           />
         )
     }
   }
 
   return (
-    <div className={styles.analyticsPage}>
+    <div className={styles.analyticsChartsPage}>
       {/* Header */}
       <div className={styles.analyticsHeader}>
         <div className={styles.analyticsHeaderContent}>
           <h2 className={styles.analyticsTitle}>
             <BarChart3 className={styles.analyticsTitleIcon} />
-            Analytics y Métricas Geográficas
+            Analytics con Gráficos Geográficos
           </h2>
           <p className={styles.analyticsSubtitle}>
-            Panel completo de análisis y rendimiento de RitterFinder con análisis geográfico
+            Visualización avanzada de datos de RitterFinder con análisis geográfico
           </p>
         </div>
         
         {showDetailedView && (
           <div className={styles.analyticsActions}>
-            <div className={styles.viewSelector}>
-              <Select value={selectedView} onValueChange={(value: ViewType) => setSelectedView(value)}>
-                <SelectTrigger className={styles.headerSelectTrigger}>
-                  <SelectValue placeholder="Vista de Datos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="category">
-                    <Building2 className={styles.selectIcon} />
-                    Por Categoría
-                  </SelectItem>
-                  <SelectItem value="country">
-                    <Globe className={styles.selectIcon} />
-                    Por País
-                  </SelectItem>
-                  <SelectItem value="state">
-                    <MapPin className={styles.selectIcon} />
-                    Por Estado/Región
-                  </SelectItem>
-                  <SelectItem value="spain-region">
-                    <Flag className={styles.selectIcon} />
-                    Por Comunidad Autónoma
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
             <Button
               variant="outline"
               size="sm"
@@ -227,7 +198,7 @@ export function AnalyticsPage({
               onClick={handleGenerateReport}
               className={styles.generateReportButton}
             >
-              <FileText className={styles.generateReportButtonIcon} />
+              <BarChart3 className={styles.generateReportButtonIcon} />
               Generar Reporte
             </Button>
           </div>
@@ -240,62 +211,90 @@ export function AnalyticsPage({
         compact={!showDetailedView} 
       />
 
-      {/* Charts Section */}
-      {showDetailedView && leadStats && leadStats.length > 0 && (
-        <div className={styles.chartsSection}>
-          <div className={styles.chartsGrid2x2}>
-            {/* Fila 1 */}
-            <div className={styles.gridItem}>
-              <PieChart
-                data={leadStats}
-                viewType={selectedView}
-                chartType="pie"
-                title={`Leads por ${getViewTitle(selectedView)} - Gráfico de Pastel`}
-                height={350}
-              />
-            </div>
-            <div className={styles.gridItem}>
-              <QualityScoreChart
-                data={leadStats}
-                viewType={selectedView}
-                chartType="bar"
-                title={`Puntuaciones de Calidad - ${getViewTitle(selectedView)}`}
-                height={350}
-              />
-            </div>
-            {/* Fila 2 */}
-            <div className={styles.gridItem}>
-              <BarChart
-                data={leadStats}
-                viewType={selectedView}
-                chartType="bar"
-                title={`Análisis Detallado - ${getViewTitle(selectedView)}`}
-                height={250}
-              />
-            </div>
-            <div className={styles.gridItem}>
-              <PieChart
-                data={leadStats}
-                viewType={selectedView}
-                chartType="pie"
-                title={`Distribución - ${getViewTitle(selectedView)}`}
-                height={250}
-              />
-            </div>
+      {/* Chart Controls */}
+      {showDetailedView && (
+        <div className={styles.chartControls}>
+          <div className={styles.controlGroup}>
+            <label className={styles.controlLabel}>Vista de Datos:</label>
+            <Select value={selectedView} onValueChange={(value: ViewType) => setSelectedView(value)}>
+              <SelectTrigger className={styles.selectTrigger}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="category">
+                  <Building2 className={styles.selectIcon} />
+                  Por Categoría
+                </SelectItem>
+                <SelectItem value="country">
+                  <Globe className={styles.selectIcon} />
+                  Por País
+                </SelectItem>
+                <SelectItem value="state">
+                  <MapPin className={styles.selectIcon} />
+                  Por Estado/Región
+                </SelectItem>
+                <SelectItem value="spain-region">
+                  <Flag className={styles.selectIcon} />
+                  Por Comunidad Autónoma
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className={styles.controlGroup}>
+            <label className={styles.controlLabel}>Tipo de Gráfico:</label>
+            <Select value={selectedChartType} onValueChange={(value: ChartType) => setSelectedChartType(value)}>
+              <SelectTrigger className={styles.selectTrigger}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bar">
+                  <BarChart3 className={styles.selectIcon} />
+                  Gráfico de Barras
+                </SelectItem>
+                <SelectItem value="pie">
+                  <PieChart className={styles.selectIcon} />
+                  Gráfico de Pastel
+                </SelectItem>
+                <SelectItem value="doughnut">
+                  <PieChart className={styles.selectIcon} />
+                  Gráfico de Dona
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}
 
-      {/* Lead Statistics */}
+      {/* Charts Grid */}
       {showDetailedView && (
-        <div className={styles.leadStatsContainer}>
-          <LeadStats 
-            showHeader={true} 
-            compact={false} 
-            viewType={selectedView} 
-            maxItems={8} 
-          />
-                  </div>
+        <div className={styles.chartsGrid}>
+          {/* Main Chart */}
+          <div className={styles.mainChart}>
+            {renderChart()}
+          </div>
+
+          {/* Quality Score Chart */}
+          <div className={styles.qualityChart}>
+            <QualityScoreChart
+              data={leadStats || []}
+              viewType={selectedView}
+              chartType="bar"
+              title={`Puntuaciones de Calidad - ${getViewTitle(selectedView)}`}
+              height={300}
+            />
+          </div>
+
+          {/* Lead Statistics Table */}
+          <div className={styles.statsTable}>
+            <LeadStats 
+              showHeader={true} 
+              compact={false} 
+              viewType={selectedView} 
+              maxItems={8} 
+            />
+          </div>
+        </div>
       )}
 
       {/* Loading State */}
@@ -303,7 +302,7 @@ export function AnalyticsPage({
         <div className={styles.loadingState}>
           <div className={styles.loadingSpinner} />
           <p className={styles.loadingText}>Cargando datos de analytics geográficos...</p>
-            </div>
+        </div>
       )}
     </div>
   )
