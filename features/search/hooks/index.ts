@@ -15,7 +15,7 @@ export type {
   CountryData,
   StateData,
   LocationOption
-} from './useLocations'
+} from './useLocations' 
 
 export type {
   SearchHistoryRecord

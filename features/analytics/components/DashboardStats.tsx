@@ -50,7 +50,7 @@ export function DashboardStats({ showRefreshButton = false, compact = false }: D
   const { 
     totalLeads, 
     totalCampaigns, 
-    totalSearches,
+    totalSearches, 
     totalUsers,
     averageLeadQuality,
     isLoading,

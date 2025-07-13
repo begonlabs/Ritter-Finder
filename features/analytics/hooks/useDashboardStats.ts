@@ -117,7 +117,7 @@ export function useDashboardStats() {
           avg_lead_quality: dailyData.avg_lead_quality
         }
         const dashboardStats = adaptDashboardOverview(adaptedData)
-        setStats(dashboardStats)
+      setStats(dashboardStats)
         setLastUpdated(new Date())
         return
       }

@@ -136,7 +136,7 @@ export default function TestAuthPage() {
                       <strong>Es Admin:</strong> {layout.state.user.role.name?.toLowerCase() === 'admin' || layout.state.user.role.name?.toLowerCase() === 'administrator' || layout.state.user.role.name?.toLowerCase() === 'administrador' ? '✅' : '❌'}
                     </div>
                     <div>
-                      <strong>Permisos en rol:</strong> {layout.state.user.role.permissions.length}
+                      <strong>Permisos en rol:</strong> {layout.state.user.role.permissions?.length || 0}
                     </div>
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export default function TestAuthPage() {
                     role: {
                       name: layout.state.user?.role.name,
                       isSystemRole: layout.state.user?.role.isSystemRole,
-                      permissionsCount: layout.state.user?.role.permissions.length
+                      permissionsCount: layout.state.user?.role.permissions?.length || 0
                     }
                   }, null, 2)}
                 </pre>
@@ -200,11 +200,11 @@ export default function TestAuthPage() {
                 <div>
                   <h4 className="font-medium mb-2">Permisos disponibles del usuario:</h4>
                   <div className="flex flex-wrap gap-2">
-                    {layout.state.user.role.permissions.map((permission) => (
+                    {layout.state.user.role.permissions?.map((permission) => (
                       <Badge key={permission.id} variant="outline" className="text-xs">
                         {permission.name}
                       </Badge>
-                    ))}
+                    )) || <span className="text-gray-500 text-sm">No hay permisos disponibles</span>}
                   </div>
                 </div>
 
@@ -304,7 +304,7 @@ export default function TestAuthPage() {
                 <strong>Layout user loaded:</strong> {layout.state.user ? 'Sí' : 'No'}
               </div>
               <div>
-                <strong>Notifications:</strong> {layout.state.notifications.length}
+                <strong>User loaded:</strong> {layout.state.user ? 'Sí' : 'No'}
               </div>
               <div className="text-xs text-gray-600 mt-4">
                 Revisa la consola del navegador para logs detallados de permisos y carga de datos.

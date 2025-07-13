@@ -82,7 +82,7 @@ export function useCampaignHistory() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [typeFilter, setTypeFilter] = useState<string>("all")
-  
+
   const supabase = createClient()
 
   // Get current user ID
@@ -210,7 +210,7 @@ export function useCampaignHistory() {
           emails_clicked: 0,
           open_rate: 0,
           click_rate: 0,
-          subject: `Copy of ${campaign.subject}`,
+      subject: `Copy of ${campaign.subject}`,
           content: campaign.content
         })
         .select()
