@@ -19,8 +19,6 @@ export type {
   Role,
   Permission,
   PermissionCategory,
-  AdminStats,
-  ActivityLog,
   AdminTab,
   UseUsersReturn,
   UseRolesReturn,
@@ -40,5 +38,5 @@ export type {
   TemplateManagementProps
 } from './types'
 
-// Re-export all types for convenience (can be removed if not needed)
+// Re-export all types for convenience
 export * from "./types" 

@@ -102,32 +102,6 @@ export interface RoleAssignmentHistory {
   reason?: string
 }
 
-export interface AdminStats {
-  totalUsers: number
-  activeUsers: number
-  totalRoles: number
-  totalPermissions: number
-  recentActivity: ActivityLog[]
-  userGrowth: {
-    current: number
-    previous: number
-    percentage: number
-  }
-}
-
-export interface ActivityLog {
-  id: string
-  userId: string
-  userName: string
-  action: string
-  resource: string
-  resourceId?: string
-  timestamp: Date
-  ipAddress: string
-  userAgent: string
-  details?: Record<string, any>
-}
-
 export interface AdminTab {
   id: string
   label: string
@@ -287,9 +261,5 @@ export interface PermissionManagementProps {
 }
 
 export interface TemplateManagementProps {
-  className?: string
-}
-
-export interface SystemSettingsProps {
   className?: string
 } 
