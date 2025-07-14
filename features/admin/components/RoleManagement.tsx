@@ -29,7 +29,8 @@ import {
   Briefcase,
   ArrowUpDown,
   History,
-  AlertCircle
+  AlertCircle,
+  RefreshCw
 } from "lucide-react"
 import type { RoleManagementProps, SystemRole, User, SystemRoleType } from "../types"
 import { useRoleManagement } from "../hooks/useRoleManagement"
@@ -53,7 +54,8 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
     toggleUserSelection,
     clearSelection,
     assignUserToRole,
-    bulkAssignRole
+    bulkAssignRole,
+    fetchUsers
   } = useRoleManagement()
 
   // Handle role assignment
@@ -88,7 +90,30 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
             Asigna usuarios a los roles del sistema. Los roles son fijos y no pueden ser modificados.
           </p>
         </div>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={fetchUsers}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          {isLoading ? 'Actualizando...' : 'Actualizar'}
+        </Button>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-red-700">
+              <AlertCircle className="h-5 w-5" />
+              <span className="font-medium">Error al cargar usuarios:</span>
+              <span>{error}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* System Roles Overview */}
       <div className={styles.rolesGrid}>
@@ -192,117 +217,126 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
           </div>
 
           {/* Users Table */}
-          <div className={styles.tableContainer}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <input
-                      type="checkbox"
-                      checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedUsers(filteredUsers.map(u => u.id))
-                        } else {
-                          setSelectedUsers([])
-                        }
-                      }}
-                      className={styles.checkbox}
-                    />
-                  </TableHead>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>Rol Actual</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => {
-                  const IconComponent = getRoleIcon(user.role.id)
-                  return (
-                    <TableRow key={user.id} className={styles.userRow}>
-                      <TableCell>
-                        <input
-                          type="checkbox"
-                          checked={selectedUsers.includes(user.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedUsers([...selectedUsers, user.id])
-                            } else {
-                              setSelectedUsers(selectedUsers.filter(id => id !== user.id))
-                            }
-                          }}
-                          className={styles.checkbox}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <div className={styles.userCell}>
-                          <div className={styles.userAvatar}>
-                            {user.name.charAt(0).toUpperCase()}
+          {isLoading && users.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <RefreshCw className="h-5 w-5 animate-spin" />
+                <span>Cargando usuarios...</span>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.tableContainer}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedUsers(filteredUsers.map(u => u.id))
+                          } else {
+                            setSelectedUsers([])
+                          }
+                        }}
+                        className={styles.checkbox}
+                      />
+                    </TableHead>
+                    <TableHead>Usuario</TableHead>
+                    <TableHead>Rol Actual</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => {
+                    const IconComponent = getRoleIcon(user.role.id)
+                    return (
+                      <TableRow key={user.id} className={styles.userRow}>
+                        <TableCell>
+                          <input
+                            type="checkbox"
+                            checked={selectedUsers.includes(user.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedUsers([...selectedUsers, user.id])
+                              } else {
+                                setSelectedUsers(selectedUsers.filter(id => id !== user.id))
+                              }
+                            }}
+                            className={styles.checkbox}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className={styles.userCell}>
+                            <div className={styles.userAvatar}>
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className={styles.userName}>{user.name}</div>
+                              <div className={styles.userEmail}>{user.email}</div>
+                            </div>
                           </div>
-                          <div>
-                            <div className={styles.userName}>{user.name}</div>
-                            <div className={styles.userEmail}>{user.email}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline" 
+                            className={styles.roleBadge}
+                            style={{ borderColor: user.role.color, color: user.role.color }}
+                          >
+                            <IconComponent className="h-3 w-3 mr-1" />
+                            {user.role.name}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={user.status === 'active' ? 'default' : 'secondary'}
+                            className={user.status === 'active' ? 'bg-green-100 text-green-800' : ''}
+                          >
+                            {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className={styles.userActions}>
+                            <Select onValueChange={(value) => handleAssignRole(user.id, value as SystemRoleType)}>
+                              <SelectTrigger className="w-36">
+                                <SelectValue placeholder="Cambiar rol" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {systemRoles
+                                  .filter(role => role.id !== user.role.id)
+                                  .map((role) => {
+                                    const RoleIcon = getRoleIcon(role.id)
+                                    return (
+                                      <SelectItem key={role.id} value={role.id}>
+                                        <div className="flex items-center gap-2">
+                                          <RoleIcon className="h-3 w-3" style={{ color: role.color }} />
+                                          {role.name}
+                                        </div>
+                                      </SelectItem>
+                                    )
+                                  })}
+                              </SelectContent>
+                            </Select>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <History className="h-4 w-4" />
+                            </Button>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant="outline" 
-                          className={styles.roleBadge}
-                          style={{ borderColor: user.role.color, color: user.role.color }}
-                        >
-                          <IconComponent className="h-3 w-3 mr-1" />
-                          {user.role.name}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={user.status === 'active' ? 'default' : 'secondary'}
-                          className={user.status === 'active' ? 'bg-green-100 text-green-800' : ''}
-                        >
-                          {user.status === 'active' ? 'Activo' : 'Inactivo'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className={styles.userActions}>
-                          <Select onValueChange={(value) => handleAssignRole(user.id, value as SystemRoleType)}>
-                            <SelectTrigger className="w-36">
-                              <SelectValue placeholder="Cambiar rol" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {systemRoles
-                                .filter(role => role.id !== user.role.id)
-                                .map((role) => {
-                                  const RoleIcon = getRoleIcon(role.id)
-                                  return (
-                                    <SelectItem key={role.id} value={role.id}>
-                                      <div className="flex items-center gap-2">
-                                        <RoleIcon className="h-3 w-3" style={{ color: role.color }} />
-                                        {role.name}
-                                      </div>
-                                    </SelectItem>
-                                  )
-                                })}
-                            </SelectContent>
-                          </Select>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <History className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
-          {filteredUsers.length === 0 && (
+          {filteredUsers.length === 0 && !isLoading && (
             <div className={styles.emptyState}>
               <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No se encontraron usuarios</p>
-              <p className="text-sm">Prueba ajustando los filtros de búsqueda</p>
+              <p className="text-sm">Prueba ajustando los filtros de búsqueda o haz clic en "Actualizar"</p>
             </div>
           )}
         </CardContent>
