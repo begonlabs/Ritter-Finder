@@ -134,40 +134,40 @@ export function useUserManagement(): UseUserManagementReturn {
       }
 
       // Fetch user profiles with auth users
+      console.log('Intentando cargar perfiles de usuario...')
+      
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false })
 
+      console.log('Resultado de la consulta:', { profiles, profilesError })
+
       if (profilesError) {
-        throw new Error('Error al cargar perfiles de usuario')
+        console.error('Error al cargar perfiles:', profilesError)
+        throw new Error(`Error al cargar perfiles de usuario: ${profilesError.message}`)
       }
 
-      // Fetch auth users for each profile
-      const usersWithAuth = await Promise.all(
-        (profiles || []).map(async (profile: UserProfile) => {
-          const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(profile.id)
-          
-          if (authError || !authUser.user) {
-            console.warn(`No se pudo obtener usuario de autenticación para ${profile.id}:`, authError)
-            // Skip this user if we can't get auth data
-            return null
-          }
-          
-          // Use auth user data (email, last_sign_in_at, etc.) from Supabase auth table
-          return transformUserData(profile, {
-            id: authUser.user.id,
-            email: authUser.user.email || 'unknown@example.com',
-            email_confirmed_at: authUser.user.email_confirmed_at || null,
-            created_at: authUser.user.created_at || new Date().toISOString(),
-            updated_at: authUser.user.updated_at || new Date().toISOString(),
-            last_sign_in_at: authUser.user.last_sign_in_at || null
-          })
-        })
-      )
+      console.log('Perfiles encontrados:', profiles?.length || 0)
+      console.log('Perfiles:', profiles)
 
-      // Filter out null values and set users
-      setUsers(usersWithAuth.filter((user): user is User => user !== null))
+      // Transform profiles to users (simplified version without admin API)
+      const usersWithAuth = (profiles || []).map((profile: UserProfile) => {
+        console.log('Procesando perfil:', profile)
+        
+        // Create user with data from profile only
+        return transformUserData(profile, {
+          id: profile.id,
+          email: profile.metadata?.email || 'unknown@example.com',
+          email_confirmed_at: null,
+          created_at: profile.created_at,
+          updated_at: profile.updated_at,
+          last_sign_in_at: profile.last_activity_at
+        })
+      })
+
+      // Set users (no need to filter nulls anymore)
+      setUsers(usersWithAuth)
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar usuarios')
