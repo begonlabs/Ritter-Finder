@@ -77,9 +77,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     isCreating,
     filteredUsers,
     availableRoles,
-    getStatusBadgeClass,
-    getStatusLabel,
-    formatLastLogin,
     createUser,
     toggleUserStatus,
     setFilters,
@@ -87,7 +84,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   } = useUserManagement()
 
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   
@@ -104,10 +100,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   useEffect(() => {
     setFilters({
       search: searchTerm,
-      status: statusFilter === 'all' ? 'all' : statusFilter as any,
+      status: 'all', // Siempre mostrar todos
       roleId: roleFilter === 'all' ? 'all' : roleFilter
     })
-  }, [searchTerm, statusFilter, roleFilter, setFilters])
+  }, [searchTerm, roleFilter, setFilters])
 
   // Validate form
   const validateForm = (): boolean => {
@@ -190,7 +186,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
             Gestión de Usuarios
           </h2>
           <p className={styles.userDescription}>
-            Administra usuarios, roles y permisos del sistema
+            Administra usuarios y roles del sistema
           </p>
         </div>
         
@@ -374,25 +370,13 @@ export function UserManagement({ className = "" }: UserManagementProps) {
               <div className={styles.searchInputWrapper}>
                 <Search className={styles.searchIcon} />
                 <Input
-                  placeholder="Buscar usuarios por nombre o email..."
+                  placeholder="Buscar usuarios por nombre..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.searchInput}
                 />
               </div>
             </div>
-            
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="active">Activo</SelectItem>
-                <SelectItem value="inactive">Inactivo</SelectItem>
-                <SelectItem value="suspended">Suspendido</SelectItem>
-              </SelectContent>
-            </Select>
             
             <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger>
@@ -438,7 +422,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <UserCheck className="h-4 w-4" />
-                {users.filter(u => u.status === 'active').length} activos
+                {users.length} usuarios registrados
               </div>
               <Button 
                 variant="outline" 
@@ -469,8 +453,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                     <TableRow>
                       <TableHead>Usuario</TableHead>
                       <TableHead>Rol</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Último Acceso</TableHead>
                       <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -487,10 +469,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                             <div>
                               <div className={styles.userName}>
                                 {user.name}
-                              </div>
-                              <div className={styles.userEmail}>
-                                <Mail className="h-3 w-3" />
-                                {user.email}
                               </div>
                               {user.metadata?.phone && (
                                 <div className={styles.userPhone}>
@@ -511,38 +489,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                             {user.role.name}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={getStatusBadgeClass(user.status)}>
-                            {getStatusLabel(user.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className={styles.lastLoginCell}>
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                            {formatLastLogin(user.lastLogin)}
-                          </div>
-                          {user.metadata?.loginCount && (
-                            <div className="text-xs text-muted-foreground">
-                              {user.metadata.loginCount} accesos
-                            </div>
-                          )}
-                        </TableCell>
                         <TableCell className="text-right">
                           <div className={styles.userActions}>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => toggleUserStatus(user.id)}
-                            >
-                              {user.status === 'active' ? (
-                                <UserX className="h-4 w-4 text-orange-600" />
-                              ) : (
-                                <UserCheck className="h-4 w-4 text-green-600" />
-                              )}
                             </Button>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600">
                               <Trash2 className="h-4 w-4" />

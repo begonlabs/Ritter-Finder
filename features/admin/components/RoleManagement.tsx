@@ -30,7 +30,10 @@ import {
   ArrowUpDown,
   History,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Phone,
+  Edit2,
+  Trash2
 } from "lucide-react"
 import type { RoleManagementProps, SystemRole, User, SystemRoleType } from "../types"
 import { useRoleManagement } from "../hooks/useRoleManagement"
@@ -245,7 +248,6 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                   </TableHead>
                   <TableHead>Usuario</TableHead>
                   <TableHead>Rol Actual</TableHead>
-                  <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -275,7 +277,12 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                           </div>
                           <div>
                             <div className={styles.userName}>{user.name}</div>
-                            <div className={styles.userEmail}>{user.email}</div>
+                            {user.metadata?.phone && (
+                              <div className={styles.userPhone}>
+                                <Phone className="h-3 w-3" />
+                                {user.metadata.phone}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </TableCell>
@@ -287,14 +294,6 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                         >
                           <IconComponent className="h-3 w-3 mr-1" />
                           {user.role.name}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={user.status === 'active' ? 'default' : 'secondary'}
-                          className={user.status === 'active' ? 'bg-green-100 text-green-800' : ''}
-                        >
-                          {user.status === 'active' ? 'Activo' : 'Inactivo'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -319,9 +318,6 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                                 })}
                             </SelectContent>
                           </Select>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <History className="h-4 w-4" />
-                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>

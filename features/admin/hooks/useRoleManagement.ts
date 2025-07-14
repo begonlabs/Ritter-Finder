@@ -111,7 +111,7 @@ export function useRoleManagement(): UseRoleManagementReturn {
       id: profile.id,
       name: profile.full_name,
       email: authUser.email,
-      status: authUser.last_sign_in_at ? 'active' : 'inactive',
+      status: 'active', // Todos los usuarios registrados son activos
       role: {
         id: selectedRole.id,
         name: selectedRole.name,
@@ -124,7 +124,7 @@ export function useRoleManagement(): UseRoleManagementReturn {
         updatedAt: new Date(profile.updated_at)
       },
       permissions: [],
-      lastLogin: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
+      lastLogin: undefined, // No mostrar último acceso
       createdAt: new Date(profile.created_at),
       updatedAt: new Date(profile.updated_at),
       metadata: {

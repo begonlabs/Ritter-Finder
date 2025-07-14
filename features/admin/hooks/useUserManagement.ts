@@ -97,7 +97,7 @@ export function useUserManagement(): UseUserManagementReturn {
       id: profile.id,
       name: profile.full_name,
       email: authUser.email,
-      status: authUser.last_sign_in_at ? 'active' : 'inactive',
+      status: 'active', // Todos los usuarios registrados son activos
       role: {
         id: selectedRole.id,
         name: selectedRole.name,
@@ -110,7 +110,7 @@ export function useUserManagement(): UseUserManagementReturn {
         updatedAt: new Date(profile.updated_at)
       },
       permissions: [],
-      lastLogin: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
+      lastLogin: undefined, // No mostrar último acceso
       createdAt: new Date(profile.created_at),
       updatedAt: new Date(profile.updated_at),
       metadata: {
@@ -418,10 +418,10 @@ export function useUserManagement(): UseUserManagementReturn {
       )
     }
 
-    // Status filter
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(user => user.status === filters.status)
-    }
+    // Status filter - siempre mostrar todos ya que todos son activos
+    // if (filters.status !== 'all') {
+    //   filtered = filtered.filter(user => user.status === filters.status)
+    // }
 
     // Role filter
     if (filters.roleId !== 'all') {
@@ -441,14 +441,6 @@ export function useUserManagement(): UseUserManagementReturn {
         case 'email':
           aValue = a.email
           bValue = b.email
-          break
-        case 'status':
-          aValue = a.status
-          bValue = b.status
-          break
-        case 'lastLogin':
-          aValue = a.lastLogin
-          bValue = b.lastLogin
           break
         case 'createdAt':
           aValue = a.createdAt
