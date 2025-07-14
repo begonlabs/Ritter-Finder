@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,97 +49,8 @@ import {
   X
 } from "lucide-react"
 import type { UserManagementProps, User as UserType, SystemRoleType } from "../types"
+import { useUserManagement } from "../hooks/useUserManagement"
 import styles from "../styles/UserManagement.module.css"
-
-// Roles disponibles
-const availableRoles = [
-  { id: 'admin', name: 'Administrador', color: '#dc2626' },
-  { id: 'supervisor', name: 'Supervisor', color: '#2563eb' },
-  { id: 'comercial', name: 'Comercial', color: '#16a34a' }
-]
-
-
-
-// Mock data for development
-const mockUsers: UserType[] = [
-  {
-    id: "1",
-    name: "María González",
-    email: "maria.gonzalez@ritterfinder.com",
-    status: "active",
-    role: {
-      id: "admin",
-      name: "Administrador",
-      description: "Acceso completo al sistema",
-      color: "#dc2626",
-      permissions: [],
-      isSystem: true,
-      userCount: 2,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    permissions: [],
-    lastLogin: new Date(Date.now() - 1000 * 60 * 30), // 30 min ago
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), // 30 days ago
-    updatedAt: new Date(),
-    metadata: {
-      loginCount: 245,
-      lastIpAddress: "192.168.1.100",
-      phone: "+34 600 123 456"
-    }
-  },
-  {
-    id: "2",
-    name: "Carlos Ruiz",
-    email: "carlos.ruiz@ritterfinder.com",
-    status: "active",
-    role: {
-      id: "supervisor",
-      name: "Supervisor",
-      description: "Gestión de equipos",
-      color: "#2563eb",
-      permissions: [],
-      isSystem: false,
-      userCount: 5,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    permissions: [],
-    lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15), // 15 days ago
-    updatedAt: new Date(),
-    metadata: {
-      loginCount: 89,
-      lastIpAddress: "192.168.1.101",
-      phone: "+34 600 789 012"
-    }
-  },
-  {
-    id: "3",
-    name: "Ana Martínez",
-    email: "ana.martinez@ritterfinder.com",
-    status: "inactive",
-    role: {
-      id: "comercial",
-      name: "Comercial",
-      description: "Acceso básico",
-      color: "#16a34a",
-      permissions: [],
-      isSystem: false,
-      userCount: 12,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    permissions: [],
-    lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45), // 45 days ago
-    updatedAt: new Date(),
-    metadata: {
-      loginCount: 34,
-      lastIpAddress: "192.168.1.102"
-    }
-  }
-]
 
 interface CreateUserForm {
   name: string
@@ -158,15 +69,26 @@ interface CreateUserFormErrors {
 }
 
 export function UserManagement({ className = "" }: UserManagementProps) {
-  const [users] = useState<UserType[]>(mockUsers)
+  const {
+    users,
+    isLoading,
+    error,
+    isCreating,
+    filteredUsers,
+    availableRoles,
+    getStatusBadgeClass,
+    getStatusLabel,
+    formatLastLogin,
+    createUser,
+    toggleUserStatus,
+    setFilters
+  } = useUserManagement()
+
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   
-  // Debug: Log modal state changes
-  console.log('Modal state:', isCreateModalOpen)
-  const [isCreating, setIsCreating] = useState(false)
   const [createForm, setCreateForm] = useState<CreateUserForm>({
     name: '',
     email: '',
@@ -176,15 +98,14 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   })
   const [formErrors, setFormErrors] = useState<CreateUserFormErrors>({})
 
-  // Filter users based on search and filters
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter
-    const matchesRole = roleFilter === "all" || user.role.id === roleFilter
-    
-    return matchesSearch && matchesStatus && matchesRole
-  })
+  // Update filters when search or filters change
+  useEffect(() => {
+    setFilters({
+      search: searchTerm,
+      status: statusFilter === 'all' ? 'all' : statusFilter as any,
+      roleId: roleFilter === 'all' ? 'all' : roleFilter
+    })
+  }, [searchTerm, statusFilter, roleFilter, setFilters])
 
   // Validate form
   const validateForm = (): boolean => {
@@ -218,13 +139,13 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   const handleCreateUser = async () => {
     if (!validateForm()) return
     
-    setIsCreating(true)
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      console.log('Creating user:', createForm)
+      await createUser({
+        name: createForm.name,
+        email: createForm.email,
+        roleId: createForm.roleId as SystemRoleType,
+        phone: createForm.phone
+      })
       
       // Reset form and close modal
       setCreateForm({
@@ -234,15 +155,11 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         phone: '',
         sendWelcomeEmail: true
       })
-            setFormErrors({})
+      setFormErrors({})
       setIsCreateModalOpen(false)
-      
-      // Here you would typically refresh the users list
       
     } catch (error) {
       console.error('Error creating user:', error)
-    } finally {
-      setIsCreating(false)
     }
   }
 
@@ -259,44 +176,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       setFormErrors({})
     }
     setIsCreateModalOpen(false)
-  }
-
-  // Get status badge styling
-  const getStatusBadge = (status: UserType['status']) => {
-    const styles = {
-      active: "bg-green-100 text-green-800 border-green-200",
-      inactive: "bg-gray-100 text-gray-800 border-gray-200",
-      suspended: "bg-red-100 text-red-800 border-red-200"
-    }
-    
-    const labels = {
-      active: "Activo",
-      inactive: "Inactivo", 
-      suspended: "Suspendido"
-    }
-    
-    return (
-      <Badge variant="outline" className={styles[status]}>
-        {labels[status]}
-      </Badge>
-    )
-  }
-
-  // Format last login time
-  const formatLastLogin = (date?: Date) => {
-    if (!date) return "Nunca"
-    
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    
-    if (diffMins < 60) return `Hace ${diffMins} min`
-    if (diffHours < 24) return `Hace ${diffHours}h`
-    if (diffDays < 7) return `Hace ${diffDays} días`
-    
-    return date.toLocaleDateString()
   }
 
   return (
@@ -597,7 +476,9 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(user.status)}
+                      <Badge variant="outline" className={getStatusBadgeClass(user.status)}>
+                        {getStatusLabel(user.status)}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className={styles.lastLoginCell}>

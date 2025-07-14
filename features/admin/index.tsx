@@ -12,6 +12,8 @@ export * from './components'
 
 // Hook Exports
 export { useAdmin } from './hooks/useAdmin'
+export { useUserManagement } from './hooks/useUserManagement'
+export { useRoleManagement } from './hooks/useRoleManagement'
 
 // Type Exports
 export type {

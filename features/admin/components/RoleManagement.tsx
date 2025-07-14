@@ -32,145 +32,47 @@ import {
   AlertCircle
 } from "lucide-react"
 import type { RoleManagementProps, SystemRole, User, SystemRoleType } from "../types"
+import { useRoleManagement } from "../hooks/useRoleManagement"
 import styles from "../styles/RoleManagement.module.css"
 
-// Roles del sistema predefinidos
-const systemRoles: SystemRole[] = [
-  {
-    id: 'admin',
-    name: 'Administrador',
-    description: 'Acceso completo al sistema, gestión de usuarios y configuración',
-    color: '#dc2626',
-    icon: 'Crown',
-    userCount: 2,
-    permissions: {}
-  },
-  {
-    id: 'supervisor',
-    name: 'Supervisor',
-    description: 'Gestión de equipos, análisis avanzado y supervisión de campañas',
-    color: '#2563eb',
-    icon: 'Shield', 
-    userCount: 5,
-    permissions: {}
-  },
-  {
-    id: 'comercial',
-    name: 'Comercial',
-    description: 'Gestión de leads, campañas de email y análisis básico',
-    color: '#16a34a',
-    icon: 'Briefcase',
-    userCount: 12,
-    permissions: {}
-  }
-]
-
-// Mock users data
-const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "María González",
-    email: "maria.gonzalez@ritterfinder.com",
-    status: "active",
-    role: {
-      id: "admin",
-      name: "Administrador",
-      description: "Acceso completo",
-      color: "#dc2626",
-      permissions: [],
-      isSystem: true,
-      userCount: 2,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    permissions: [],
-    lastLogin: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    metadata: { loginCount: 245 }
-  },
-  {
-    id: "2",
-    name: "Carlos Ruiz",
-    email: "carlos.ruiz@ritterfinder.com",
-    status: "active",
-    role: {
-      id: "supervisor",
-      name: "Supervisor",
-      description: "Gestión de equipos",
-      color: "#2563eb",
-      permissions: [],
-      isSystem: true,
-      userCount: 5,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    permissions: [],
-    lastLogin: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    metadata: { loginCount: 89 }
-  },
-  {
-    id: "3",
-    name: "Ana Martínez",
-    email: "ana.martinez@ritterfinder.com",
-    status: "active",
-    role: {
-      id: "comercial",
-      name: "Comercial",
-      description: "Gestión de leads",
-      color: "#16a34a",
-      permissions: [],
-      isSystem: true,
-      userCount: 12,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    permissions: [],
-    lastLogin: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    metadata: { loginCount: 34 }
-  }
-]
-
 export function RoleManagement({ className = "" }: RoleManagementProps) {
-  const [users] = useState<User[]>(mockUsers)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedRole, setSelectedRole] = useState<SystemRoleType | 'all'>('all')
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const {
+    users,
+    isLoading,
+    error,
+    isAssigning,
+    searchTerm,
+    selectedRole,
+    selectedUsers,
+    filteredUsers,
+    systemRoles,
+    getRoleIcon,
+    setSearchTerm,
+    setSelectedRole,
+    setSelectedUsers,
+    toggleUserSelection,
+    clearSelection,
+    assignUserToRole,
+    bulkAssignRole
+  } = useRoleManagement()
 
-  // Filter users
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = selectedRole === 'all' || user.role.id === selectedRole
-    
-    return matchesSearch && matchesRole
-  })
-
-  // Get role icon
-  const getRoleIcon = (roleId: string) => {
-    switch (roleId) {
-      case 'admin': return Crown
-      case 'supervisor': return Shield
-      case 'comercial': return Briefcase
-      default: return Users
+  // Handle role assignment
+  const handleAssignRole = async (userId: string, newRoleId: SystemRoleType) => {
+    try {
+      await assignUserToRole(userId, newRoleId)
+    } catch (error) {
+      console.error('Error assigning role:', error)
     }
   }
 
-  // Handle role assignment
-  const handleAssignRole = (userId: string, newRoleId: SystemRoleType) => {
-    console.log(`Assigning user ${userId} to role ${newRoleId}`)
-    // Aquí iría la lógica para asignar el rol
-  }
-
   // Handle bulk role assignment
-  const handleBulkAssign = (roleId: SystemRoleType) => {
+  const handleBulkAssign = async (roleId: SystemRoleType) => {
     if (selectedUsers.length === 0) return
-    console.log(`Bulk assigning ${selectedUsers.length} users to role ${roleId}`)
-    setSelectedUsers([])
+    try {
+      await bulkAssignRole(selectedUsers, roleId)
+    } catch (error) {
+      console.error('Error bulk assigning roles:', error)
+    }
   }
 
   return (

@@ -1,4 +1,5 @@
 // Admin Feature Types - RitterFinder Admin Dashboard
+import { LucideIcon } from 'lucide-react'
 
 export interface User {
   id: string
@@ -59,7 +60,7 @@ export interface SystemRole {
   name: string
   description: string
   color: string
-  icon: string
+  icon: LucideIcon
   userCount: number
   permissions: PermissionMatrix
 }
