@@ -46,7 +46,8 @@ import {
   Trash2,
   User,
   AlertCircle,
-  X
+  X,
+  RefreshCw
 } from "lucide-react"
 import type { UserManagementProps, User as UserType, SystemRoleType } from "../types"
 import { useUserManagement } from "../hooks/useUserManagement"
@@ -81,7 +82,8 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     formatLastLogin,
     createUser,
     toggleUserStatus,
-    setFilters
+    setFilters,
+    fetchUsers
   } = useUserManagement()
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -415,118 +417,151 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         </CardContent>
       </Card>
 
+      {/* Error Display */}
+      {error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-red-700">
+              <AlertCircle className="h-5 w-5" />
+              <span className="font-medium">Error al cargar usuarios:</span>
+              <span>{error}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Users Table */}
       <Card className={styles.usersTableCard}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Usuarios ({filteredUsers.length})</span>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <UserCheck className="h-4 w-4" />
-              {users.filter(u => u.status === 'active').length} activos
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <UserCheck className="h-4 w-4" />
+                {users.filter(u => u.status === 'active').length} activos
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={fetchUsers}
+                disabled={isLoading}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                {isLoading ? 'Actualizando...' : 'Actualizar'}
+              </Button>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className={styles.tableContainer}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>Rol</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Último Acceso</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id} className={styles.userRow}>
-                    <TableCell>
-                      <div className={styles.userCell}>
-                        <div className={styles.userAvatar}>
-                          <span className="text-sm font-medium text-ritter-gold">
-                            {user.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <div className={styles.userName}>
-                            {user.name}
+          {isLoading && users.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <RefreshCw className="h-5 w-5 animate-spin" />
+                <span>Cargando usuarios...</span>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className={styles.tableContainer}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Usuario</TableHead>
+                      <TableHead>Rol</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Último Acceso</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id} className={styles.userRow}>
+                        <TableCell>
+                          <div className={styles.userCell}>
+                            <div className={styles.userAvatar}>
+                              <span className="text-sm font-medium text-ritter-gold">
+                                {user.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <div className={styles.userName}>
+                                {user.name}
+                              </div>
+                              <div className={styles.userEmail}>
+                                <Mail className="h-3 w-3" />
+                                {user.email}
+                              </div>
+                              {user.metadata?.phone && (
+                                <div className={styles.userPhone}>
+                                  <Phone className="h-3 w-3" />
+                                  {user.metadata.phone}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className={styles.userEmail}>
-                            <Mail className="h-3 w-3" />
-                            {user.email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline" 
+                            style={{ borderColor: user.role.color, color: user.role.color }}
+                            className={styles.roleBadge}
+                          >
+                            <Shield className="h-3 w-3 mr-1" />
+                            {user.role.name}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={getStatusBadgeClass(user.status)}>
+                            {getStatusLabel(user.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className={styles.lastLoginCell}>
+                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                            {formatLastLogin(user.lastLogin)}
                           </div>
-                          {user.metadata?.phone && (
-                            <div className={styles.userPhone}>
-                              <Phone className="h-3 w-3" />
-                              {user.metadata.phone}
+                          {user.metadata?.loginCount && (
+                            <div className="text-xs text-muted-foreground">
+                              {user.metadata.loginCount} accesos
                             </div>
                           )}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        style={{ borderColor: user.role.color, color: user.role.color }}
-                        className={styles.roleBadge}
-                      >
-                        <Shield className="h-3 w-3 mr-1" />
-                        {user.role.name}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={getStatusBadgeClass(user.status)}>
-                        {getStatusLabel(user.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className={styles.lastLoginCell}>
-                        <Calendar className="h-3 w-3 text-muted-foreground" />
-                        {formatLastLogin(user.lastLogin)}
-                      </div>
-                      {user.metadata?.loginCount && (
-                        <div className="text-xs text-muted-foreground">
-                          {user.metadata.loginCount} accesos
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className={styles.userActions}>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => {
-                            // Toggle user status logic here
-                          }}
-                        >
-                          {user.status === 'active' ? (
-                            <UserX className="h-4 w-4 text-orange-600" />
-                          ) : (
-                            <UserCheck className="h-4 w-4 text-green-600" />
-                          )}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          
-          {filteredUsers.length === 0 && (
-            <div className={styles.emptyState}>
-              <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No se encontraron usuarios</p>
-              <p className="text-sm">Prueba ajustando los filtros de búsqueda</p>
-            </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className={styles.userActions}>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => toggleUserStatus(user.id)}
+                            >
+                              {user.status === 'active' ? (
+                                <UserX className="h-4 w-4 text-orange-600" />
+                              ) : (
+                                <UserCheck className="h-4 w-4 text-green-600" />
+                              )}
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              {filteredUsers.length === 0 && !isLoading && (
+                <div className={styles.emptyState}>
+                  <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No se encontraron usuarios</p>
+                  <p className="text-sm">Prueba ajustando los filtros de búsqueda o haz clic en "Actualizar"</p>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

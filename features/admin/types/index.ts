@@ -231,7 +231,7 @@ export interface UserFilters {
   search: string
   status: User['status'] | 'all'
   roleId: string | 'all'
-  sortBy: 'name' | 'email' | 'lastLogin' | 'createdAt'
+  sortBy: 'name' | 'email' | 'status' | 'lastLogin' | 'createdAt'
   sortOrder: 'asc' | 'desc'
 }
 
