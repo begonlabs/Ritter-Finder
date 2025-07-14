@@ -79,10 +79,10 @@ function generateSearchResults(config: SearchConfig): SearchLead[] {
       if (!matchesLocation) return false
     }
 
-    // Filter by validation requirements
+    // Filter by requirements
     if (config.requireWebsite && !lead.company_website) return false
-    if (config.validateEmail && !lead.verified_email) return false
-    if (config.validateWebsite && !lead.verified_website) return false
+    if (config.requireEmail && !lead.email) return false
+    if (config.requirePhone && !lead.phone) return false
     
     // Filter by quality score if specified
     if (config.minQualityScore && lead.data_quality_score < config.minQualityScore) return false
@@ -352,8 +352,8 @@ export function useSearch() {
     configActions.setSelectedClientTypes(searchConfig.selectedClientTypes)
     configActions.setSelectedLocations(searchConfig.selectedLocations)
     configActions.setRequireWebsite(searchConfig.requireWebsite)
-    configActions.setValidateEmail(searchConfig.validateEmail)
-    configActions.setValidateWebsite(searchConfig.validateWebsite)
+    configActions.setRequireEmail(searchConfig.requireEmail)
+    configActions.setRequirePhone(searchConfig.requirePhone)
     
     // Set new search criteria if provided
     if (searchConfig.minQualityScore !== undefined) {

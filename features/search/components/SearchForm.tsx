@@ -42,15 +42,9 @@ export function SearchForm({ state, actions, canStartSearch, searchComplete, cur
           requireWebsite={state.requireWebsite}
           requireEmail={state.requireEmail}
           requirePhone={state.requirePhone}
-          validateEmail={state.validateEmail}
-          validateWebsite={state.validateWebsite}
-          validatePhone={state.validatePhone}
           setRequireWebsite={actions.setRequireWebsite}
           setRequireEmail={actions.setRequireEmail}
           setRequirePhone={actions.setRequirePhone}
-          setValidateEmail={actions.setValidateEmail}
-          setValidateWebsite={actions.setValidateWebsite}
-          setValidatePhone={actions.setValidatePhone}
         />
       </div>
 

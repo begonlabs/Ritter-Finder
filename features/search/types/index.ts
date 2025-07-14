@@ -4,9 +4,6 @@ export interface SearchConfig {
   requireWebsite: boolean
   requireEmail: boolean
   requirePhone: boolean
-  validateEmail: boolean
-  validateWebsite: boolean
-  validatePhone: boolean
   // New search criteria based on simplified schema
   minQualityScore?: number // 1-5 scale
   activityFilter?: string[] // Filter by business activity
@@ -26,9 +23,6 @@ export interface SearchActions {
   setRequireWebsite: (require: boolean) => void
   setRequireEmail: (require: boolean) => void
   setRequirePhone: (require: boolean) => void
-  setValidateEmail: (validate: boolean) => void
-  setValidateWebsite: (validate: boolean) => void
-  setValidatePhone: (validate: boolean) => void
   handleSearch: () => void
   resetSearch: () => void
   rerunSearch: (config: SearchConfig) => void

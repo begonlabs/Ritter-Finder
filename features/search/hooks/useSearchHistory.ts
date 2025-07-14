@@ -48,9 +48,6 @@ export function useSearchHistory() {
         requireWebsite: searchConfig.requireWebsite,
         requireEmail: searchConfig.requireEmail,
         requirePhone: searchConfig.requirePhone,
-        validateEmail: searchConfig.validateEmail,
-        validateWebsite: searchConfig.validateWebsite,
-        validatePhone: searchConfig.validatePhone,
         minQualityScore: searchConfig.minQualityScore,
         activityFilter: searchConfig.activityFilter,
         categoryFilter: searchConfig.categoryFilter,
@@ -61,9 +58,6 @@ export function useSearchHistory() {
         websiteRequired: searchConfig.requireWebsite,
         emailRequired: searchConfig.requireEmail,
         phoneRequired: searchConfig.requirePhone,
-        emailValidation: searchConfig.validateEmail,
-        websiteValidation: searchConfig.validateWebsite,
-        phoneValidation: searchConfig.validatePhone,
         qualityScoreMin: searchConfig.minQualityScore,
       }
 

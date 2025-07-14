@@ -8,10 +8,8 @@ export function useSearchConfig() {
     selectedClientTypes: [],
     selectedLocations: [],
     requireWebsite: false,
-    validateEmail: false,
-    validateWebsite: false,
+    requireEmail: false,
     requirePhone: false,
-    validatePhone: false,
   })
 
   const setSelectedClientTypes = (clientTypes: string[]) => {
@@ -26,20 +24,12 @@ export function useSearchConfig() {
     setConfig(prev => ({ ...prev, requireWebsite: require }))
   }
 
-  const setValidateEmail = (validate: boolean) => {
-    setConfig(prev => ({ ...prev, validateEmail: validate }))
-  }
-
-  const setValidateWebsite = (validate: boolean) => {
-    setConfig(prev => ({ ...prev, validateWebsite: validate }))
+  const setRequireEmail = (require: boolean) => {
+    setConfig(prev => ({ ...prev, requireEmail: require }))
   }
 
   const setRequirePhone = (require: boolean) => {
     setConfig(prev => ({ ...prev, requirePhone: require }))
-  }
-
-  const setValidatePhone = (validate: boolean) => {
-    setConfig(prev => ({ ...prev, validatePhone: validate }))
   }
 
   const resetConfig = () => {
@@ -47,10 +37,8 @@ export function useSearchConfig() {
       selectedClientTypes: [],
       selectedLocations: [],
       requireWebsite: false,
-      validateEmail: false,
-      validateWebsite: false,
+      requireEmail: false,
       requirePhone: false,
-      validatePhone: false,
     })
   }
 
@@ -63,10 +51,8 @@ export function useSearchConfig() {
     setSelectedClientTypes,
     setSelectedLocations,
     setRequireWebsite,
-    setValidateEmail,
-    setValidateWebsite,
+    setRequireEmail,
     setRequirePhone,
-    setValidatePhone,
     resetSearch: resetConfig,
   }
 
