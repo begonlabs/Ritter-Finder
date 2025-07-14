@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "node-fetch": "^2.6.7",
-    "node-mailjet": "^6.0.0"
+    "node-mailjet": "^6.0.0",
+    "nodemailer": "^7.0.5"
   },
-  "devDependencies": {},
   "keywords": [
     "email",
     "campaign",
@@ -21,4 +21,4 @@
   ],
   "author": "RitterFinder Team",
   "license": "MIT"
-} 
+}

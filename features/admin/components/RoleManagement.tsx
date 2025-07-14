@@ -225,111 +225,111 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
               </div>
             </div>
           ) : (
-            <div className={styles.tableContainer}>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">
-                      <input
-                        type="checkbox"
-                        checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedUsers(filteredUsers.map(u => u.id))
-                          } else {
-                            setSelectedUsers([])
-                          }
-                        }}
-                        className={styles.checkbox}
-                      />
-                    </TableHead>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Rol Actual</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredUsers.map((user) => {
-                    const IconComponent = getRoleIcon(user.role.id)
-                    return (
-                      <TableRow key={user.id} className={styles.userRow}>
-                        <TableCell>
-                          <input
-                            type="checkbox"
-                            checked={selectedUsers.includes(user.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedUsers([...selectedUsers, user.id])
-                              } else {
-                                setSelectedUsers(selectedUsers.filter(id => id !== user.id))
-                              }
-                            }}
-                            className={styles.checkbox}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className={styles.userCell}>
-                            <div className={styles.userAvatar}>
-                              {user.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className={styles.userName}>{user.name}</div>
-                              <div className={styles.userEmail}>{user.email}</div>
-                            </div>
+          <div className={styles.tableContainer}>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedUsers(filteredUsers.map(u => u.id))
+                        } else {
+                          setSelectedUsers([])
+                        }
+                      }}
+                      className={styles.checkbox}
+                    />
+                  </TableHead>
+                  <TableHead>Usuario</TableHead>
+                  <TableHead>Rol Actual</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => {
+                  const IconComponent = getRoleIcon(user.role.id)
+                  return (
+                    <TableRow key={user.id} className={styles.userRow}>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.includes(user.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedUsers([...selectedUsers, user.id])
+                            } else {
+                              setSelectedUsers(selectedUsers.filter(id => id !== user.id))
+                            }
+                          }}
+                          className={styles.checkbox}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className={styles.userCell}>
+                          <div className={styles.userAvatar}>
+                            {user.name.charAt(0).toUpperCase()}
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant="outline" 
-                            className={styles.roleBadge}
-                            style={{ borderColor: user.role.color, color: user.role.color }}
-                          >
-                            <IconComponent className="h-3 w-3 mr-1" />
-                            {user.role.name}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant={user.status === 'active' ? 'default' : 'secondary'}
-                            className={user.status === 'active' ? 'bg-green-100 text-green-800' : ''}
-                          >
-                            {user.status === 'active' ? 'Activo' : 'Inactivo'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className={styles.userActions}>
-                            <Select onValueChange={(value) => handleAssignRole(user.id, value as SystemRoleType)}>
-                              <SelectTrigger className="w-36">
-                                <SelectValue placeholder="Cambiar rol" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {systemRoles
-                                  .filter(role => role.id !== user.role.id)
-                                  .map((role) => {
-                                    const RoleIcon = getRoleIcon(role.id)
-                                    return (
-                                      <SelectItem key={role.id} value={role.id}>
-                                        <div className="flex items-center gap-2">
-                                          <RoleIcon className="h-3 w-3" style={{ color: role.color }} />
-                                          {role.name}
-                                        </div>
-                                      </SelectItem>
-                                    )
-                                  })}
-                              </SelectContent>
-                            </Select>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <History className="h-4 w-4" />
-                            </Button>
+                          <div>
+                            <div className={styles.userName}>{user.name}</div>
+                            <div className={styles.userEmail}>{user.email}</div>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className={styles.roleBadge}
+                          style={{ borderColor: user.role.color, color: user.role.color }}
+                        >
+                          <IconComponent className="h-3 w-3 mr-1" />
+                          {user.role.name}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={user.status === 'active' ? 'default' : 'secondary'}
+                          className={user.status === 'active' ? 'bg-green-100 text-green-800' : ''}
+                        >
+                          {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className={styles.userActions}>
+                          <Select onValueChange={(value) => handleAssignRole(user.id, value as SystemRoleType)}>
+                            <SelectTrigger className="w-36">
+                              <SelectValue placeholder="Cambiar rol" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {systemRoles
+                                .filter(role => role.id !== user.role.id)
+                                .map((role) => {
+                                  const RoleIcon = getRoleIcon(role.id)
+                                  return (
+                                    <SelectItem key={role.id} value={role.id}>
+                                      <div className="flex items-center gap-2">
+                                        <RoleIcon className="h-3 w-3" style={{ color: role.color }} />
+                                        {role.name}
+                                      </div>
+                                    </SelectItem>
+                                  )
+                                })}
+                            </SelectContent>
+                          </Select>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <History className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
           )}
 
           {filteredUsers.length === 0 && !isLoading && (
