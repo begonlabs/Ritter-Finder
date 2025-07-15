@@ -137,7 +137,7 @@ export const useNavigation = ({
       disabled: false,
       badge: null,
       dataOnboarding: "search",
-      requiredPermissions: ["leads:search", "leads:create"]
+      requiredPermissions: ["leads:search"] // Only need search permission
     },
     {
       id: "results",
@@ -146,7 +146,7 @@ export const useNavigation = ({
       disabled: !searchComplete,
       badge: null,
       dataOnboarding: "results",
-      requiredPermissions: ["leads:read", "leads:view"]
+      requiredPermissions: ["leads:read"] // Only need read permission
     },
     {
       id: "campaign",
@@ -155,7 +155,7 @@ export const useNavigation = ({
       disabled: selectedLeadsCount === 0,
       badge: selectedLeadsCount > 0 ? selectedLeadsCount : null,
       dataOnboarding: "campaigns",
-      requiredPermissions: ["campaigns:create", "campaigns:send"]
+      requiredPermissions: ["campaigns:create", "campaigns:send"] // Need create and send permissions
     },
     {
       id: "history",
@@ -164,9 +164,8 @@ export const useNavigation = ({
       disabled: false,
       badge: null,
       dataOnboarding: "history",
-      requiredPermissions: ["leads:read", "campaigns:read"]
+      requiredPermissions: ["leads:read", "campaigns:read"] // Need both read permissions
     },
-
     {
       id: "analytics",
       label: "Analytics",
@@ -174,7 +173,7 @@ export const useNavigation = ({
       disabled: false,
       badge: null,
       dataOnboarding: "analytics",
-      requiredPermissions: ["analytics:view", "analytics:read"]
+      requiredPermissions: ["analytics:view"] // Only need view permission
     },
     {
       id: "admin",
@@ -183,40 +182,7 @@ export const useNavigation = ({
       disabled: false,
       badge: null,
       dataOnboarding: "admin",
-      requiredPermissions: ["admin:users", "admin:settings", "admin:roles"]
-    },
-    // Additional admin-only items
-    {
-      id: "users",
-      label: "Usuarios",
-      icon: UserCog,
-      disabled: false,
-      badge: null,
-      requiredPermissions: ["admin:users"]
-    },
-    {
-      id: "roles",
-      label: "Roles",
-      icon: Settings,
-      disabled: false,
-      badge: null,
-      requiredPermissions: ["admin:roles"]
-    },
-    {
-      id: "templates",
-      label: "Plantillas",
-      icon: FileText,
-      disabled: false,
-      badge: null,
-      requiredPermissions: ["campaigns:templates"]
-    },
-    {
-      id: "system",
-      label: "Sistema",
-      icon: Database,
-      disabled: false,
-      badge: null,
-      requiredPermissions: ["admin:system"]
+      requiredPermissions: ["admin:*"] // Need admin wildcard permission
     }
   ], [searchComplete, selectedLeadsCount])
   
@@ -237,9 +203,30 @@ export const useNavigation = ({
   
   // Main navigation items (commonly used)
   const navigationItems = useMemo(() => {
-    const mainItemIds = ["dashboard", "search", "results", "campaign", "history", "analytics", "admin"]
-    return availableItems.filter(item => mainItemIds.includes(item.id))
-  }, [availableItems])
+    // Filter based on role permissions
+    if (!user) return []
+    
+    const roleName = user.role.name?.toLowerCase()
+    
+    // Define which items each role can see
+    let allowedItemIds: string[] = []
+    
+    if (roleName === 'admin' || roleName === 'administrator') {
+      // Admin sees everything
+      allowedItemIds = ["dashboard", "search", "results", "campaign", "history", "analytics", "admin"]
+    } else if (roleName === 'supervisor') {
+      // Supervisor sees everything except admin
+      allowedItemIds = ["dashboard", "search", "results", "campaign", "history", "analytics"]
+    } else if (roleName === 'comercial' || roleName === 'commercial') {
+      // Commercial sees only dashboard, search, results, and campaigns
+      allowedItemIds = ["dashboard", "search", "results", "campaign"]
+    } else {
+      // Default fallback - only dashboard
+      allowedItemIds = ["dashboard"]
+    }
+    
+    return availableItems.filter(item => allowedItemIds.includes(item.id))
+  }, [availableItems, user])
   
   // Function to check if user has access to specific item
   const hasAccess = (itemId: string): boolean => {
