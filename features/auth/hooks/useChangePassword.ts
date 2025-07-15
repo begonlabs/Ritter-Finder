@@ -25,7 +25,7 @@ export interface ChangePasswordResponse {
 }
 
 export function useChangePassword() {
-  const { updatePassword, signIn } = useAuth()
+  const { updatePassword, signIn, user } = useAuth()
   
   const [state, setState] = useState<ChangePasswordState>({
     currentPassword: '',
@@ -98,8 +98,22 @@ export function useChangePassword() {
     setState(prev => ({ ...prev, isLoading: true, error: '', success: false }))
     
     try {
-      // First, verify current password by attempting to sign in
-      const currentUser = await signIn(credentials.currentPassword, credentials.currentPassword)
+      // Check if we have the current user's email
+      if (!user?.email) {
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: 'No se pudo obtener la información del usuario'
+        }))
+        
+        return {
+          success: false,
+          error: 'No se pudo obtener la información del usuario'
+        }
+      }
+
+      // First, verify current password by attempting to sign in with the correct email
+      const currentUser = await signIn(user.email, credentials.currentPassword)
       if (!currentUser.success) {
         setState(prev => ({
           ...prev,
