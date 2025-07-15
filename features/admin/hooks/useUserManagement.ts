@@ -250,7 +250,7 @@ export function useUserManagement(): UseUserManagementReturn {
       }
 
       // Check if profile already exists
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile } = await adminClient
         .from('user_profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -260,7 +260,7 @@ export function useUserManagement(): UseUserManagementReturn {
 
       if (existingProfile) {
         // Update existing profile with new data
-        const { data: updatedProfile, error: profileError } = await supabase
+        const { data: updatedProfile, error: profileError } = await adminClient
           .from('user_profiles')
           .update({
             full_name: userData.name,
@@ -286,7 +286,7 @@ export function useUserManagement(): UseUserManagementReturn {
         console.log('✅ Perfil actualizado:', profile)
       } else {
         // Create new user profile
-        const { data: newProfile, error: profileError } = await supabase
+        const { data: newProfile, error: profileError } = await adminClient
           .from('user_profiles')
           .insert({
             id: authData.user.id,
@@ -344,8 +344,11 @@ export function useUserManagement(): UseUserManagementReturn {
       setIsUpdating(true)
       setError(null)
       
+      // Use admin client for database operations
+      const adminClient = createAdminClient()
+      
       // Update user profile
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await adminClient
         .from('user_profiles')
         .update({
           full_name: userData.name,
@@ -458,7 +461,7 @@ export function useUserManagement(): UseUserManagementReturn {
       }
 
       // Delete user profile first
-      const { error: profileError } = await supabase
+      const { error: profileError } = await adminClient
         .from('user_profiles')
         .delete()
         .eq('id', id)
@@ -507,8 +510,11 @@ export function useUserManagement(): UseUserManagementReturn {
       
       const newStatus = user.status === 'active' ? 'inactive' : 'active'
       
+      // Use admin client for database operations
+      const adminClient = createAdminClient()
+      
       // Update user profile with status
-      const { error: profileError } = await supabase
+      const { error: profileError } = await adminClient
         .from('user_profiles')
         .update({
           metadata: {
