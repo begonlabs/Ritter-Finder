@@ -37,7 +37,6 @@ import {
   Mail, 
   Search, 
   Plus, 
-  Edit2,
   Trash2,
   Copy,
   Eye,
@@ -341,14 +340,6 @@ export function TemplateManagement({ className = "" }: TemplateManagementProps) 
                     </TableCell>
                     <TableCell className="text-right">
                       <div className={styles.templateActions}>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => openEditDialog(template)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"

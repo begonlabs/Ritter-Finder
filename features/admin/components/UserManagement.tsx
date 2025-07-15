@@ -42,7 +42,6 @@ import {
   Shield,
   UserCheck,
   UserX,
-  Edit2,
   Trash2,
   User,
   AlertCircle,
@@ -710,9 +709,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                               title="Verificar datos del usuario"
                             >
                               <Search className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <Edit2 className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="ghost" 

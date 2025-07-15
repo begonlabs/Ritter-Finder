@@ -32,7 +32,6 @@ import {
   AlertCircle,
   RefreshCw,
   Phone,
-  Edit2,
   Trash2
 } from "lucide-react"
 import type { RoleManagementProps, SystemRole, User, SystemRoleType } from "../types"
