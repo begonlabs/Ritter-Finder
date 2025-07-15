@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu, User, UserCircle, LogOut, Shield } from "lucide-react"
+import { Menu, User, UserCircle, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
@@ -114,17 +114,6 @@ export function DashboardHeader({
                 <UserCircle className={styles.menuItemIcon} />
                 <span>{t("nav.profile")}</span>
               </DropdownMenuItem>
-
-              {/* Security Menu Item */}
-              {state.user?.twoFactorEnabled !== undefined && (
-                <DropdownMenuItem className={styles.userMenuItem}>
-                  <Shield className={styles.menuItemIcon} />
-                  <span>Seguridad</span>
-                  {state.user.twoFactorEnabled && (
-                    <Badge variant="outline" className="ml-auto">2FA</Badge>
-                  )}
-                </DropdownMenuItem>
-              )}
               
               <DropdownMenuSeparator />
               
