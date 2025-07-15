@@ -1,23 +1,25 @@
 {
-  "name": "ritterfinder-campaign-tests",
+  "name": "ritterfinder-user-management-test",
   "version": "1.0.0",
-  "description": "Test scripts for RitterFinder email campaigns using Mailjet",
-  "main": "test-mailjet-campaign.js",
+  "description": "Scripts de prueba para gestión de usuarios en RitterFinder",
+  "main": "test-user-management.js",
   "scripts": {
-    "test:campaign": "node test-mailjet-campaign.js",
-    "test:dry-run": "node test-mailjet-campaign.js --dry-run"
+    "test": "node test-user-management.js test",
+    "cleanup": "node test-user-management.js cleanup",
+    "verify": "node test-user-management.js verify"
   },
   "dependencies": {
-    "node-fetch": "^2.6.7",
-    "node-mailjet": "^6.0.0",
-    "nodemailer": "^7.0.5"
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   },
   "keywords": [
-    "email",
-    "campaign",
-    "mailjet",
-    "ritterfinder",
-    "test"
+    "supabase",
+    "user-management",
+    "testing",
+    "ritterfinder"
   ],
   "author": "RitterFinder Team",
   "license": "MIT"
