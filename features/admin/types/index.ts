@@ -53,7 +53,7 @@ export type PermissionCategory =
   | 'templates'
 
 // Sistema de roles fijos
-export type SystemRoleType = 'admin' | 'supervisor' | 'comercial'
+export type SystemRoleType = 'f6798529-943b-483c-98be-bca8fdde370d' | '39af56ac-919b-45ae-94b7-569a2d85681a' | '8f698c5f-2373-45f8-90c2-9f4427d2638c'
 
 export interface SystemRole {
   id: SystemRoleType
@@ -184,7 +184,7 @@ export interface UsePermissionMatrixReturn {
 export interface CreateUserInput {
   name: string
   email: string
-  roleId: string
+  roleId: string // UUID del rol
   password: string
   phone?: string
 }
@@ -192,7 +192,7 @@ export interface CreateUserInput {
 export interface UpdateUserInput {
   name?: string
   email?: string
-  roleId?: string
+  roleId?: string // UUID del rol
   status?: User['status']
   phone?: string
 }

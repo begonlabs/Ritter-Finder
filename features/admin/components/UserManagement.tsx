@@ -56,7 +56,7 @@ import styles from "../styles/UserManagement.module.css"
 interface CreateUserForm {
   name: string
   email: string
-  roleId: SystemRoleType | ''
+  roleId: string | ''
   password: string
   confirmPassword: string
   phone: string
@@ -78,12 +78,15 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     isLoading,
     error,
     isCreating,
+    isDeleting,
     filteredUsers,
     availableRoles,
     createUser,
+    deleteUser,
     toggleUserStatus,
     setFilters,
-    fetchUsers
+    fetchUsers,
+    verifyUserData
   } = useUserManagement()
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -171,10 +174,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     try {
       const finalPassword = createForm.generatePassword ? generateRandomPassword() : createForm.password
       
-      await createUser({
+      const newUser = await createUser({
         name: createForm.name,
         email: createForm.email,
-        roleId: createForm.roleId as SystemRoleType,
+        roleId: createForm.roleId,
         password: finalPassword,
         phone: createForm.phone
       })
@@ -191,6 +194,9 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       })
       setFormErrors({})
       setIsCreateModalOpen(false)
+      
+      // Show success message
+      console.log('✅ Usuario creado exitosamente:', newUser.name)
       
     } catch (error) {
       console.error('Error creating user:', error)
@@ -303,7 +309,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                 </Label>
                 <Select 
                   value={createForm.roleId} 
-                  onValueChange={(value) => setCreateForm(prev => ({ ...prev, roleId: value as SystemRoleType }))}
+                  onValueChange={(value: string) => setCreateForm(prev => ({ ...prev, roleId: value }))}
                   disabled={isCreating}
                 >
                   <SelectTrigger className={formErrors.roleId ? styles.inputError : ''}>
@@ -584,11 +590,40 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className={styles.userActions}>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => verifyUserData(user.id)}
+                              title="Verificar datos del usuario"
+                            >
+                              <Search className="h-4 w-4" />
+                            </Button>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <Edit2 className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600">
-                              <Trash2 className="h-4 w-4" />
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 text-red-600"
+                              onClick={async () => {
+                                if (confirm(`¿Estás seguro de que quieres eliminar a ${user.name}?`)) {
+                                  try {
+                                    await deleteUser(user.id)
+                                    console.log('✅ Usuario eliminado exitosamente:', user.name)
+                                  } catch (error) {
+                                    console.error('Error eliminando usuario:', error)
+                                  }
+                                }
+                              }}
+                              disabled={isDeleting}
+                              title="Eliminar usuario"
+                            >
+                              {isDeleting ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
                             </Button>
                           </div>
                         </TableCell>

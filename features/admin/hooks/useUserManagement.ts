@@ -2,13 +2,21 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { createAdminClient } from '@/utils/supabase/admin'
 import type { User, SystemRoleType, CreateUserInput, UpdateUserInput, UserFilters } from '../types'
 
-// Roles disponibles del sistema
+// Mapeo de roles para facilitar el uso
+const roleMapping = {
+  admin: 'f6798529-943b-483c-98be-bca8fdde370d',
+  supervisor: '39af56ac-919b-45ae-94b7-569a2d85681a',
+  comercial: '8f698c5f-2373-45f8-90c2-9f4427d2638c'
+} as const
+
+// Roles disponibles del sistema con UUIDs reales
 const availableRoles = [
-  { id: 'admin', name: 'Administrador', color: '#dc2626' },
-  { id: 'supervisor', name: 'Supervisor', color: '#2563eb' },
-  { id: 'comercial', name: 'Comercial', color: '#16a34a' }
+  { id: roleMapping.admin, name: 'Administrador', color: '#dc2626' },
+  { id: roleMapping.supervisor, name: 'Supervisor', color: '#2563eb' },
+  { id: roleMapping.comercial, name: 'Comercial', color: '#16a34a' }
 ] as const
 
 interface UseUserManagementReturn {
@@ -30,6 +38,7 @@ interface UseUserManagementReturn {
   updateUser: (id: string, userData: UpdateUserInput) => Promise<User>
   deleteUser: (id: string) => Promise<void>
   toggleUserStatus: (id: string) => Promise<void>
+  verifyUserData: (userId: string) => Promise<void>
   
   // Filter actions
   setFilters: (filters: Partial<UserFilters>) => void
@@ -189,8 +198,44 @@ export function useUserManagement(): UseUserManagementReturn {
         throw new Error('No autorizado')
       }
 
+      console.log('👤 Usuario actual:', currentUser.email)
+      
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profileError) {
+        console.error('Error obteniendo perfil del usuario actual:', profileError)
+        throw new Error('Error al verificar permisos de administrador')
+      }
+
+      // Check if user has admin role (using UUID from roles table)
+      const adminRoleId = roleMapping.admin // admin role UUID
+      
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        throw new Error('Solo los administradores pueden crear usuarios')
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador')
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      // Check if user already exists
+      const { data: existingUser } = await adminClient.auth.admin.listUsers()
+      const userExists = existingUser.users.some(u => u.email === userData.email)
+      
+      if (userExists) {
+        throw new Error('Ya existe un usuario con este email')
+      }
+
       // Create auth user first
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
         email: userData.email,
         password: userData.password,
         email_confirm: true,
@@ -201,29 +246,69 @@ export function useUserManagement(): UseUserManagementReturn {
       })
 
       if (authError || !authData.user) {
-        throw new Error('Error al crear usuario de autenticación')
+        throw new Error(`Error al crear usuario de autenticación: ${authError?.message}`)
       }
 
-      // Create user profile
-      const { data: profile, error: profileError } = await supabase
+      // Check if profile already exists
+      const { data: existingProfile } = await supabase
         .from('user_profiles')
-        .insert({
-          id: authData.user.id,
-          full_name: userData.name,
-          role_id: userData.roleId,
-          invited_by: currentUser.id,
-          metadata: {
-            phone: userData.phone,
-            email: userData.email
-          }
-        })
-        .select()
+        .select('*')
+        .eq('id', authData.user.id)
         .single()
 
-      if (profileError) {
-        // Clean up auth user if profile creation fails
-        await supabase.auth.admin.deleteUser(authData.user.id)
-        throw new Error('Error al crear perfil de usuario')
+      let profile: any
+
+      if (existingProfile) {
+        // Update existing profile with new data
+        const { data: updatedProfile, error: profileError } = await supabase
+          .from('user_profiles')
+          .update({
+            full_name: userData.name,
+            role_id: userData.roleId,
+            invited_by: currentUser.id,
+            metadata: {
+              phone: userData.phone,
+              email: userData.email
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', authData.user.id)
+          .select()
+          .single()
+
+        if (profileError) {
+          // Clean up auth user if profile update fails
+          await adminClient.auth.admin.deleteUser(authData.user.id)
+          throw new Error(`Error al actualizar perfil de usuario: ${profileError.message}`)
+        }
+
+        profile = updatedProfile
+        console.log('✅ Perfil actualizado:', profile)
+      } else {
+        // Create new user profile
+        const { data: newProfile, error: profileError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: authData.user.id,
+            full_name: userData.name,
+            role_id: userData.roleId,
+            invited_by: currentUser.id,
+            metadata: {
+              phone: userData.phone,
+              email: userData.email
+            }
+          })
+          .select()
+          .single()
+
+        if (profileError) {
+          // Clean up auth user if profile creation fails
+          await adminClient.auth.admin.deleteUser(authData.user.id)
+          throw new Error(`Error al crear perfil de usuario: ${profileError.message}`)
+        }
+
+        profile = newProfile
+        console.log('✅ Perfil creado:', profile)
       }
 
       // Transform and add to state
@@ -241,6 +326,7 @@ export function useUserManagement(): UseUserManagementReturn {
       })
       setUsers(prev => [newUser, ...prev])
       
+      console.log('✅ Usuario creado exitosamente:', newUser)
       return newUser
       
     } catch (err) {
@@ -279,7 +365,8 @@ export function useUserManagement(): UseUserManagementReturn {
 
       // Update auth user if email changed
       if (userData.email) {
-        const { error: authError } = await supabase.auth.admin.updateUserById(id, {
+        const adminClient = createAdminClient()
+        const { error: authError } = await adminClient.auth.admin.updateUserById(id, {
           email: userData.email
         })
         if (authError) {
@@ -327,15 +414,78 @@ export function useUserManagement(): UseUserManagementReturn {
       setIsDeleting(true)
       setError(null)
       
-      // Delete auth user (this will cascade to user_profiles)
-      const { error: authError } = await supabase.auth.admin.deleteUser(id)
+      // Get current user
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
+      if (userError || !currentUser) {
+        throw new Error('No autorizado')
+      }
+
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: currentProfileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (currentProfileError) {
+        console.error('Error obteniendo perfil del usuario actual:', currentProfileError)
+        throw new Error('Error al verificar permisos de administrador')
+      }
+
+      const adminRoleId = roleMapping.admin // admin role UUID
       
-      if (authError) {
-        throw new Error('Error al eliminar usuario de autenticación')
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        throw new Error('Solo los administradores pueden eliminar usuarios')
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador')
+      console.log('🗑️ Iniciando eliminación de usuario:', id)
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      // Check if user exists in auth
+      const { data: authUsers, error: listError } = await adminClient.auth.admin.listUsers()
+      if (listError) {
+        throw new Error(`Error al verificar usuario: ${listError.message}`)
+      }
+
+      const authUser = authUsers.users.find(u => u.id === id)
+      if (!authUser) {
+        console.log('⚠️ Usuario no encontrado en auth, eliminando solo perfil')
+      }
+
+      // Delete user profile first
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .delete()
+        .eq('id', id)
+
+      if (profileError) {
+        console.error('Error eliminando perfil:', profileError)
+        throw new Error(`Error al eliminar perfil de usuario: ${profileError.message}`)
+      }
+
+      console.log('✅ Perfil eliminado correctamente')
+
+      // Delete auth user if exists
+      if (authUser) {
+        const { error: authError } = await adminClient.auth.admin.deleteUser(id)
+        
+        if (authError) {
+          console.error('Error eliminando usuario de auth:', authError)
+          throw new Error(`Error al eliminar usuario de autenticación: ${authError.message}`)
+        }
+
+        console.log('✅ Usuario de auth eliminado correctamente')
       }
 
       // Remove from local state
       setUsers(prev => prev.filter(user => user.id !== id))
+      
+      console.log('✅ Usuario eliminado completamente')
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al eliminar usuario')
@@ -505,6 +655,57 @@ export function useUserManagement(): UseUserManagementReturn {
     })
   }, [])
 
+  // Verify user data (like in the test script)
+  const verifyUserData = useCallback(async (userId: string) => {
+    try {
+      console.log('🔍 Verificando datos del usuario:', userId)
+      
+      // Check auth user
+      const { data: authUsers, error: listError } = await supabase.auth.admin.listUsers()
+      if (listError) {
+        console.error('Error listando usuarios de auth:', listError)
+        return
+      }
+
+      const authUser = authUsers.users.find(u => u.id === userId)
+      if (authUser) {
+        console.log('✅ Usuario encontrado en auth:', {
+          id: authUser.id,
+          email: authUser.email,
+          created_at: authUser.created_at
+        })
+      } else {
+        console.log('❌ Usuario no encontrado en auth')
+      }
+
+      // Check user profile
+      const { data: profile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (profileError) {
+        console.error('Error verificando perfil:', profileError)
+        return
+      }
+
+      if (profile) {
+        console.log('✅ Perfil encontrado:', {
+          id: profile.id,
+          full_name: profile.full_name,
+          role_id: profile.role_id,
+          created_at: profile.created_at
+        })
+      } else {
+        console.log('❌ Perfil no encontrado')
+      }
+
+    } catch (err) {
+      console.error('Error verificando usuario:', err)
+    }
+  }, [supabase])
+
   // Load users on mount
   useEffect(() => {
     fetchUsers()
@@ -529,6 +730,7 @@ export function useUserManagement(): UseUserManagementReturn {
     updateUser,
     deleteUser,
     toggleUserStatus,
+    verifyUserData, // New verification function
     
     // Filter actions
     setFilters,
