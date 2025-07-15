@@ -142,30 +142,58 @@ export function useUserManagement(): UseUserManagementReturn {
         throw new Error('No autorizado')
       }
 
-      // Fetch user profiles with auth users
-      console.log('Intentando cargar perfiles de usuario...')
+      console.log('👤 Usuario actual:', currentUser.email)
       
-      const { data: profiles, error: profilesError } = await supabase
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profileError) {
+        console.error('Error obteniendo perfil del usuario actual:', profileError)
+        throw new Error('Error al verificar permisos de administrador')
+      }
+
+      // Check if user has admin role (using UUID from roles table)
+      const adminRoleId = roleMapping.admin // admin role UUID
+      
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        throw new Error('Solo los administradores pueden ver todos los usuarios')
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador')
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      // Fetch user profiles with admin client
+      console.log('Intentando cargar perfiles de usuario con cliente admin...')
+      
+      const { data: profiles, error: profilesError } = await adminClient
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false })
 
-      console.log('Resultado de la consulta:', { profiles, profilesError })
+      console.log('Resultado de la consulta admin:', { profiles, profilesError })
 
       if (profilesError) {
-        console.error('Error al cargar perfiles:', profilesError)
+        console.error('Error al cargar perfiles con admin:', profilesError)
         throw new Error(`Error al cargar perfiles de usuario: ${profilesError.message}`)
       }
 
       console.log('Perfiles encontrados:', profiles?.length || 0)
       console.log('Perfiles:', profiles)
 
-      // Transform profiles to users (simplified version without admin API)
-      const usersWithAuth = (profiles || []).map((profile: UserProfile) => {
+      // Transform profiles to users
+      const usersWithAuth = (profiles || []).map((profile: any) => {
         console.log('Procesando perfil:', profile)
         
         // Create user with data from profile only
-        return transformUserData(profile, {
+        return transformUserData(profile as UserProfile, {
           id: profile.id,
           email: profile.metadata?.email || 'unknown@example.com',
           email_confirmed_at: null,
@@ -175,7 +203,7 @@ export function useUserManagement(): UseUserManagementReturn {
         })
       })
 
-      // Set users (no need to filter nulls anymore)
+      // Set users
       setUsers(usersWithAuth)
       
     } catch (err) {

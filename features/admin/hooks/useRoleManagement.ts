@@ -2,13 +2,14 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { Crown, Shield, Briefcase, Users } from 'lucide-react'
 import type { User, SystemRoleType, SystemRole } from '../types'
 
 // Roles del sistema predefinidos
 const systemRoles: SystemRole[] = [
   {
-    id: 'admin',
+    id: 'f6798529-943b-483c-98be-bca8fdde370d' as SystemRoleType,
     name: 'Administrador',
     description: 'Acceso completo al sistema, gestión de usuarios y configuración',
     color: '#dc2626',
@@ -17,7 +18,7 @@ const systemRoles: SystemRole[] = [
     permissions: {}
   },
   {
-    id: 'supervisor',
+    id: '39af56ac-919b-45ae-94b7-569a2d85681a' as SystemRoleType,
     name: 'Supervisor',
     description: 'Gestión de equipos, análisis avanzado y supervisión de campañas',
     color: '#2563eb',
@@ -26,7 +27,7 @@ const systemRoles: SystemRole[] = [
     permissions: {}
   },
   {
-    id: 'comercial',
+    id: '8f698c5f-2373-45f8-90c2-9f4427d2638c' as SystemRoleType,
     name: 'Comercial',
     description: 'Gestión de leads, campañas de email y análisis básico',
     color: '#16a34a',
@@ -147,30 +148,58 @@ export function useRoleManagement(): UseRoleManagementReturn {
         throw new Error('No autorizado')
       }
 
-      console.log('Intentando cargar perfiles de usuario para roles...')
+      console.log('👤 Usuario actual para roles:', currentUser.email)
       
-      // Fetch user profiles
-      const { data: profiles, error: profilesError } = await supabase
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profileError) {
+        console.error('Error obteniendo perfil del usuario actual para roles:', profileError)
+        throw new Error('Error al verificar permisos de administrador')
+      }
+
+      // Check if user has admin role (using UUID from roles table)
+      const adminRoleId = 'f6798529-943b-483c-98be-bca8fdde370d' // admin role UUID
+      
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin para roles. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        throw new Error('Solo los administradores pueden gestionar roles')
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador para roles')
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      console.log('Intentando cargar perfiles de usuario para roles con cliente admin...')
+      
+      // Fetch user profiles with admin client
+      const { data: profiles, error: profilesError } = await adminClient
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false })
 
-      console.log('Resultado de la consulta de roles:', { profiles, profilesError })
+      console.log('Resultado de la consulta de roles con admin:', { profiles, profilesError })
 
       if (profilesError) {
-        console.error('Error al cargar perfiles para roles:', profilesError)
+        console.error('Error al cargar perfiles para roles con admin:', profilesError)
         throw new Error(`Error al cargar perfiles de usuario: ${profilesError.message}`)
       }
 
       console.log('Perfiles encontrados para roles:', profiles?.length || 0)
       console.log('Perfiles para roles:', profiles)
 
-      // Transform profiles to users (simplified version without admin API)
-      const usersWithAuth = (profiles || []).map((profile: UserProfile) => {
+      // Transform profiles to users
+      const usersWithAuth = (profiles || []).map((profile: any) => {
         console.log('Procesando perfil para roles:', profile)
         
         // Create user with data from profile only
-        return transformUserData(profile, {
+        return transformUserData(profile as UserProfile, {
           id: profile.id,
           email: profile.metadata?.email || 'unknown@example.com',
           email_confirmed_at: null,
@@ -323,9 +352,9 @@ export function useRoleManagement(): UseRoleManagementReturn {
   // Get role icon
   const getRoleIcon = useCallback((roleId: string) => {
     switch (roleId) {
-      case 'admin': return Crown
-      case 'supervisor': return Shield
-      case 'comercial': return Briefcase
+      case 'f6798529-943b-483c-98be-bca8fdde370d': return Crown
+      case '39af56ac-919b-45ae-94b7-569a2d85681a': return Shield
+      case '8f698c5f-2373-45f8-90c2-9f4427d2638c': return Briefcase
       default: return Users
     }
   }, [])
