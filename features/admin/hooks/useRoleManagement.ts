@@ -231,8 +231,37 @@ export function useRoleManagement(): UseRoleManagementReturn {
         throw new Error('No autorizado')
       }
 
-      // Update user profile with new role
-      const { error: profileError } = await supabase
+      console.log('👤 Usuario actual asignando rol:', currentUser.email)
+      
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profileError) {
+        console.error('Error obteniendo perfil del usuario actual para asignar rol:', profileError)
+        throw new Error('Error al verificar permisos de administrador')
+      }
+
+      // Check if user has admin role (using UUID from roles table)
+      const adminRoleId = 'f6798529-943b-483c-98be-bca8fdde370d' // admin role UUID
+      
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin para asignar roles. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        throw new Error('Solo los administradores pueden asignar roles')
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador para asignar roles')
+      console.log('🔄 Asignando rol', roleId, 'al usuario', userId)
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      // Update user profile with new role using admin client
+      const { error: updateError } = await adminClient
         .from('user_profiles')
         .update({
           role_id: roleId,
@@ -240,9 +269,12 @@ export function useRoleManagement(): UseRoleManagementReturn {
         })
         .eq('id', userId)
 
-      if (profileError) {
-        throw new Error('Error al actualizar rol del usuario')
+      if (updateError) {
+        console.error('Error actualizando rol con admin client:', updateError)
+        throw new Error(`Error al actualizar rol del usuario: ${updateError.message}`)
       }
+
+      console.log('✅ Rol asignado exitosamente')
 
       // Update local state
       setUsers(prev => prev.map(user => 
@@ -261,7 +293,7 @@ export function useRoleManagement(): UseRoleManagementReturn {
       ))
       
     } catch (err) {
-      setError('Error al asignar rol')
+      setError(err instanceof Error ? err.message : 'Error al asignar rol')
       console.error('Error assigning role:', err)
       throw err
     } finally {
@@ -281,8 +313,37 @@ export function useRoleManagement(): UseRoleManagementReturn {
         throw new Error('No autorizado')
       }
 
-      // Update multiple user profiles with new role
-      const { error: profileError } = await supabase
+      console.log('👤 Usuario actual asignando roles masivamente:', currentUser.email)
+      
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profileError) {
+        console.error('Error obteniendo perfil del usuario actual para asignación masiva:', profileError)
+        throw new Error('Error al verificar permisos de administrador')
+      }
+
+      // Check if user has admin role (using UUID from roles table)
+      const adminRoleId = 'f6798529-943b-483c-98be-bca8fdde370d' // admin role UUID
+      
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin para asignación masiva. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        throw new Error('Solo los administradores pueden asignar roles masivamente')
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador para asignación masiva')
+      console.log('🔄 Asignando rol', roleId, 'a', userIds.length, 'usuarios')
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      // Update multiple user profiles with new role using admin client
+      const { error: updateError } = await adminClient
         .from('user_profiles')
         .update({
           role_id: roleId,
@@ -290,9 +351,12 @@ export function useRoleManagement(): UseRoleManagementReturn {
         })
         .in('id', userIds)
 
-      if (profileError) {
-        throw new Error('Error al actualizar roles de usuarios')
+      if (updateError) {
+        console.error('Error actualizando roles masivamente con admin client:', updateError)
+        throw new Error(`Error al actualizar roles de usuarios: ${updateError.message}`)
       }
+
+      console.log('✅ Roles asignados masivamente exitosamente')
 
       // Update local state
       setUsers(prev => prev.map(user => 
@@ -314,7 +378,7 @@ export function useRoleManagement(): UseRoleManagementReturn {
       setSelectedUsers([])
       
     } catch (err) {
-      setError('Error al asignar roles masivamente')
+      setError(err instanceof Error ? err.message : 'Error al asignar roles masivamente')
       console.error('Error bulk assigning roles:', err)
       throw err
     } finally {

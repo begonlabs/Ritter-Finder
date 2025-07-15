@@ -307,6 +307,45 @@
   gap: 0.5rem;
 }
 
+/* Loading states for role assignment */
+.userActions select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.userActions select:disabled + .select-trigger {
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--color-gray-500, #6b7280);
+}
+
+/* Success animation for role assignment */
+@keyframes roleAssigned {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.roleAssigned {
+  animation: roleAssigned 0.3s ease-out;
+}
+
+/* Bulk actions loading state */
+.bulkActions select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bulkActions select:disabled + .select-trigger {
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--color-gray-500, #6b7280);
+}
+
 /* Checkbox */
 .checkbox {
   width: 1rem;

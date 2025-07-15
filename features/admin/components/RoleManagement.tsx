@@ -64,19 +64,32 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
   // Handle role assignment
   const handleAssignRole = async (userId: string, newRoleId: SystemRoleType) => {
     try {
+      console.log('🔄 Iniciando asignación de rol...')
       await assignUserToRole(userId, newRoleId)
+      console.log('✅ Rol asignado exitosamente')
+      // Aquí podrías agregar una notificación de éxito
     } catch (error) {
-      console.error('Error assigning role:', error)
+      console.error('❌ Error assigning role:', error)
+      // Aquí podrías agregar una notificación de error
+      throw error // Re-lanzar para que el componente padre pueda manejarlo
     }
   }
 
   // Handle bulk role assignment
   const handleBulkAssign = async (roleId: SystemRoleType) => {
-    if (selectedUsers.length === 0) return
+    if (selectedUsers.length === 0) {
+      console.log('⚠️ No hay usuarios seleccionados para asignación masiva')
+      return
+    }
     try {
+      console.log('🔄 Iniciando asignación masiva de roles...')
       await bulkAssignRole(selectedUsers, roleId)
+      console.log('✅ Roles asignados masivamente exitosamente')
+      // Aquí podrías agregar una notificación de éxito
     } catch (error) {
-      console.error('Error bulk assigning roles:', error)
+      console.error('❌ Error bulk assigning roles:', error)
+      // Aquí podrías agregar una notificación de error
+      throw error // Re-lanzar para que el componente padre pueda manejarlo
     }
   }
 
@@ -163,9 +176,24 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                 <span className="text-sm text-muted-foreground mr-3">
                   {selectedUsers.length} usuarios seleccionados
                 </span>
-                <Select onValueChange={(value) => handleBulkAssign(value as SystemRoleType)}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Asignar rol masivo" />
+                <Select 
+                  onValueChange={async (value) => {
+                    try {
+                      await handleBulkAssign(value as SystemRoleType)
+                      // Reset the select value after successful assignment
+                      const selectElement = document.querySelector('[data-bulk-assign]') as HTMLSelectElement
+                      if (selectElement) {
+                        selectElement.value = ''
+                      }
+                    } catch (error) {
+                      console.error('Error en asignación masiva de roles:', error)
+                      // Aquí podrías mostrar una notificación de error
+                    }
+                  }}
+                  disabled={isAssigning}
+                >
+                  <SelectTrigger className="w-48" data-bulk-assign>
+                    <SelectValue placeholder={isAssigning ? "Asignando..." : "Asignar rol masivo"} />
                   </SelectTrigger>
                   <SelectContent>
                     {systemRoles.map((role) => (
@@ -298,9 +326,24 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className={styles.userActions}>
-                          <Select onValueChange={(value) => handleAssignRole(user.id, value as SystemRoleType)}>
-                            <SelectTrigger className="w-36">
-                              <SelectValue placeholder="Cambiar rol" />
+                          <Select 
+                            onValueChange={async (value) => {
+                              try {
+                                await handleAssignRole(user.id, value as SystemRoleType)
+                                // Reset the select value after successful assignment
+                                const selectElement = document.querySelector(`[data-user-id="${user.id}"]`) as HTMLSelectElement
+                                if (selectElement) {
+                                  selectElement.value = ''
+                                }
+                              } catch (error) {
+                                console.error('Error en asignación de rol:', error)
+                                // Aquí podrías mostrar una notificación de error
+                              }
+                            }}
+                            disabled={isAssigning}
+                          >
+                            <SelectTrigger className="w-36" data-user-id={user.id}>
+                              <SelectValue placeholder={isAssigning ? "Asignando..." : "Cambiar rol"} />
                             </SelectTrigger>
                             <SelectContent>
                               {systemRoles
