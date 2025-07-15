@@ -57,16 +57,19 @@ interface CreateUserForm {
   name: string
   email: string
   roleId: SystemRoleType | ''
+  password: string
+  confirmPassword: string
   phone: string
-  sendWelcomeEmail: boolean
+  generatePassword: boolean
 }
 
 interface CreateUserFormErrors {
   name?: string
   email?: string
   roleId?: string
+  password?: string
+  confirmPassword?: string
   phone?: string
-  sendWelcomeEmail?: string
 }
 
 export function UserManagement({ className = "" }: UserManagementProps) {
@@ -91,8 +94,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     name: '',
     email: '',
     roleId: '',
+    password: '',
+    confirmPassword: '',
     phone: '',
-    sendWelcomeEmail: true
+    generatePassword: false
   })
   const [formErrors, setFormErrors] = useState<CreateUserFormErrors>({})
 
@@ -125,6 +130,22 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       errors.roleId = 'Selecciona un rol'
     }
     
+    if (!createForm.generatePassword) {
+      if (!createForm.password) {
+        errors.password = 'La contraseña es requerida'
+      } else if (createForm.password.length < 8) {
+        errors.password = 'La contraseña debe tener al menos 8 caracteres'
+      } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(createForm.password)) {
+        errors.password = 'La contraseña debe contener al menos una mayúscula, una minúscula y un número'
+      }
+      
+      if (!createForm.confirmPassword) {
+        errors.confirmPassword = 'Confirma la contraseña'
+      } else if (createForm.password !== createForm.confirmPassword) {
+        errors.confirmPassword = 'Las contraseñas no coinciden'
+      }
+    }
+    
     if (createForm.phone && !/^[\+]?[0-9\s\-\(\)]+$/.test(createForm.phone)) {
       errors.phone = 'Formato de teléfono inválido'
     }
@@ -133,15 +154,28 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     return Object.keys(errors).length === 0
   }
 
+  // Generate random password
+  const generateRandomPassword = (): string => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
+    let password = ''
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return password
+  }
+
   // Handle form submission
   const handleCreateUser = async () => {
     if (!validateForm()) return
     
     try {
+      const finalPassword = createForm.generatePassword ? generateRandomPassword() : createForm.password
+      
       await createUser({
         name: createForm.name,
         email: createForm.email,
         roleId: createForm.roleId as SystemRoleType,
+        password: finalPassword,
         phone: createForm.phone
       })
       
@@ -150,8 +184,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         name: '',
         email: '',
         roleId: '',
+        password: '',
+        confirmPassword: '',
         phone: '',
-        sendWelcomeEmail: true
+        generatePassword: false
       })
       setFormErrors({})
       setIsCreateModalOpen(false)
@@ -168,8 +204,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         name: '',
         email: '',
         roleId: '',
+        password: '',
+        confirmPassword: '',
         phone: '',
-        sendWelcomeEmail: true
+        generatePassword: false
       })
       setFormErrors({})
     }
@@ -293,6 +331,77 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                 )}
               </div>
 
+              {/* Password Section */}
+              <div className={styles.formGroup}>
+                <div className={styles.checkboxGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={createForm.generatePassword}
+                      onChange={(e) => setCreateForm(prev => ({ 
+                        ...prev, 
+                        generatePassword: e.target.checked,
+                        password: e.target.checked ? '' : prev.password,
+                        confirmPassword: e.target.checked ? '' : prev.confirmPassword
+                      }))}
+                      className={styles.checkbox}
+                      disabled={isCreating}
+                    />
+                    <span className={styles.checkboxText}>
+                      Generar contraseña automáticamente
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {!createForm.generatePassword && (
+                <div className={styles.passwordFields}>
+                  {/* Password Field */}
+                  <div className={styles.formGroup}>
+                    <Label htmlFor="password" className={styles.formLabel}>
+                      Contraseña *
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={createForm.password}
+                      onChange={(e) => setCreateForm(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="Ingresa la contraseña"
+                      className={formErrors.password ? styles.inputError : ''}
+                      disabled={isCreating}
+                    />
+                    {formErrors.password && (
+                      <div className={styles.errorMessage}>
+                        <AlertCircle className="h-4 w-4" />
+                        {formErrors.password}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Confirm Password Field */}
+                  <div className={styles.formGroup}>
+                    <Label htmlFor="confirmPassword" className={styles.formLabel}>
+                      Confirmar Contraseña *
+                    </Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={createForm.confirmPassword}
+                      onChange={(e) => setCreateForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      placeholder="Confirma la contraseña"
+                      className={formErrors.confirmPassword ? styles.inputError : ''}
+                      disabled={isCreating}
+                    />
+                    {formErrors.confirmPassword && (
+                      <div className={styles.errorMessage}>
+                        <AlertCircle className="h-4 w-4" />
+                        {formErrors.confirmPassword}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Phone Field */}
               <div className={styles.formGroup}>
                 <Label htmlFor="phone" className={styles.formLabel}>
@@ -312,22 +421,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                     {formErrors.phone}
                   </div>
                 )}
-              </div>
-
-              {/* Welcome Email Checkbox */}
-              <div className={styles.checkboxGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={createForm.sendWelcomeEmail}
-                    onChange={(e) => setCreateForm(prev => ({ ...prev, sendWelcomeEmail: e.target.checked }))}
-                    className={styles.checkbox}
-                    disabled={isCreating}
-                  />
-                  <span className={styles.checkboxText}>
-                    Enviar email de bienvenida con credenciales de acceso
-                  </span>
-                </label>
               </div>
             </div>
 

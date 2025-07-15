@@ -185,8 +185,8 @@ export interface CreateUserInput {
   name: string
   email: string
   roleId: string
+  password: string
   phone?: string
-  sendWelcomeEmail?: boolean
 }
 
 export interface UpdateUserInput {

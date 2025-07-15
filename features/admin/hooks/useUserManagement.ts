@@ -192,7 +192,7 @@ export function useUserManagement(): UseUserManagementReturn {
       // Create auth user first
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: userData.email,
-        password: 'tempPassword123!', // Will be changed on first login
+        password: userData.password,
         email_confirm: true,
         user_metadata: {
           full_name: userData.name,
