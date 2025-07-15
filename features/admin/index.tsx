@@ -4,7 +4,6 @@
 export { AdminDashboard } from './components/AdminDashboard'
 export { UserManagement } from './components/UserManagement'
 export { RoleManagement } from './components/RoleManagement'
-export { PermissionManagement } from './components/PermissionManagement'
 export { TemplateManagement } from './components/TemplateManagement'
 
 // Component Exports
@@ -36,7 +35,6 @@ export type {
   AdminDashboardProps,
   UserManagementProps,
   RoleManagementProps,
-  PermissionManagementProps,
   TemplateManagementProps
 } from './types'
 

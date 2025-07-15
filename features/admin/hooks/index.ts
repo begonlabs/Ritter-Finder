@@ -2,5 +2,4 @@
 export { useAdmin } from './useAdmin'
 export { useUserManagement } from './useUserManagement'
 export { useRoleManagement } from './useRoleManagement'
-export { usePermissionManagement } from './usePermissionManagement'
 export { useConfirmDialog } from './useConfirmDialog' 

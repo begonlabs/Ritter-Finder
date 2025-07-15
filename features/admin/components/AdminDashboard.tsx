@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Users, 
   Shield, 
-  Key, 
   Mail
 } from "lucide-react"
 import type { AdminDashboardProps, AdminTab } from "../types"
@@ -15,7 +14,6 @@ import styles from "../styles/AdminDashboard.module.css"
 // Import real components
 import { UserManagement } from "./UserManagement"
 import { RoleManagement } from "./RoleManagement"
-import { PermissionManagement } from "./PermissionManagement"
 import { TemplateManagement } from "./TemplateManagement"
 
 export function AdminDashboard({ className = "" }: AdminDashboardProps) {
@@ -36,13 +34,6 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
       icon: Shield,
       component: RoleManagement,
       permissions: ["admin.roles.view"],
-    },
-    {
-      id: "permissions",
-      label: "Permisos",
-      icon: Key,
-      component: PermissionManagement,
-      permissions: ["admin.permissions.view"],
     },
     {
       id: "templates",
@@ -66,14 +57,14 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
             Dashboard de Administración
           </h1>
           <p className={`${styles.adminDescription} text-gray-600 mt-2`}>
-            Gestiona usuarios, roles, permisos y configuración del sistema
+            Gestiona usuarios, roles y configuración del sistema
           </p>
         </div>
       </div>
 
       {/* Admin Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className={styles.adminTabs}>
-        <TabsList className={`${styles.tabsList} grid w-full grid-cols-4 lg:w-fit lg:grid-cols-none lg:flex`}>
+        <TabsList className={`${styles.tabsList} grid w-full grid-cols-3 lg:w-fit lg:grid-cols-none lg:flex`}>
           {adminTabs.map((tab) => {
             const Icon = tab.icon
             return (

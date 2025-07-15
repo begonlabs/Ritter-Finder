@@ -257,9 +257,7 @@ export interface RoleManagementProps {
   className?: string
 }
 
-export interface PermissionManagementProps {
-  className?: string
-}
+
 
 export interface TemplateManagementProps {
   className?: string
