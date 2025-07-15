@@ -287,22 +287,22 @@ export function useUserManagement(): UseUserManagementReturn {
       } else {
         // Create new user profile
         const { data: newProfile, error: profileError } = await adminClient
-          .from('user_profiles')
-          .insert({
-            id: authData.user.id,
-            full_name: userData.name,
-            role_id: userData.roleId,
-            invited_by: currentUser.id,
-            metadata: {
-              phone: userData.phone,
-              email: userData.email
-            }
-          })
-          .select()
-          .single()
+        .from('user_profiles')
+        .insert({
+          id: authData.user.id,
+          full_name: userData.name,
+          role_id: userData.roleId,
+          invited_by: currentUser.id,
+          metadata: {
+            phone: userData.phone,
+            email: userData.email
+          }
+        })
+        .select()
+        .single()
 
-        if (profileError) {
-          // Clean up auth user if profile creation fails
+      if (profileError) {
+        // Clean up auth user if profile creation fails
           await adminClient.auth.admin.deleteUser(authData.user.id)
           throw new Error(`Error al crear perfil de usuario: ${profileError.message}`)
         }
@@ -476,8 +476,8 @@ export function useUserManagement(): UseUserManagementReturn {
       // Delete auth user if exists
       if (authUser) {
         const { error: authError } = await adminClient.auth.admin.deleteUser(id)
-        
-        if (authError) {
+      
+      if (authError) {
           console.error('Error eliminando usuario de auth:', authError)
           throw new Error(`Error al eliminar usuario de autenticación: ${authError.message}`)
         }

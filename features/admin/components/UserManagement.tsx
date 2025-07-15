@@ -47,7 +47,10 @@ import {
   User,
   AlertCircle,
   X,
-  RefreshCw
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Copy
 } from "lucide-react"
 import type { UserManagementProps, User as UserType, SystemRoleType } from "../types"
 import { useUserManagement } from "../hooks/useUserManagement"
@@ -59,8 +62,10 @@ interface CreateUserForm {
   roleId: string | ''
   password: string
   confirmPassword: string
-  phone: string
   generatePassword: boolean
+  showPassword: boolean
+  showConfirmPassword: boolean
+  generatedPassword: string
 }
 
 interface CreateUserFormErrors {
@@ -69,7 +74,6 @@ interface CreateUserFormErrors {
   roleId?: string
   password?: string
   confirmPassword?: string
-  phone?: string
 }
 
 export function UserManagement({ className = "" }: UserManagementProps) {
@@ -99,8 +103,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     roleId: '',
     password: '',
     confirmPassword: '',
-    phone: '',
-    generatePassword: false
+    generatePassword: false,
+    showPassword: false,
+    showConfirmPassword: false,
+    generatedPassword: ''
   })
   const [formErrors, setFormErrors] = useState<CreateUserFormErrors>({})
 
@@ -149,10 +155,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       }
     }
     
-    if (createForm.phone && !/^[\+]?[0-9\s\-\(\)]+$/.test(createForm.phone)) {
-      errors.phone = 'Formato de teléfono inválido'
-    }
-    
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -167,19 +169,50 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     return password
   }
 
+  // Handle generate password toggle
+  const handleGeneratePasswordToggle = (checked: boolean) => {
+    if (checked) {
+      const generated = generateRandomPassword()
+      setCreateForm(prev => ({ 
+        ...prev, 
+        generatePassword: true,
+        password: '',
+        confirmPassword: '',
+        generatedPassword: generated
+      }))
+    } else {
+      setCreateForm(prev => ({ 
+        ...prev, 
+        generatePassword: false,
+        password: '',
+        confirmPassword: '',
+        generatedPassword: ''
+      }))
+    }
+  }
+
+  // Copy generated password to clipboard
+  const copyGeneratedPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(createForm.generatedPassword)
+      console.log('✅ Contraseña copiada al portapapeles')
+    } catch (error) {
+      console.error('Error copiando contraseña:', error)
+    }
+  }
+
   // Handle form submission
   const handleCreateUser = async () => {
     if (!validateForm()) return
     
     try {
-      const finalPassword = createForm.generatePassword ? generateRandomPassword() : createForm.password
+      const finalPassword = createForm.generatePassword ? createForm.generatedPassword : createForm.password
       
       const newUser = await createUser({
         name: createForm.name,
         email: createForm.email,
         roleId: createForm.roleId,
-        password: finalPassword,
-        phone: createForm.phone
+        password: finalPassword
       })
       
       // Reset form and close modal
@@ -189,8 +222,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         roleId: '',
         password: '',
         confirmPassword: '',
-        phone: '',
-        generatePassword: false
+        generatePassword: false,
+        showPassword: false,
+        showConfirmPassword: false,
+        generatedPassword: ''
       })
       setFormErrors({})
       setIsCreateModalOpen(false)
@@ -212,8 +247,10 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         roleId: '',
         password: '',
         confirmPassword: '',
-        phone: '',
-        generatePassword: false
+        generatePassword: false,
+        showPassword: false,
+        showConfirmPassword: false,
+        generatedPassword: ''
       })
       setFormErrors({})
     }
@@ -344,12 +381,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                     <input
                       type="checkbox"
                       checked={createForm.generatePassword}
-                      onChange={(e) => setCreateForm(prev => ({ 
-                        ...prev, 
-                        generatePassword: e.target.checked,
-                        password: e.target.checked ? '' : prev.password,
-                        confirmPassword: e.target.checked ? '' : prev.confirmPassword
-                      }))}
+                      onChange={(e) => handleGeneratePasswordToggle(e.target.checked)}
                       className={styles.checkbox}
                       disabled={isCreating}
                     />
@@ -360,6 +392,35 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                 </div>
               </div>
 
+              {/* Generated Password Display */}
+              {createForm.generatePassword && createForm.generatedPassword && (
+                <div className={styles.generatedPasswordSection}>
+                  <Label className={styles.formLabel}>
+                    Contraseña generada
+                  </Label>
+                  <div className={styles.generatedPasswordContainer}>
+                    <Input
+                      value={createForm.generatedPassword}
+                      readOnly
+                      className={styles.generatedPasswordInput}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={copyGeneratedPassword}
+                      className={styles.copyButton}
+                      title="Copiar contraseña"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className={styles.helperText}>
+                    Esta es la contraseña generada. El usuario deberá cambiarla al iniciar sesión por primera vez. Guárdala en un lugar seguro.
+                  </p>
+                </div>
+              )}
+
               {!createForm.generatePassword && (
                 <div className={styles.passwordFields}>
                   {/* Password Field */}
@@ -367,15 +428,27 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                     <Label htmlFor="password" className={styles.formLabel}>
                       Contraseña *
                     </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={createForm.password}
-                      onChange={(e) => setCreateForm(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="Ingresa la contraseña"
-                      className={formErrors.password ? styles.inputError : ''}
-                      disabled={isCreating}
-                    />
+                    <div className={styles.passwordInputContainer}>
+                      <Input
+                        id="password"
+                        type={createForm.showPassword ? "text" : "password"}
+                        value={createForm.password}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, password: e.target.value }))}
+                        placeholder="Ingresa la contraseña"
+                        className={`${formErrors.password ? styles.inputError : ''} ${styles.passwordInput}`}
+                        disabled={isCreating}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCreateForm(prev => ({ ...prev, showPassword: !prev.showPassword }))}
+                        className={styles.passwordToggle}
+                        title={createForm.showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        {createForm.showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
                     {formErrors.password && (
                       <div className={styles.errorMessage}>
                         <AlertCircle className="h-4 w-4" />
@@ -389,15 +462,27 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                     <Label htmlFor="confirmPassword" className={styles.formLabel}>
                       Confirmar Contraseña *
                     </Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={createForm.confirmPassword}
-                      onChange={(e) => setCreateForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      placeholder="Confirma la contraseña"
-                      className={formErrors.confirmPassword ? styles.inputError : ''}
-                      disabled={isCreating}
-                    />
+                    <div className={styles.passwordInputContainer}>
+                      <Input
+                        id="confirmPassword"
+                        type={createForm.showConfirmPassword ? "text" : "password"}
+                        value={createForm.confirmPassword}
+                        onChange={(e) => setCreateForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        placeholder="Confirma la contraseña"
+                        className={`${formErrors.confirmPassword ? styles.inputError : ''} ${styles.passwordInput}`}
+                        disabled={isCreating}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCreateForm(prev => ({ ...prev, showConfirmPassword: !prev.showConfirmPassword }))}
+                        className={styles.passwordToggle}
+                        title={createForm.showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        {createForm.showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
                     {formErrors.confirmPassword && (
                       <div className={styles.errorMessage}>
                         <AlertCircle className="h-4 w-4" />
@@ -407,27 +492,6 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                   </div>
                 </div>
               )}
-
-              {/* Phone Field */}
-              <div className={styles.formGroup}>
-                <Label htmlFor="phone" className={styles.formLabel}>
-                  Teléfono
-                </Label>
-                <Input
-                  id="phone"
-                  value={createForm.phone}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="+34 600 123 456"
-                  className={formErrors.phone ? styles.inputError : ''}
-                  disabled={isCreating}
-                />
-                {formErrors.phone && (
-                  <div className={styles.errorMessage}>
-                    <AlertCircle className="h-4 w-4" />
-                    {formErrors.phone}
-                  </div>
-                )}
-              </div>
             </div>
 
             <DialogFooter className={styles.modalFooter}>

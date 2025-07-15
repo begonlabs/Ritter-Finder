@@ -201,6 +201,97 @@
   }
 }
 
+/* Generated Password Section */
+.generatedPasswordSection {
+  padding: 1rem;
+  background: var(--color-green-50, #f0fdf4);
+  border: 1px solid var(--color-green-200, #bbf7d0);
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.generatedPasswordContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.generatedPasswordInput {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--color-green-300, #86efac);
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.generatedPasswordInput:focus {
+  border-color: var(--color-green-500, #22c55e);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.copyButton {
+  background: var(--color-green-600, #16a34a);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.copyButton:hover {
+  background: var(--color-green-700, #15803d);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.helperText {
+  font-size: 0.75rem;
+  color: var(--color-green-700, #15803d);
+  margin-top: 0.5rem;
+  line-height: 1.3;
+}
+
+/* Password Input Container */
+.passwordInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordInput {
+  padding-right: 3rem !important;
+  flex: 1;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--color-gray-500, #6b7280);
+  padding: 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.passwordToggle:hover {
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--color-gray-700, #374151);
+}
+
+.passwordToggle:focus {
+  outline: 2px solid var(--color-ritter-gold, #f59e0b);
+  outline-offset: 2px;
+}
+
 /* Modal Footer */
 .modalFooter {
   display: flex;

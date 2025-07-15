@@ -148,8 +148,8 @@ export function UserProfile({
       })
 
       if (result.success) {
-        setIsEditing(false)
-        onSave?.(editData)
+    setIsEditing(false)
+    onSave?.(editData)
         setNotification({
           type: 'success',
           message: 'Perfil actualizado exitosamente'
@@ -275,9 +275,9 @@ export function UserProfile({
 
   return (
     <>
-      <div className={`${styles.profileContainer} ${className}`}>
-        {/* Profile Header */}
-        <Card className={styles.headerCard}>
+    <div className={`${styles.profileContainer} ${className}`}>
+      {/* Profile Header */}
+      <Card className={styles.headerCard}>
           <div className={styles.profileHeader}>
             <Avatar className={styles.profileAvatar}>
               <AvatarFallback className={styles.avatarFallback}>
@@ -294,42 +294,42 @@ export function UserProfile({
                       onChange={(e) => setEditData(prev => ({ ...prev, fullName: e.target.value }))}
                       className={styles.editInput}
                       placeholder="Nombre completo"
-                      disabled={isLoading}
+                    disabled={isLoading}
                     />
                     <div className={styles.editActions}>
-                      <Button 
-                        size="sm" 
-                        onClick={handleSave} 
-                        className={styles.saveButton}
-                        disabled={isLoading || !editData.fullName.trim()}
-                      >
-                        {isLoading ? (
-                          <div className={styles.spinner} />
-                        ) : (
-                          <Save className="h-4 w-4" />
-                        )}
+                    <Button 
+                      size="sm" 
+                      onClick={handleSave} 
+                      className={styles.saveButton}
+                      disabled={isLoading || !editData.fullName.trim()}
+                    >
+                      {isLoading ? (
+                        <div className={styles.spinner} />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={handleCancel} 
-                        className={styles.cancelButton}
-                        disabled={isLoading}
-                      >
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={handleCancel} 
+                      className={styles.cancelButton}
+                      disabled={isLoading}
+                    >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <div className={styles.nameDisplay}>
-                    <h1 className={styles.profileName}>{user.fullName}</h1>
+                  <h1 className={styles.profileName}>{user.fullName}</h1>
                     {canEdit && (
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={handleEdit} 
-                        className={styles.editButton}
-                      >
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={handleEdit} 
+                      className={styles.editButton}
+                    >
                         <Edit3 className="h-4 w-4" />
                       </Button>
                     )}
@@ -338,10 +338,10 @@ export function UserProfile({
               </div>
               
               <div className={styles.profileEmail}>
-                <p className={styles.emailText}>{user.email}</p>
-                <small className={styles.emailNote}>
-                  {user.emailVerifiedAt ? '✓ Email verificado' : '⚠ Email no verificado'}
-                </small>
+                  <p className={styles.emailText}>{user.email}</p>
+              <small className={styles.emailNote}>
+                {user.emailVerifiedAt ? '✓ Email verificado' : '⚠ Email no verificado'}
+              </small>
               </div>
 
               <div className={styles.profileBadges}>
@@ -368,81 +368,81 @@ export function UserProfile({
               </div>
             </div>
           </div>
-        </Card>
+      </Card>
 
-        {/* Account Information */}
-        <Card className={styles.infoCard}>
-          <CardHeader>
-            <CardTitle className={styles.cardTitle}>
-              <User className="h-5 w-5" />
-              Información de la Cuenta
-            </CardTitle>
-          </CardHeader>
-          <CardContent className={styles.infoContent}>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoItem}>
-                <Label className={styles.infoLabel}>ID de Usuario</Label>
-                <div className={styles.infoValue}>
-                  <span className="font-mono text-sm">{user.id}</span>
-                </div>
+      {/* Account Information */}
+      <Card className={styles.infoCard}>
+        <CardHeader>
+          <CardTitle className={styles.cardTitle}>
+            <User className="h-5 w-5" />
+            Información de la Cuenta
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={styles.infoContent}>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>ID de Usuario</Label>
+              <div className={styles.infoValue}>
+                <span className="font-mono text-sm">{user.id}</span>
               </div>
-
-              <div className={styles.infoItem}>
-                <Label className={styles.infoLabel}>Estado</Label>
-                <div className={styles.infoValue}>
-                  <StatusIcon className="h-4 w-4 mr-2" />
-                  {statusInfo.text}
-                </div>
-              </div>
-
-              <div className={styles.infoItem}>
-                <Label className={styles.infoLabel}>Rol</Label>
-                <div className={styles.infoValue}>
-                  <Shield className="h-4 w-4 mr-2" />
-                  {user.role.name}
-                  {user.role.isSystemRole && (
-                    <Badge variant="outline" className="ml-2">Sistema</Badge>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.infoItem}>
-                <Label className={styles.infoLabel}>Último acceso</Label>
-                <div className={styles.infoValue}>
-                  <Clock className="h-4 w-4 mr-2" />
-                  {user.lastLoginAt ? (
-                    <>
-                      {formatDistanceToNow(user.lastLoginAt, { addSuffix: true, locale: es })}
-                      <span className={styles.infoSubtext}>
-                        ({format(user.lastLoginAt, 'dd/MM/yyyy HH:mm', { locale: es })})
-                      </span>
-                    </>
-                  ) : (
-                    'Nunca'
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.infoItem}>
-                <Label className={styles.infoLabel}>Miembro desde</Label>
-                <div className={styles.infoValue}>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  {format(user.createdAt, 'dd/MM/yyyy', { locale: es })}
-                </div>
-              </div>
-
-              {user.invitedAt && (
-                <div className={styles.infoItem}>
-                  <Label className={styles.infoLabel}>Invitado</Label>
-                  <div className={styles.infoValue}>
-                    <Mail className="h-4 w-4 mr-2" />
-                    {format(user.invitedAt, 'dd/MM/yyyy', { locale: es })}
-                  </div>
-                </div>
-              )}
             </div>
-          </CardContent>
-        </Card>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Estado</Label>
+              <div className={styles.infoValue}>
+                <StatusIcon className="h-4 w-4 mr-2" />
+                {statusInfo.text}
+              </div>
+            </div>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Rol</Label>
+              <div className={styles.infoValue}>
+                <Shield className="h-4 w-4 mr-2" />
+                {user.role.name}
+                {user.role.isSystemRole && (
+                  <Badge variant="outline" className="ml-2">Sistema</Badge>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Último acceso</Label>
+              <div className={styles.infoValue}>
+                <Clock className="h-4 w-4 mr-2" />
+                {user.lastLoginAt ? (
+                  <>
+                    {formatDistanceToNow(user.lastLoginAt, { addSuffix: true, locale: es })}
+                    <span className={styles.infoSubtext}>
+                      ({format(user.lastLoginAt, 'dd/MM/yyyy HH:mm', { locale: es })})
+                    </span>
+                  </>
+                ) : (
+                  'Nunca'
+                )}
+              </div>
+            </div>
+
+            <div className={styles.infoItem}>
+              <Label className={styles.infoLabel}>Miembro desde</Label>
+              <div className={styles.infoValue}>
+                <Calendar className="h-4 w-4 mr-2" />
+                {format(user.createdAt, 'dd/MM/yyyy', { locale: es })}
+              </div>
+            </div>
+
+            {user.invitedAt && (
+              <div className={styles.infoItem}>
+                <Label className={styles.infoLabel}>Invitado</Label>
+                <div className={styles.infoValue}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  {format(user.invitedAt, 'dd/MM/yyyy', { locale: es })}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
         {/* Password Change Section */}
         <Card className={styles.passwordCard}>
@@ -611,102 +611,102 @@ export function UserProfile({
           </CardContent>
         </Card>
 
-        {/* Security Information */}
-        <Card className={styles.securityCard}>
-          <CardHeader>
-            <CardTitle className={styles.cardTitle}>
-              <Shield className="h-5 w-5" />
-              Seguridad
-              <div className={styles.securityToggle}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowSensitiveInfo(!showSensitiveInfo)}
-                >
-                  {showSensitiveInfo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
+      {/* Security Information */}
+      <Card className={styles.securityCard}>
+        <CardHeader>
+          <CardTitle className={styles.cardTitle}>
+            <Shield className="h-5 w-5" />
+            Seguridad
+            <div className={styles.securityToggle}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSensitiveInfo(!showSensitiveInfo)}
+              >
+                {showSensitiveInfo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={styles.securityContent}>
+          <div className={styles.securityGrid}>
+            <div className={styles.securityItem}>
+              <Label className={styles.securityLabel}>Autenticación 2FA</Label>
+              <div className={styles.securityValue}>
+                <Switch 
+                  checked={user.twoFactorEnabled} 
+                  disabled 
+                  className={styles.securitySwitch}
+                />
+                <span className={user.twoFactorEnabled ? styles.enabled : styles.disabled}>
+                  {user.twoFactorEnabled ? 'Habilitada' : 'Deshabilitada'}
+                </span>
               </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className={styles.securityContent}>
-            <div className={styles.securityGrid}>
+            </div>
+
+            <div className={styles.securityItem}>
+              <Label className={styles.securityLabel}>Email verificado</Label>
+              <div className={styles.securityValue}>
+                {user.emailVerifiedAt ? (
+                  <div className={styles.verified}>
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Verificado</span>
+                    {showSensitiveInfo && (
+                      <span className={styles.verificationDate}>
+                        ({format(user.emailVerifiedAt, 'dd/MM/yyyy', { locale: es })})
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className={styles.unverified}>
+                    <AlertCircle className="h-4 w-4" />
+                    <span>No verificado</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {showSensitiveInfo && (
               <div className={styles.securityItem}>
-                <Label className={styles.securityLabel}>Autenticación 2FA</Label>
+                <Label className={styles.securityLabel}>Intentos fallidos</Label>
                 <div className={styles.securityValue}>
-                  <Switch 
-                    checked={user.twoFactorEnabled} 
-                    disabled 
-                    className={styles.securitySwitch}
-                  />
-                  <span className={user.twoFactorEnabled ? styles.enabled : styles.disabled}>
-                    {user.twoFactorEnabled ? 'Habilitada' : 'Deshabilitada'}
+                  <span className={user.failedLoginAttempts > 0 ? styles.warning : styles.safe}>
+                    {user.failedLoginAttempts}
                   </span>
                 </div>
               </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-              <div className={styles.securityItem}>
-                <Label className={styles.securityLabel}>Email verificado</Label>
-                <div className={styles.securityValue}>
-                  {user.emailVerifiedAt ? (
-                    <div className={styles.verified}>
-                      <CheckCircle className="h-4 w-4" />
-                      <span>Verificado</span>
-                      {showSensitiveInfo && (
-                        <span className={styles.verificationDate}>
-                          ({format(user.emailVerifiedAt, 'dd/MM/yyyy', { locale: es })})
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className={styles.unverified}>
-                      <AlertCircle className="h-4 w-4" />
-                      <span>No verificado</span>
-                    </div>
-                  )}
+      {/* Permissions */}
+      <Card className={styles.permissionsCard}>
+        <CardHeader>
+          <CardTitle className={styles.cardTitle}>
+            <Settings className="h-5 w-5" />
+            Permisos ({user.role.permissions.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={styles.permissionsContent}>
+          <div className={styles.permissionsList}>
+            {user.role.permissions.map((permission) => (
+              <div key={permission.id} className={styles.permissionItem}>
+                <div className={styles.permissionMain}>
+                  <span className={styles.permissionName}>{permission.name}</span>
+                  <Badge variant="outline" className={styles.permissionCategory}>
+                    {permission.category}
+                  </Badge>
                 </div>
+                {permission.description && (
+                  <p className={styles.permissionDescription}>{permission.description}</p>
+                )}
               </div>
-
-              {showSensitiveInfo && (
-                <div className={styles.securityItem}>
-                  <Label className={styles.securityLabel}>Intentos fallidos</Label>
-                  <div className={styles.securityValue}>
-                    <span className={user.failedLoginAttempts > 0 ? styles.warning : styles.safe}>
-                      {user.failedLoginAttempts}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Permissions */}
-        <Card className={styles.permissionsCard}>
-          <CardHeader>
-            <CardTitle className={styles.cardTitle}>
-              <Settings className="h-5 w-5" />
-              Permisos ({user.role.permissions.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className={styles.permissionsContent}>
-            <div className={styles.permissionsList}>
-              {user.role.permissions.map((permission) => (
-                <div key={permission.id} className={styles.permissionItem}>
-                  <div className={styles.permissionMain}>
-                    <span className={styles.permissionName}>{permission.name}</span>
-                    <Badge variant="outline" className={styles.permissionCategory}>
-                      {permission.category}
-                    </Badge>
-                  </div>
-                  {permission.description && (
-                    <p className={styles.permissionDescription}>{permission.description}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
 
       {/* Notification */}
       {notification && (
