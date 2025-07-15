@@ -21,8 +21,14 @@ export { MobileHeader } from "./components/MobileHeader"
 export { MobileFeatures } from "./components/MobileFeatures"
 
 // Hooks
+export { useAuth } from "./providers/AuthProvider"
 export { useLogin } from "./hooks/useLogin"
 export { useSetPassword } from "./hooks/useSetPassword"
+export { useSetupPassword } from "./hooks/useSetupPassword"
+export { useChangePassword } from "./hooks/useChangePassword"
+
+// Providers
+export { AuthProvider } from "./providers/AuthProvider"
 
 // Types
 export type {
@@ -30,16 +36,19 @@ export type {
   LoginFormState,
   AuthResponse,
   LoginFormProps,
-  SetPasswordCredentials,
-  SetPasswordFormState,
-  SetPasswordResponse,
-  SetPasswordFormProps,
-  SetPasswordPageProps,
-  TwoFactorCredentials,
-  TwoFactorFormState,
-  TwoFactorResponse,
-  TwoFactorFormProps,
   WelcomeSectionProps,
   MobileHeaderProps,
   FeatureItem,
+  SetPasswordCredentials,
+  SetPasswordFormState,
+  SetPasswordResponse,
+  TwoFactorCredentials,
+  TwoFactorFormState,
+  TwoFactorResponse,
+  SetPasswordFormProps,
+  SetPasswordPageProps,
+  TwoFactorFormProps,
+  ChangePasswordCredentials,
+  ChangePasswordState,
+  ChangePasswordResponse
 } from "./types"

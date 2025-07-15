@@ -21,6 +21,7 @@ export { UserProfile as UserProfileComponent } from "./components/UserProfile"
 
 // Hooks
 export { useLayout } from "./hooks/useLayout"
+export { useNavigation } from "./hooks/useNavigation"
 export { useResponsive } from "./hooks/useResponsive"
 
 // Types
@@ -40,7 +41,8 @@ export type {
   LayoutActions,
   UseLayoutReturn,
   UseResponsiveReturn,
-  UserProfileProps
+  UserProfileProps,
+  PermissionChecker
 } from "./types"
 
 // Type aliases for external use

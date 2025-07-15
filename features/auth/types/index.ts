@@ -97,4 +97,26 @@ export interface TwoFactorFormProps {
   onSuccess: (response: TwoFactorResponse) => void
   onCancel: () => void
   className?: string
+}
+
+// Change Password Types
+export interface ChangePasswordCredentials {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface ChangePasswordState {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+  error: string
+  isLoading: boolean
+  success: boolean
+}
+
+export interface ChangePasswordResponse {
+  success: boolean
+  error?: string
+  message?: string
 } 

@@ -25,8 +25,15 @@ export function ProfilePage({
   }
 
   const handlePasswordChange = (data: any) => {
-    console.log("Contraseña cambiada:", data)
-    // Here you would typically call an API to change the password
+    console.log("Contraseña cambiada exitosamente:", data)
+    // Here you would typically:
+    // 1. Show a success notification
+    // 2. Optionally log the user out to re-authenticate with new password
+    // 3. Update any local state if needed
+    
+    // For now, we'll just log the success
+    // In a real app, you might want to show a toast notification
+    console.log("¡Contraseña actualizada exitosamente! Por seguridad, se recomienda cerrar sesión y volver a iniciar.")
   }
 
   return (
@@ -47,7 +54,7 @@ export function ProfilePage({
               <div>
                 <h1 className={styles.layoutTitle}>Mi Perfil</h1>
                 <p className={styles.layoutSubtitle}>
-                  Gestiona tu información personal y configuración de seguridad
+                  Gestiona tu información personal, seguridad y configuración de cuenta
                 </p>
               </div>
             </div>
@@ -61,6 +68,7 @@ export function ProfilePage({
                   user={user}
                   onProfileUpdate={handleProfileUpdate}
                   onPasswordChange={handlePasswordChange}
+                  onLogout={onLogout}
                 />
               </div>
             </div>
