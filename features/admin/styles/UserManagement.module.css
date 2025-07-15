@@ -545,7 +545,7 @@
 .userActions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.25rem;
   opacity: 0.7;
   transition: opacity 0.2s ease;
@@ -777,7 +777,7 @@
   }
 
   .userActions {
-    justify-content: flex-start;
+    justify-content: center;
     margin-top: 0.5rem;
   }
 

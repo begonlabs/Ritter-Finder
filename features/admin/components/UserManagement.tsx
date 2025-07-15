@@ -50,10 +50,14 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
-  Copy
+  Copy,
+  Check,
+  Info
 } from "lucide-react"
 import type { UserManagementProps, User as UserType, SystemRoleType } from "../types"
 import { useUserManagement } from "../hooks/useUserManagement"
+import { useConfirmDialog } from "../hooks/useConfirmDialog"
+import { ConfirmDialog } from "./ConfirmDialog"
 import styles from "../styles/UserManagement.module.css"
 
 interface CreateUserForm {
@@ -96,6 +100,13 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error' | 'info'
+    message: string
+    show: boolean
+  } | null>(null)
+  
+  const { confirmDialog, showConfirmDialog, closeConfirmDialog } = useConfirmDialog()
   
   const [createForm, setCreateForm] = useState<CreateUserForm>({
     name: '',
@@ -255,6 +266,25 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       setFormErrors({})
     }
     setIsCreateModalOpen(false)
+  }
+
+  // Handle notifications
+  const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
+    setNotification({ type, message, show: true })
+    setTimeout(() => {
+      setNotification(null)
+    }, 3000) // Auto-hide after 3 seconds
+  }
+
+  // Handle user verification
+  const handleVerifyUser = async (userId: string, userName: string) => {
+    try {
+      await verifyUserData(userId)
+      showNotification('success', `✅ Datos de ${userName} verificados con éxito`)
+    } catch (error) {
+      console.error('Error verificando usuario:', error)
+      showNotification('error', `❌ Error al verificar datos de ${userName}`)
+    }
   }
 
   return (
@@ -525,6 +555,24 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         </Dialog>
       </div>
 
+      {/* Notification */}
+      {notification && (
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+          notification.type === 'success' 
+            ? 'bg-green-100 border border-green-300 text-green-800' 
+            : notification.type === 'error'
+            ? 'bg-red-100 border border-red-300 text-red-800'
+            : 'bg-blue-100 border border-blue-300 text-blue-800'
+        }`}>
+          <div className="flex items-center gap-2">
+            {notification.type === 'success' && <Check className="h-5 w-5" />}
+            {notification.type === 'error' && <AlertCircle className="h-5 w-5" />}
+            {notification.type === 'info' && <Info className="h-5 w-5" />}
+            <span className="font-medium">{notification.message}</span>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <Card className={styles.filtersCard}>
         <CardContent className="pt-6">
@@ -658,7 +706,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                               variant="ghost" 
                               size="sm" 
                               className="h-8 w-8 p-0"
-                              onClick={() => verifyUserData(user.id)}
+                              onClick={() => handleVerifyUser(user.id, user.name)}
                               title="Verificar datos del usuario"
                             >
                               <Search className="h-4 w-4" />
@@ -670,15 +718,25 @@ export function UserManagement({ className = "" }: UserManagementProps) {
                               variant="ghost" 
                               size="sm" 
                               className="h-8 w-8 p-0 text-red-600"
-                              onClick={async () => {
-                                if (confirm(`¿Estás seguro de que quieres eliminar a ${user.name}?`)) {
-                                  try {
-                                    await deleteUser(user.id)
-                                    console.log('✅ Usuario eliminado exitosamente:', user.name)
-                                  } catch (error) {
-                                    console.error('Error eliminando usuario:', error)
+                              onClick={() => {
+                                showConfirmDialog(
+                                  "Eliminar Usuario",
+                                  `¿Estás seguro de que quieres eliminar a ${user.name}? Esta acción no se puede deshacer.`,
+                                  async () => {
+                                    try {
+                                      await deleteUser(user.id)
+                                      showNotification('success', `✅ Usuario ${user.name} eliminado exitosamente`)
+                                    } catch (error) {
+                                      console.error('Error eliminando usuario:', error)
+                                      showNotification('error', `❌ Error al eliminar usuario ${user.name}`)
+                                    }
+                                  },
+                                  {
+                                    type: 'delete',
+                                    confirmText: 'Eliminar',
+                                    cancelText: 'Cancelar'
                                   }
-                                }
+                                )
                               }}
                               disabled={isDeleting}
                               title="Eliminar usuario"
@@ -707,6 +765,21 @@ export function UserManagement({ className = "" }: UserManagementProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Confirm Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={closeConfirmDialog}
+          onConfirm={confirmDialog.onConfirm}
+          title={confirmDialog.title}
+          description={confirmDialog.description}
+          confirmText={confirmDialog.confirmText}
+          cancelText={confirmDialog.cancelText}
+          type={confirmDialog.type}
+          isLoading={isDeleting}
+        />
+      )}
     </div>
   )
 }

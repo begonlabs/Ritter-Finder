@@ -694,10 +694,44 @@ export function useUserManagement(): UseUserManagementReturn {
     try {
       console.log('🔍 Verificando datos del usuario:', userId)
       
-      // Check auth user
-      const { data: authUsers, error: listError } = await supabase.auth.admin.listUsers()
+      // Get current user to check permissions
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
+      if (userError || !currentUser) {
+        console.error('❌ No autorizado para verificar usuarios')
+        return
+      }
+
+      // Check if current user has admin permissions
+      const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('role_id')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profileError) {
+        console.error('Error obteniendo perfil del usuario actual para verificación:', profileError)
+        return
+      }
+
+      // Check if user has admin role (using UUID from roles table)
+      const adminRoleId = roleMapping.admin // admin role UUID
+      
+      if (currentUserProfile?.role_id !== adminRoleId) {
+        console.log('❌ Usuario no es admin para verificación. Role ID:', currentUserProfile?.role_id)
+        console.log('✅ Admin Role ID esperado:', adminRoleId)
+        console.log('❌ Solo los administradores pueden verificar usuarios')
+        return
+      }
+
+      console.log('✅ Usuario actual tiene permisos de administrador para verificación')
+
+      // Use admin client for administrative operations
+      const adminClient = createAdminClient()
+
+      // Check auth user with admin client
+      const { data: authUsers, error: listError } = await adminClient.auth.admin.listUsers()
       if (listError) {
-        console.error('Error listando usuarios de auth:', listError)
+        console.error('Error listando usuarios de auth con admin client:', listError)
         return
       }
 
@@ -712,15 +746,15 @@ export function useUserManagement(): UseUserManagementReturn {
         console.log('❌ Usuario no encontrado en auth')
       }
 
-      // Check user profile
-      const { data: profile, error: profileError } = await supabase
+      // Check user profile with admin client
+      const { data: profile, error: profileCheckError } = await adminClient
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single()
 
-      if (profileError) {
-        console.error('Error verificando perfil:', profileError)
+      if (profileCheckError) {
+        console.error('Error verificando perfil con admin client:', profileCheckError)
         return
       }
 

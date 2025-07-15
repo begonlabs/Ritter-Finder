@@ -49,6 +49,8 @@ import {
 import { useEmailTemplates } from "@/features/campaigns/hooks/useEmailTemplates"
 import type { EmailTemplate, TemplateVariable } from "@/features/campaigns/types"
 import type { TemplateManagementProps } from "../types"
+import { useConfirmDialog } from "../hooks/useConfirmDialog"
+import { ConfirmDialog } from "./ConfirmDialog"
 import styles from "../styles/TemplateManagement.module.css"
 
 export function TemplateManagement({ className = "" }: TemplateManagementProps) {
@@ -67,6 +69,7 @@ export function TemplateManagement({ className = "" }: TemplateManagementProps) 
   const [isEditing, setIsEditing] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [previewMode, setPreviewMode] = useState<'edit' | 'preview'>('edit')
+  const { confirmDialog, showConfirmDialog, closeConfirmDialog } = useConfirmDialog()
 
   // Template form state
   const [formData, setFormData] = useState<Partial<EmailTemplate>>({
@@ -124,14 +127,23 @@ export function TemplateManagement({ className = "" }: TemplateManagementProps) 
     }
   }
 
-  const handleDeleteTemplate = async (templateId: string) => {
-    if (confirm('¿Estás seguro de que quieres eliminar esta plantilla?')) {
-      try {
-        await deleteTemplate(templateId)
-      } catch (error) {
-        console.error('Error deleting template:', error)
+  const handleDeleteTemplate = async (templateId: string, templateName: string) => {
+    showConfirmDialog(
+      "Eliminar Plantilla",
+      `¿Estás seguro de que quieres eliminar la plantilla "${templateName}"? Esta acción no se puede deshacer.`,
+      async () => {
+        try {
+          await deleteTemplate(templateId)
+        } catch (error) {
+          console.error('Error deleting template:', error)
+        }
+      },
+      {
+        type: 'delete',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
       }
-    }
+    )
   }
 
   const handleDuplicateTemplate = async (templateId: string) => {
@@ -348,7 +360,7 @@ export function TemplateManagement({ className = "" }: TemplateManagementProps) 
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          onClick={() => handleDeleteTemplate(template.id)}
+                          onClick={() => handleDeleteTemplate(template.id, template.name)}
                           className="h-8 w-8 p-0 text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -629,6 +641,20 @@ export function TemplateManagement({ className = "" }: TemplateManagementProps) 
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Confirm Dialog */}
+      {confirmDialog && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={closeConfirmDialog}
+          onConfirm={confirmDialog.onConfirm}
+          title={confirmDialog.title}
+          description={confirmDialog.description}
+          confirmText={confirmDialog.confirmText}
+          cancelText={confirmDialog.cancelText}
+          type={confirmDialog.type}
+        />
+      )}
     </div>
   )
 } 
