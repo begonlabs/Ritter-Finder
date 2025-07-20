@@ -365,4 +365,19 @@
   .recipientItem:hover {
     transform: none;
   }
+}
+
+/* Pagination Styles */
+.pagination {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive pagination */
+@media (max-width: 768px) {
+  .pagination {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
 } 

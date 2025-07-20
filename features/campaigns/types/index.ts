@@ -226,3 +226,31 @@ export interface UseTemplatesReturn {
   duplicateTemplate: (id: string) => Promise<void>
   refreshTemplates: () => Promise<void>
 }
+
+// Pagination Types
+export interface PaginationState {
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  itemsPerPage: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
+}
+
+export interface PaginationActions {
+  goToPage: (page: number) => void
+  nextPage: () => void
+  prevPage: () => void
+  goToFirstPage: () => void
+  goToLastPage: () => void
+}
+
+export interface PaginationInfo {
+  startIndex: number
+  endIndex: number
+  pageInfo: string
+}
+
+export type PaginationReturn<T> = {
+  currentItems: T[]
+} & PaginationState & PaginationActions & PaginationInfo
