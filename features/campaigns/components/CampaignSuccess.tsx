@@ -2,15 +2,25 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2, Mail, Clock, Target } from "lucide-react"
+import { CheckCircle2, Mail, Clock, Target, CheckCircle } from "lucide-react"
 import type { Lead } from "../types"
 import styles from "../styles/CampaignSuccess.module.css"
 
 interface CampaignSuccessProps {
   selectedLeads: Lead[]
+  campaignResult?: {
+    sentCount: number
+    failedCount: number
+    results?: Array<{
+      email: string
+      success: boolean
+      messageId?: string
+      error?: string
+    }>
+  }
 }
 
-export function CampaignSuccess({ selectedLeads }: CampaignSuccessProps) {
+export function CampaignSuccess({ selectedLeads, campaignResult }: CampaignSuccessProps) {
   return (
     <Card className={`${styles.campaignSuccess} border-green-200 bg-green-50`}>
       <CardContent className={`${styles.content} pt-6`}>
@@ -39,7 +49,9 @@ export function CampaignSuccess({ selectedLeads }: CampaignSuccessProps) {
         <div className={`${styles.statsGrid} mt-6 grid gap-4 md:grid-cols-3`}>
           <div className={`${styles.statCard} text-center p-4 bg-white rounded-lg border`}>
             <Mail className={`${styles.statIcon} ${styles.statIconMail} mx-auto h-8 w-8 text-blue-600 mb-2`} />
-            <p className={`${styles.statValue} font-semibold`}>{selectedLeads.length}</p>
+            <p className={`${styles.statValue} font-semibold`}>
+              {campaignResult?.sentCount || selectedLeads.length}
+            </p>
             <p className={`${styles.statLabel} text-sm text-muted-foreground`}>Emails Enviados</p>
           </div>
           
@@ -51,8 +63,10 @@ export function CampaignSuccess({ selectedLeads }: CampaignSuccessProps) {
           
           <div className={`${styles.statCard} text-center p-4 bg-white rounded-lg border`}>
             <Target className={`${styles.statIcon} ${styles.statIconTarget} mx-auto h-8 w-8 text-green-600 mb-2`} />
-            <p className={`${styles.statValue} font-semibold`}>85%</p>
-            <p className={`${styles.statLabel} text-sm text-muted-foreground`}>Tasa de Apertura Esperada</p>
+            <p className={`${styles.statValue} font-semibold`}>
+              {campaignResult?.failedCount ? `${Math.round((campaignResult.sentCount / (campaignResult.sentCount + campaignResult.failedCount)) * 100)}%` : '85%'}
+            </p>
+            <p className={`${styles.statLabel} text-sm text-muted-foreground`}>Tasa de Éxito</p>
           </div>
         </div>
 

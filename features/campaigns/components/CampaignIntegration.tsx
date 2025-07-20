@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useLeadAdapter } from '../hooks/useLeadAdapter'
 import { EmailComposer } from './EmailComposer'
 import { CampaignSuccess } from './CampaignSuccess'
+import { brevoService } from '../../../lib/brevo-service'
 import type { Lead, NormalizedLead, Campaign } from '../types'
 import styles from '../styles/CampaignIntegration.module.css'
 
@@ -32,6 +33,16 @@ export function CampaignIntegration({
   const [adaptedLeads, setAdaptedLeads] = useState<Lead[]>([])
   const [validationIssues, setValidationIssues] = useState<Record<string, string[]>>({})
   const [showSuccess, setShowSuccess] = useState(emailSent)
+  const [campaignResult, setCampaignResult] = useState<{
+    sentCount: number
+    failedCount: number
+    results?: Array<{
+      email: string
+      success: boolean
+      messageId?: string
+      error?: string
+    }>
+  } | null>(null)
   
   const { adaptLeadsForCampaign, validateLeadForCampaign } = useLeadAdapter()
 
@@ -58,11 +69,36 @@ export function CampaignIntegration({
   // Manejar envío de campaña
   const handleSendCampaign = async (campaignData: Campaign) => {
     try {
+      // Enviar campaña usando Brevo
+      const result = await brevoService.sendCampaign({
+        subject: campaignData.subject,
+        content: campaignData.content,
+        htmlContent: campaignData.htmlContent,
+        senderName: campaignData.senderName,
+        senderEmail: campaignData.senderEmail,
+        recipients: adaptedLeads.map(lead => ({
+          email: lead.email || '',
+          name: lead.name || lead.company_name
+        })).filter(recipient => recipient.email)
+      });
+
+      // Guardar resultados de la campaña
+      setCampaignResult({
+        sentCount: result.sentCount,
+        failedCount: result.failedCount,
+        results: result.results
+      });
+
+      if (!result.success) {
+        throw new Error(`Error al enviar campaña: ${result.failedCount} emails fallaron`);
+      }
+
       await onSendCampaign(campaignData)
       setShowSuccess(true)
     } catch (error) {
       console.error('Error sending campaign:', error)
       // Aquí podrías mostrar un toast de error
+      throw error
     }
   }
 
@@ -159,6 +195,7 @@ export function CampaignIntegration({
         selectedLeads={adaptedLeads}
         onSendCampaign={handleSendCampaign}
         emailSent={showSuccess}
+        campaignResult={campaignResult || undefined}
       />
 
       {/* Validation Issues */}

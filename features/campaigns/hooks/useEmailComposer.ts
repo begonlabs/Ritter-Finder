@@ -1,17 +1,8 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
-import type { 
-  Lead, 
-  EmailTemplate, 
-  EmailComposerState, 
-  EmailComposerActions,
-  Language,
-  Campaign,
-  TemplateVariable
-} from "../types"
-import { AUTO_VARIABLES } from "../types"
-import { useEmailTemplates } from './useEmailTemplates'
+import { brevoService } from '../../../lib/brevo-service';
+import type { Lead, Campaign } from "../types"
 
 interface EmailComposerData {
   // Basic fields
@@ -21,10 +12,6 @@ interface EmailComposerData {
   senderEmail: string;
   content: string;
   htmlContent?: string;
-  
-  // Template-related
-  selectedTemplate: EmailTemplate | null;
-  templateVariables: Record<string, string>;
   
   // Mode
   contentMode: 'text' | 'html';
@@ -54,22 +41,15 @@ export interface UseEmailComposerReturn {
   
   // Actions
   updateField: (field: keyof EmailComposerData, value: any) => void;
-  updateTemplateVariable: (variableName: string, value: string) => void;
-  selectTemplate: (template: EmailTemplate | null) => void;
-  clearTemplate: () => void;
   setPreviewLead: (lead: Lead) => void;
   setSubject: (subject: string) => void;
   setContent: (content: string) => void;
   setHtmlContent: (htmlContent: string) => void;
   setSenderName: (name: string) => void;
   setSenderEmail: (email: string) => void;
-  setSelectedTemplate: (template: EmailTemplate | null) => void;
   setIsHtmlMode: (isHtml: boolean) => void;
-  setTemplateVariable: (key: string, value: string) => void;
   
   // Content processing
-  getProcessedContent: () => string;
-  getProcessedSubject: () => string;
   personalizeEmail: (content: string, lead: Lead) => string;
   renderHtmlContent: (lead: Lead) => string;
   
@@ -85,9 +65,6 @@ export interface UseEmailComposerReturn {
   sendCampaign: (leads: Lead[]) => Promise<void>;
   isSending: boolean;
   
-  // Loading and template
-  loadTemplate: (templateId?: string) => Promise<void>;
-  
   // Reset
   reset: () => void;
 }
@@ -99,8 +76,6 @@ const DEFAULT_COMPOSER_DATA: EmailComposerData = {
   senderEmail: 'no-reply@ritterfinder.com',
   content: '',
   htmlContent: '',
-  selectedTemplate: null,
-  templateVariables: {},
   contentMode: 'text',
   isHtmlMode: false,
   previewLead: undefined,
@@ -131,54 +106,6 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
     }));
   }, []);
 
-  // Update template variables
-  const updateTemplateVariable = useCallback((variableName: string, value: string) => {
-    setData(prev => ({
-      ...prev,
-      templateVariables: {
-        ...prev.templateVariables,
-        [variableName]: value
-      }
-    }));
-  }, []);
-
-  // Select template
-  const selectTemplate = useCallback((template: EmailTemplate | null) => {
-    if (!template) {
-      setData(prev => ({
-        ...prev,
-        selectedTemplate: null,
-        templateVariables: {},
-        subject: '',
-        content: ''
-      }));
-      return;
-    }
-
-    // Initialize template variables with default values (solo variables personalizadas)    
-    const initialVariables: Record<string, string> = {};
-    template.variables?.forEach(variable => {
-      // Solo inicializar variables personalizadas
-      if (!AUTO_VARIABLES.includes(variable.key)) {
-        initialVariables[variable.key] = variable.defaultValue || '';
-      }
-    });
-
-    setData(prev => ({
-      ...prev,
-      selectedTemplate: template,
-      templateVariables: initialVariables,
-      subject: template.subject,
-      content: template.htmlContent || template.plainTextContent || '',
-      contentMode: template.htmlContent ? 'html' : 'text'
-    }));
-  }, []);
-
-  // Clear template
-  const clearTemplate = useCallback(() => {
-    selectTemplate(null);
-  }, [selectTemplate]);
-
   // Individual field setters
   const setPreviewLead = useCallback((lead: Lead) => {
     setData(prev => ({ ...prev, previewLead: lead }));
@@ -204,196 +131,62 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
     setData(prev => ({ ...prev, senderEmail }));
   }, []);
 
-  const setSelectedTemplate = useCallback((template: EmailTemplate | null) => {
-    selectTemplate(template);
-  }, [selectTemplate]);
-
-  const setIsHtmlMode = useCallback((isHtmlMode: boolean) => {
-    setData(prev => ({ ...prev, isHtmlMode, contentMode: isHtmlMode ? 'html' : 'text' }));
+  const setIsHtmlMode = useCallback((isHtml: boolean) => {
+    setData(prev => ({ 
+      ...prev, 
+      isHtmlMode: isHtml,
+      contentMode: isHtml ? 'html' : 'text'
+    }));
   }, []);
 
-  const setTemplateVariable = useCallback((key: string, value: string) => {
-    updateTemplateVariable(key, value);
-  }, [updateTemplateVariable]);
+  // Content processing
+  const personalizeEmail = useCallback((content: string, lead: Lead) => {
+    if (!content || !lead) return content;
 
-  // Process content with template variables
-  const replaceVariables = useCallback((text: string, variables: Record<string, string>): string => {
-    // Ensure text is a string
-    if (!text || typeof text !== 'string') {
-      return '';
-    }
-
-    let processedText = text;
-    
-    // Ensure variables is an object
-    if (!variables || typeof variables !== 'object') {
-      return processedText;
-    }
-    
-    Object.entries(variables).forEach(([key, value]) => {
-      // Skip if key is invalid
-      if (!key || typeof key !== 'string') {
-        return;
-      }
-
-      // Ensure value is a string
-      const safeValue = value != null ? String(value) : `[${key}]`;
-      
-      // Replace various formats: {{variable}}, {variable}, [variable]
-      const patterns = [
-        new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, 'g'),
-        new RegExp(`\\{\\s*${key}\\s*\\}`, 'g'),
-        new RegExp(`\\[\\s*${key}\\s*\\]`, 'g'),
-        new RegExp(`\\$\\{\\s*${key}\\s*\\}`, 'g')
-      ];
-      
-      patterns.forEach(pattern => {
-        try {
-          processedText = processedText.replace(pattern, safeValue);
-        } catch (error) {
-          console.warn(`Error replacing pattern ${pattern} with value ${safeValue}:`, error);
-        }
-      });
-    });
-    
-    return processedText;
+    return content
+      .replace(/\{\{name\}\}/g, lead.name || lead.company_name || '')
+      .replace(/\{\{company\}\}/g, lead.company || lead.company_name || '')
+      .replace(/\{\{email\}\}/g, lead.email || '')
+      .replace(/\{\{position\}\}/g, lead.position || lead.activity || '')
+      .replace(/\{\{industry\}\}/g, lead.industry || lead.category || '')
+      .replace(/\{\{location\}\}/g, lead.location || '');
   }, []);
 
-  // Get processed content
-  const getProcessedContent = useCallback((): string => {
-    if (!data.selectedTemplate) {
-      return data.content || '';
-    }
+  const renderHtmlContent = useCallback((lead: Lead) => {
+    if (!data.content || !lead) return data.content;
 
-    const baseContent = data.contentMode === 'html' 
-      ? data.selectedTemplate.htmlContent 
-      : data.selectedTemplate.plainTextContent;
-
-    return replaceVariables(baseContent || data.content || '', data.templateVariables || {});
-  }, [data, replaceVariables]);
-
-  // Get processed subject
-  const getProcessedSubject = useCallback((): string => {
-    if (!data.selectedTemplate) {
-      return data.subject || '';
-    }
-
-    return replaceVariables(data.selectedTemplate.subject || '', data.templateVariables || {});
-  }, [data, replaceVariables]);
-
-  // Personalize email content with lead data
-  const personalizeEmail = useCallback((content: string, lead: Lead): string => {
-    // Ensure content and lead are valid
-    if (!content || typeof content !== 'string') {
-      return '';
-    }
-
-    if (!lead) {
-      return content;
-    }
-
-    let personalizedContent = content;
-
-    // Create contact name from company name if not available
-    const contactName = lead.name || (lead.company_name ? `Responsable de ${lead.company_name}` : '');
-    const nameParts = contactName.split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-
-    // Replace standard lead variables - ensure all values are strings (simplified schema)
-    const leadVariables: Record<string, string> = {
-      // Direct database fields
-      'lead_id': String(lead.id || ''),
-      'email': String(lead.email || ''),
-      'phone': String(lead.phone || ''),
-      'company_name': String(lead.company_name || ''),
-      'company_website': String(lead.company_website || ''),
-      'address': String(lead.address || ''),
-      'state': String(lead.state || ''),
-      'country': String(lead.country || ''),
-      'activity': String(lead.activity || ''),
-      'description': String(lead.description || ''),
-      'category': String(lead.category || ''),
-      
-      // Verification fields (new structure)
-      'verified_email': lead.verified_email ? 'Sí' : 'No',
-      'verified_phone': lead.verified_phone ? 'Sí' : 'No', 
-      'verified_website': lead.verified_website ? 'Sí' : 'No',
-      
-      // Legacy compatibility variables
-      'contact_name': String(contactName),
-      'contact_email': String(lead.email || ''),
-      'contact_phone': String(lead.phone || ''),
-      'first_name': String(firstName),
-      'last_name': String(lastName),
-      'full_name': String(contactName),
-      'name': String(contactName),
-      'company': String(lead.company_name || ''), // Alias
-      'website': String(lead.company_website || ''), // Alias
-      'position': String(lead.position || ''),
-      'industry': String(lead.industry || ''),
-      'location': String(lead.location || ''),
-      
-      // Computed validation fields for templates (legacy compatibility)
-      'emailValidated': lead.emailValidated ? 'Validado' : 'No validado',
-      'phoneValidated': lead.phoneValidated ? 'Validado' : 'No validado',
-      'websiteExists': lead.websiteExists ? 'Validada' : 'No validada'
-    };
-
-    // Apply lead variables
-    personalizedContent = replaceVariables(personalizedContent, leadVariables);
-
-    // Apply template variables if template is selected
-    if (data.selectedTemplate && data.templateVariables) {
-      personalizedContent = replaceVariables(personalizedContent, data.templateVariables);
-    }
-
+    const personalizedContent = personalizeEmail(data.content, lead);
+    
+    // Si es modo HTML, devolver el contenido tal como está
+    if (data.contentMode === 'html') {
     return personalizedContent;
-  }, [data, replaceVariables]);
-
-  // Render HTML content for a specific lead
-  const renderHtmlContent = useCallback((lead: Lead): string => {
-    if (!lead) {
-      return '';
     }
-
-    const baseContent = data.contentMode === 'html' 
-      ? (data.selectedTemplate?.htmlContent || data.content || '')
-      : (data.content || '');
-
-    return personalizeEmail(baseContent, lead);
-  }, [data, personalizeEmail]);
+    
+    // Si es modo texto, convertir a HTML básico
+    return personalizedContent
+      .split('\n')
+      .map(line => `<p>${line}</p>`)
+      .join('');
+  }, [data.content, data.contentMode, personalizeEmail]);
 
   // Validation
-  const validateData = useCallback((): {
-    errors: ValidationError[];
-    warnings: ValidationError[];
-    isValid: boolean;
-  } => {
+  useEffect(() => {
     const errors: ValidationError[] = [];
     const warnings: ValidationError[] = [];
 
     // Required fields
-    if (!data.name.trim()) {
-      errors.push({
-        field: 'name',
-        message: 'El nombre de la campaña es obligatorio',
-        type: 'error'
-      });
-    }
-
-    if (!data.subject.trim() && !data.selectedTemplate?.subject.trim()) {
+    if (!data.subject.trim()) {
       errors.push({
         field: 'subject',
-        message: 'El asunto del email es obligatorio',
+        message: 'El asunto es obligatorio',
         type: 'error'
       });
     }
 
-    if (!data.content.trim() && !data.selectedTemplate?.htmlContent && !data.selectedTemplate?.plainTextContent) {
+    if (!data.content.trim()) {
       errors.push({
         field: 'content',
-        message: 'El contenido del email es obligatorio',
+        message: 'El contenido es obligatorio',
         type: 'error'
       });
     }
@@ -403,200 +196,122 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
         field: 'senderEmail',
         message: 'El email del remitente es obligatorio',
         type: 'error'
-      });
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (data.senderEmail && !emailRegex.test(data.senderEmail)) {
-      errors.push({
-        field: 'senderEmail',
-        message: 'El email del remitente no es válido',
-        type: 'error'
-      });
-    }
-
-    // Template variable validation (solo variables personalizadas)
-    if (data.selectedTemplate?.variables) {
-      // Filtrar variables automáticas
-      data.selectedTemplate.variables
-        .filter(variable => !AUTO_VARIABLES.includes(variable.key))
-        .forEach(variable => {
-          const value = data.templateVariables[variable.key];
-          
-          if (variable.required && (!value || !value.trim())) {
-            errors.push({
-              field: `templateVariable_${variable.key}`,
-              message: `La variable personalizada "${variable.key}" es obligatoria`,
-              type: 'error'
-            });
-          }
         });
     }
 
     // Warnings
-    if (data.recipientCount === 0) {
-      warnings.push({
-        field: 'recipients',
-        message: 'No hay destinatarios seleccionados para esta campaña',
-        type: 'warning'
-      });
-    }
-
-    if (data.contentMode === 'html' && data.content.length > 102400) { // 100KB
-      warnings.push({
-        field: 'content',
-        message: 'El contenido HTML es muy largo, puede afectar la entrega',
-        type: 'warning'
-      });
-    }
-
     if (data.subject.length > 78) {
       warnings.push({
         field: 'subject',
-        message: 'El asunto es muy largo, puede cortarse en algunos clientes de email',
+        message: 'El asunto es muy largo (máximo 78 caracteres)',
         type: 'warning'
       });
     }
 
-    return {
+    if (data.content.length > 50000) {
+      warnings.push({
+        field: 'content',
+        message: 'El contenido es muy largo',
+        type: 'warning'
+      });
+    }
+
+    setValidation({
       errors,
       warnings,
       isValid: errors.length === 0
-    };
-  }, [data]);
+    });
+  }, [data.subject, data.content, data.senderEmail]);
 
-  // Send email
-  const sendEmail = useCallback(async (): Promise<void> => {
+  // Send functions
+  const sendEmail = useCallback(async () => {
     if (!validation.isValid) {
-      throw new Error('El formulario contiene errores que deben corregirse');
+      throw new Error('El formulario no es válido');
     }
 
     setIsSending(true);
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Here would be the actual API call
-      const emailData = {
-        name: data.name,
-        subject: getProcessedSubject(),
-        content: getProcessedContent(),
-        senderName: data.senderName,
-        senderEmail: data.senderEmail,
-        contentMode: data.contentMode,
-        templateId: data.selectedTemplate?.id,
-        templateVariables: data.templateVariables,
-        recipientCount: data.recipientCount,
-        leadId: data.leadId
-      };
+      // Enviar email usando Brevo
+      const result = await brevoService.sendEmail({
+        to: data.previewLead?.email || 'test@example.com',
+        name: data.previewLead?.name || data.previewLead?.company_name,
+        subject: data.subject,
+        htmlContent: data.contentMode === 'html' ? data.content : undefined,
+        textContent: data.contentMode === 'text' ? data.content : undefined
+      });
 
-      console.log('Sending email:', emailData);
+      if (!result.success) {
+        throw new Error(result.error || 'Error al enviar email');
+      }
       
-      // Reset form after successful send
-      reset();
-      
+      setData(prev => ({ ...prev, emailSent: true }));
     } catch (error) {
       console.error('Error sending email:', error);
       throw error;
     } finally {
       setIsSending(false);
     }
-  }, [data, validation.isValid, getProcessedContent, getProcessedSubject]);
+  }, [validation.isValid, data]);
 
-  // Send campaign
-  const sendCampaign = useCallback(async (leads: Lead[]): Promise<void> => {
+  const sendCampaign = useCallback(async (leads: Lead[]) => {
     if (!validation.isValid) {
-      throw new Error('El formulario contiene errores que deben corregirse');
+      throw new Error('El formulario no es válido');
     }
 
-    setData(prev => ({ ...prev, isLoading: true }));
-    
+    if (leads.length === 0) {
+      throw new Error('No hay destinatarios seleccionados');
+    }
+
+    setIsSending(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Here would be the actual API call
-      const campaignData = {
-        subject: getProcessedSubject(),
-        content: getProcessedContent(),
-        htmlContent: data.htmlContent,
+      // Enviar campaña usando Brevo
+      const result = await brevoService.sendCampaign({
+        subject: data.subject,
+        content: data.content,
+        htmlContent: data.contentMode === 'html' ? data.content : undefined,
         senderName: data.senderName,
         senderEmail: data.senderEmail,
-        templateId: data.selectedTemplate?.id,
-        templateVariables: data.templateVariables,
-        leads: leads
-      };
+        recipients: leads.map(lead => ({
+          email: lead.email || '',
+          name: lead.name || lead.company_name
+        })).filter(recipient => recipient.email) // Solo emails válidos
+      });
 
-      console.log('Sending campaign:', campaignData);
+      if (!result.success) {
+        throw new Error(`Error al enviar campaña: ${result.failedCount} emails fallaron`);
+      }
       
       setData(prev => ({ ...prev, emailSent: true }));
-      
     } catch (error) {
       console.error('Error sending campaign:', error);
       throw error;
     } finally {
-      setData(prev => ({ ...prev, isLoading: false }));
+      setIsSending(false);
     }
-  }, [data, validation.isValid, getProcessedContent, getProcessedSubject]);
+  }, [validation.isValid, data]);
 
-  // Load template
-  const loadTemplate = useCallback(async (templateId?: string): Promise<void> => {
-    if (!templateId) return;
-    
-    setData(prev => ({ ...prev, isLoading: true }));
-    
-    try {
-      // Simulate API call to load template
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Here would be the actual API call to fetch template
-      console.log('Loading template:', templateId);
-      
-    } catch (error) {
-      console.error('Error loading template:', error);
-      throw error;
-    } finally {
-      setData(prev => ({ ...prev, isLoading: false }));
-    }
-  }, []);
-
-  // Reset form
+  // Reset
   const reset = useCallback(() => {
     setData(DEFAULT_COMPOSER_DATA);
+    setIsSending(false);
   }, []);
-
-  // Update validation when data changes
-  useEffect(() => {
-    const validationResult = validateData();
-    setValidation(validationResult);
-  }, [validateData]);
 
   return {
     data,
     updateField,
-    updateTemplateVariable,
-    selectTemplate,
-    clearTemplate,
     setPreviewLead,
     setSubject,
     setContent,
     setHtmlContent,
     setSenderName,
     setSenderEmail,
-    setSelectedTemplate,
     setIsHtmlMode,
-    setTemplateVariable,
-    getProcessedContent,
-    getProcessedSubject,
     personalizeEmail,
     renderHtmlContent,
     validation,
     sendEmail,
     sendCampaign,
     isSending,
-    loadTemplate,
     reset
   };
 };

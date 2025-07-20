@@ -3,23 +3,31 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
 import { useEmailComposer } from "../hooks/useEmailComposer"
 import { ComposeTab } from "./ComposeTab"
 import { RecipientsTab } from "./RecipientsTab"
 import { PreviewTab } from "./PreviewTab"
 import { CampaignSuccess } from "./CampaignSuccess"
-import type { Lead, Campaign, Language } from "../types"
+import type { Lead, Campaign } from "../types"
 import styles from "../styles/EmailComposer.module.css"
 
 interface EmailComposerProps {
   selectedLeads: Lead[]
   onSendCampaign: (campaignData: Campaign) => void
   emailSent?: boolean
+  campaignResult?: {
+    sentCount: number
+    failedCount: number
+    results?: Array<{
+      email: string
+      success: boolean
+      messageId?: string
+      error?: string
+    }>
+  }
 }
 
-export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false }: EmailComposerProps) {
-  const { language } = useLanguage()
+export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false, campaignResult }: EmailComposerProps) {
   const composer = useEmailComposer()
 
   if (selectedLeads.length === 0) {
@@ -40,7 +48,7 @@ export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false
   }
 
   if (emailSent || composer.data.emailSent) {
-    return <CampaignSuccess selectedLeads={selectedLeads} />
+    return <CampaignSuccess selectedLeads={selectedLeads} campaignResult={campaignResult} />
   }
 
   return (

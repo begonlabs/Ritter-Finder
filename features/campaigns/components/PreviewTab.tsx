@@ -4,9 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Eye, Code, FileText, ExternalLink } from "lucide-react"
-import type { Lead, EmailTemplate } from "../types"
-import { AUTO_VARIABLES } from "../types"
+import { Eye, Code, ExternalLink } from "lucide-react"
+import type { Lead } from "../types"
 import styles from "../styles/PreviewTab.module.css"
 
 import type { UseEmailComposerReturn } from '../hooks/useEmailComposer';
@@ -81,16 +80,11 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
                   </>
                 ) : (
                   <>
-                    <FileText className="h-3 w-3 mr-1" />
+                    📝
                     Texto
                   </>
                 )}
               </Badge>
-              {composer.data.selectedTemplate && (
-                <Badge variant="secondary" className={styles.templateBadge}>
-                  📧 {composer.data.selectedTemplate.name}
-                </Badge>
-              )}
             </div>
           </div>
 
@@ -184,31 +178,6 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
             </div>
           </div>
 
-          {/* Template Variables Info */}
-          {composer.data.selectedTemplate && Object.keys(composer.data.templateVariables).length > 0 && (
-            (() => {
-              // Filtrar variables automáticas 
-              const customVariables = Object.entries(composer.data.templateVariables).filter(([key]) => 
-                !AUTO_VARIABLES.includes(key)
-              );
-              
-              return customVariables.length > 0 ? (
-                <div className={styles.variablesInfo}>
-                  <Label className={styles.variablesLabel}>Variables personalizadas utilizadas:</Label>
-                  <div className={styles.variablesList}>
-                    {customVariables.map(([key, value]) => (
-                      <div key={key} className={styles.variableItem}>
-                        <Badge variant="outline" className={styles.variableBadge}>
-                          {key}: {value || '(vacío)'}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null;
-            })()
-          )}
-
           {/* Validation Warnings */}
           <div className={styles.validationWarnings}>
             {!(composer.data.subject || '').trim() && (
@@ -218,22 +187,10 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
               </div>
             )}
             
-            {!(composer.data.content || '').trim() && !(composer.data.htmlContent || '').trim() && (
+            {!(composer.data.content || '').trim() && (
               <div className={`${styles.warningItem} text-sm text-orange-600`}>
                 <span className={styles.warningIcon}>⚠️</span>
                 No has ingresado contenido para el email
-              </div>
-            )}
-
-            {composer.data.selectedTemplate && composer.data.selectedTemplate.variables && composer.data.selectedTemplate.variables.filter(v => {
-              // Solo mostrar warning para variables personalizadas (no automáticas)
-              return !AUTO_VARIABLES.includes(v.key);
-            }).some(v => 
-              v.required && !(composer.data.templateVariables?.[v.key] || '').trim()
-            ) && (
-              <div className={`${styles.warningItem} text-sm text-orange-600`}>
-                <span className={styles.warningIcon}>⚠️</span>
-                Algunas variables personalizadas obligatorias están vacías
               </div>
             )}
 

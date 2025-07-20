@@ -9,8 +9,11 @@
     "verify": "node test-user-management.js verify"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^2.5.0",
     "@supabase/supabase-js": "^2.39.0",
-    "dotenv": "^16.3.1"
+    "@types/nodemailer": "^6.4.17",
+    "dotenv": "^16.3.1",
+    "nodemailer": "^7.0.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
