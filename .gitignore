@@ -39,3 +39,4 @@ scripts/node_modules
 scripts/test-brevo-sdk.js
 scripts/test-brevo-service.ts
 scripts/test-brevo-email.js
+scripts/test-integration.ts

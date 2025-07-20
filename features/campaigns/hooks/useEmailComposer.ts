@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
-import { brevoService } from '../../../lib/brevo-service';
+import { campaignClient } from '../../../lib/campaign-client';
 import type { Lead, Campaign } from "../types"
 
 interface EmailComposerData {
@@ -72,8 +72,8 @@ export interface UseEmailComposerReturn {
 const DEFAULT_COMPOSER_DATA: EmailComposerData = {
   name: '',
   subject: '',
-  senderName: 'RitterFinder',
-  senderEmail: 'no-reply@ritterfinder.com',
+  senderName: process.env.NEXT_PUBLIC_BREVO_SENDER_NAME || 'RitterFinder Team',
+  senderEmail: process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy',
   content: '',
   htmlContent: '',
   contentMode: 'text',
@@ -231,8 +231,8 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
 
     setIsSending(true);
     try {
-      // Enviar email usando Brevo
-      const result = await brevoService.sendEmail({
+      // Enviar email usando Campaign Client
+      const result = await campaignClient.sendEmail({
         to: data.previewLead?.email || 'test@example.com',
         name: data.previewLead?.name || data.previewLead?.company_name,
         subject: data.subject,
@@ -264,13 +264,13 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
 
     setIsSending(true);
     try {
-      // Enviar campaña usando Brevo
-      const result = await brevoService.sendCampaign({
+      // Enviar campaña usando Campaign Client
+      const result = await campaignClient.sendCampaign({
         subject: data.subject,
         content: data.content,
         htmlContent: data.contentMode === 'html' ? data.content : undefined,
-        senderName: data.senderName,
-        senderEmail: data.senderEmail,
+        senderName: process.env.NEXT_PUBLIC_BREVO_SENDER_NAME || 'RitterFinder Team',
+        senderEmail: process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy',
         recipients: leads.map(lead => ({
           email: lead.email || '',
           name: lead.name || lead.company_name

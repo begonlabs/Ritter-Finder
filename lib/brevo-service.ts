@@ -8,6 +8,17 @@ let apiKey = process.env.BREVO_API_KEY;
 let senderEmail = process.env.BREVO_SENDER_EMAIL || 'info@rittermor.energy';
 let senderName = process.env.BREVO_SENDER_NAME || 'RitterFinder Team';
 
+// Verificar que las variables estén configuradas
+if (!apiKey) {
+  console.warn('⚠️ BREVO_API_KEY no está configurada');
+}
+if (!senderEmail) {
+  console.warn('⚠️ BREVO_SENDER_EMAIL no está configurada');
+}
+if (!senderName) {
+  console.warn('⚠️ BREVO_SENDER_NAME no está configurada');
+}
+
 // Función para configurar la API key
 function configureApiKey() {
   apiKey = process.env.BREVO_API_KEY;

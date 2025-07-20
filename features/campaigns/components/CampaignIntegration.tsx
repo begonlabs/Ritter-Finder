@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useLeadAdapter } from '../hooks/useLeadAdapter'
 import { EmailComposer } from './EmailComposer'
 import { CampaignSuccess } from './CampaignSuccess'
-import { brevoService } from '../../../lib/brevo-service'
+import { campaignClient } from '../../../lib/campaign-client'
 import type { Lead, NormalizedLead, Campaign } from '../types'
 import styles from '../styles/CampaignIntegration.module.css'
 
@@ -69,13 +69,13 @@ export function CampaignIntegration({
   // Manejar envío de campaña
   const handleSendCampaign = async (campaignData: Campaign) => {
     try {
-      // Enviar campaña usando Brevo
-      const result = await brevoService.sendCampaign({
+      // Enviar campaña usando Campaign Client
+      const result = await campaignClient.sendCampaign({
         subject: campaignData.subject,
         content: campaignData.content,
         htmlContent: campaignData.htmlContent,
-        senderName: campaignData.senderName,
-        senderEmail: campaignData.senderEmail,
+        senderName: process.env.NEXT_PUBLIC_BREVO_SENDER_NAME || 'RitterFinder Team',
+        senderEmail: process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy',
         recipients: adaptedLeads.map(lead => ({
           email: lead.email || '',
           name: lead.name || lead.company_name

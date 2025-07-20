@@ -120,69 +120,37 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
           </section>
 
           {/* Form Fields */}
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <Label htmlFor="campaignName" className={styles.formLabel}>
-                Nombre de la Campaña <span style={{ color: '#ef4444' }}>*</span>
-              </Label>
-              <Input 
-                id="campaignName"
-                type="text"
-                className={styles.formInput}
-                placeholder="Ej: Newsletter Enero 2025"
-                value={data.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('name', e.target.value)}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <Label htmlFor="senderName" className={styles.formLabel}>
-                Nombre del Remitente
-              </Label>
-              <Input
-                id="senderName"
-                type="text"
-                className={styles.formInput}
-                placeholder="RitterFinder"
-                value={data.senderName}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('senderName', e.target.value)}
-              />
-            </div>
+          <div className={styles.formGroup}>
+            <Label htmlFor="campaignName" className={styles.formLabel}>
+              Nombre de la Campaña <span style={{ color: '#ef4444' }}>*</span>
+            </Label>
+            <Input 
+              id="campaignName"
+              type="text"
+              className={styles.formInput}
+              placeholder="Ej: Newsletter Enero 2025"
+              value={data.name}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('name', e.target.value)}
+            />
           </div>
 
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <Label htmlFor="subject" className={styles.formLabel}>
-                Asunto del Email <span style={{ color: '#ef4444' }}>*</span>
-              </Label>
-              <Input
-                id="subject"
-                type="text"
-                className={styles.formInput}
-                placeholder="Escribe el asunto de tu email"
-                value={data.subject}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('subject', e.target.value)}
-              />
-              {data.subject.length > 78 && (
-                <div className={styles.helperText}>
-                  ⚠️ El asunto es muy largo ({data.subject.length} caracteres)
-                </div>
-              )}
-            </div>
-
-            <div className={styles.formGroup}>
-              <Label htmlFor="senderEmail" className={styles.formLabel}>
-                Email del Remitente <span style={{ color: '#ef4444' }}>*</span>
-              </Label>
+          <div className={styles.formGroup}>
+            <Label htmlFor="subject" className={styles.formLabel}>
+              Asunto del Email <span style={{ color: '#ef4444' }}>*</span>
+            </Label>
             <Input
-                id="senderEmail"
-                type="email"
+              id="subject"
+              type="text"
               className={styles.formInput}
-                placeholder="no-reply@ritterfinder.com"
-                value={data.senderEmail}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('senderEmail', e.target.value)}
+              placeholder="Escribe el asunto de tu email"
+              value={data.subject}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('subject', e.target.value)}
             />
-            </div>
+            {data.subject.length > 78 && (
+              <div className={styles.helperText}>
+                ⚠️ El asunto es muy largo ({data.subject.length} caracteres)
+              </div>
+            )}
           </div>
 
           <div className={styles.formGroup}>

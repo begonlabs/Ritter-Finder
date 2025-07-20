@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, Code, ExternalLink } from "lucide-react"
+import { campaignClient } from '../../../lib/campaign-client'
 import type { Lead } from "../types"
 import styles from "../styles/PreviewTab.module.css"
 
@@ -32,10 +33,10 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
     )
   }
 
-  const personalizedSubject = composer.personalizeEmail(composer.data.subject, previewLead)
+  const personalizedSubject = campaignClient.personalizeContent(composer.data.subject, previewLead)
   const personalizedContent = composer.data.contentMode === 'html' ? 
-    composer.renderHtmlContent(previewLead) : 
-    composer.personalizeEmail(composer.data.content, previewLead)
+    campaignClient.textToHtml(composer.data.content) : 
+    campaignClient.personalizeContent(composer.data.content, previewLead)
 
   return (
     <Card className={styles.previewTab}>
@@ -96,7 +97,7 @@ export function PreviewTab({ composer, selectedLeads }: PreviewTabProps) {
                 <div className={styles.emailMetaLine}>
                   <span className={styles.emailLabel}>De:</span>
                   <span className={styles.emailValue}>
-                    {composer.data.senderName} &lt;{composer.data.senderEmail}&gt;
+                    {process.env.NEXT_PUBLIC_BREVO_SENDER_NAME || 'RitterFinder Team'} &lt;{process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy'}&gt;
                   </span>
                 </div>
                 <div className={styles.emailMetaLine}>
