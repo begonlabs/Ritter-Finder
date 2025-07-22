@@ -68,6 +68,7 @@ export function LeadImport({ className = "" }: LeadImportProps) {
     isCreating,
     validationErrors,
     previewData,
+    notifications,
     
     // Actions
     importFromCSV,
@@ -75,11 +76,17 @@ export function LeadImport({ className = "" }: LeadImportProps) {
     validateLead,
     clearLeads,
     downloadTemplate,
+    importLeadsBulk,
     
     // Form state
     formData,
     setFormData,
-    resetForm
+    resetForm,
+    
+    // Notifications
+    addNotification,
+    removeNotification,
+    clearNotifications
   } = useLeadImport()
 
   const [activeTab, setActiveTab] = useState("manual")
@@ -116,8 +123,8 @@ export function LeadImport({ className = "" }: LeadImportProps) {
       `¿Estás seguro de que quieres importar ${leads.length} leads? Esta acción no se puede deshacer.`,
       async () => {
         try {
-          // Implement bulk import logic
-          console.log('Importing leads:', leads)
+          const result = await importLeadsBulk(leads)
+          console.log('Import result:', result)
         } catch (error) {
           console.error('Error importing leads:', error)
         }
@@ -617,6 +624,27 @@ export function LeadImport({ className = "" }: LeadImportProps) {
           type={confirmDialog.type}
         />
       )}
+
+      {/* Notifications */}
+      <div className={styles.notificationsContainer}>
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className={`${styles.notification} ${styles[`notification${notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}`]}`}
+          >
+            <div className={styles.notificationContent}>
+              <div className={styles.notificationTitle}>{notification.title}</div>
+              <div className={styles.notificationMessage}>{notification.message}</div>
+            </div>
+            <button
+              onClick={() => removeNotification(notification.id)}
+              className={styles.notificationClose}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   )
 } 
