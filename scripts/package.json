@@ -1,29 +1,21 @@
 {
-  "name": "ritterfinder-user-management-test",
+  "name": "ritterfinder-lead-tests",
   "version": "1.0.0",
-  "description": "Scripts de prueba para gestión de usuarios en RitterFinder",
-  "main": "test-user-management.js",
+  "description": "Scripts de prueba para importación de leads en RitterFinder",
+  "main": "run-all-tests.ts",
   "scripts": {
-    "test": "node test-user-management.js test",
-    "cleanup": "node test-user-management.js cleanup",
-    "verify": "node test-user-management.js verify"
+    "test": "tsx run-lead-tests.ts",
+    "test-all": "tsx run-all-tests.ts",
+    "generate-csv": "tsx generate-test-csv.ts",
+    "test-import": "tsx test-lead-import.ts",
+    "test-db": "tsx test-database-insert.ts"
   },
   "dependencies": {
-    "@getbrevo/brevo": "^2.5.0",
+    "tsx": "^4.0.0",
     "@supabase/supabase-js": "^2.39.0",
-    "@types/nodemailer": "^6.4.17",
-    "dotenv": "^16.3.1",
-    "nodemailer": "^7.0.5"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
-  },
-  "keywords": [
-    "supabase",
-    "user-management",
-    "testing",
-    "ritterfinder"
-  ],
-  "author": "RitterFinder Team",
-  "license": "MIT"
+    "@types/node": "^20.0.0"
+  }
 }
