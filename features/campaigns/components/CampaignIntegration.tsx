@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useLeadAdapter } from '../hooks/useLeadAdapter'
+import { useEmailQueue } from '../hooks/useEmailQueue'
+import { useNotifications } from '../hooks/useNotifications'
 import { EmailComposer } from './EmailComposer'
 import { CampaignSuccess } from './CampaignSuccess'
+import { EmailQueueProgress } from './EmailQueueProgress'
+import { CampaignNotifications } from './CampaignNotifications'
 import { campaignClient } from '../../../lib/campaign-client'
 import type { Lead, NormalizedLead, Campaign } from '../types'
 import styles from '../styles/CampaignIntegration.module.css'
@@ -20,6 +24,10 @@ interface CampaignIntegrationProps {
   // Estado
   emailSent?: boolean
   className?: string
+  
+  // User info for notifications
+  userEmail?: string
+  userName?: string
 }
 
 export function CampaignIntegration({
@@ -28,11 +36,14 @@ export function CampaignIntegration({
   onSendCampaign,
   onBack,
   emailSent = false,
-  className
+  className,
+  userEmail,
+  userName
 }: CampaignIntegrationProps) {
   const [adaptedLeads, setAdaptedLeads] = useState<Lead[]>([])
   const [validationIssues, setValidationIssues] = useState<Record<string, string[]>>({})
   const [showSuccess, setShowSuccess] = useState(emailSent)
+  const [showQueue, setShowQueue] = useState(false)
   const [campaignResult, setCampaignResult] = useState<{
     sentCount: number
     failedCount: number
@@ -45,6 +56,18 @@ export function CampaignIntegration({
   } | null>(null)
   
   const { adaptLeadsForCampaign, validateLeadForCampaign } = useLeadAdapter()
+  const { 
+    queue, 
+    progress, 
+    status, 
+    addToQueue, 
+    startQueue, 
+    pauseQueue, 
+    resumeQueue, 
+    clearQueue,
+    calculateEstimatedTime 
+  } = useEmailQueue()
+  const { sendCampaignNotification } = useNotifications()
 
   // Adaptar leads cuando cambian los datos
   useEffect(() => {
@@ -69,35 +92,43 @@ export function CampaignIntegration({
   // Manejar envío de campaña
   const handleSendCampaign = async (campaignData: Campaign) => {
     try {
-      // Enviar campaña usando Campaign Client
-      const result = await campaignClient.sendCampaign({
-        subject: campaignData.subject,
-        content: campaignData.content,
-        htmlContent: campaignData.htmlContent,
-        senderName: process.env.NEXT_PUBLIC_BREVO_SENDER_NAME || 'RitterFinder Team',
-        senderEmail: process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy',
-        recipients: adaptedLeads.map(lead => ({
-          email: lead.email || '',
-          name: lead.name || lead.company_name
-        })).filter(recipient => recipient.email)
-      });
+      // Calcular tiempo estimado
+      const { days, hours } = calculateEstimatedTime(adaptedLeads.length)
+      
+      // Mostrar confirmación con tiempo estimado
+      const confirmed = window.confirm(
+        `¿Estás seguro de que quieres enviar ${adaptedLeads.length} emails?\n\n` +
+        `Tiempo estimado: ${days} días (${hours} horas)\n` +
+        `Límites: 25 emails/hora, 100 emails/día\n\n` +
+        `La campaña continuará ejecutándose aunque te desconectes.`
+      )
+      
+      if (!confirmed) return
 
-      // Guardar resultados de la campaña
-      setCampaignResult({
-        sentCount: result.sentCount,
-        failedCount: result.failedCount,
-        results: result.results
-      });
-
-      if (!result.success) {
-        throw new Error(`Error al enviar campaña: ${result.failedCount} emails fallaron`);
+      // Agregar a la cola
+      await addToQueue(campaignData, adaptedLeads)
+      
+      // Mostrar progreso de la cola
+      setShowQueue(true)
+      
+      // Iniciar procesamiento
+      await startQueue()
+      
+      // Enviar notificación si hay email de usuario
+      if (userEmail) {
+        try {
+          await sendCampaignNotification(
+            userEmail,
+            campaignData.subject,
+            'Iniciada'
+          )
+        } catch (error) {
+          console.error('Error sending notification:', error)
+        }
       }
-
-      await onSendCampaign(campaignData)
-      setShowSuccess(true)
+      
     } catch (error) {
       console.error('Error sending campaign:', error)
-      // Aquí podrías mostrar un toast de error
       throw error
     }
   }
@@ -117,6 +148,32 @@ export function CampaignIntegration({
         <CampaignSuccess selectedLeads={adaptedLeads} />
         {onBack && (
           <div className={styles.successActions}>
+            <button
+              onClick={onBack}
+              className={styles.backButton}
+            >
+              ← Volver a Resultados
+            </button>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  if (showQueue) {
+    return (
+      <div className={`${styles.campaignIntegration} ${className || ''}`}>
+        <EmailQueueProgress
+          progress={progress}
+          status={status}
+          onStart={startQueue}
+          onPause={pauseQueue}
+          onResume={resumeQueue}
+          onStop={clearQueue}
+        />
+        
+        {onBack && (
+          <div className={styles.queueActions}>
             <button
               onClick={onBack}
               className={styles.backButton}
@@ -227,6 +284,29 @@ export function CampaignIntegration({
               )
             })}
           </div>
+        </div>
+      )}
+
+      {/* Notifications Component */}
+      {userEmail && (
+        <div className={styles.notificationsSection}>
+          <CampaignNotifications
+            campaign={{
+              id: 'temp-campaign',
+              subject: 'Campaña desde Resultados',
+              content: '',
+              recipients: adaptedLeads,
+              senderName: 'RitterFinder',
+              senderEmail: 'info@rittermor.energy',
+              status: 'draft',
+              sentAt: new Date()
+            }}
+            userEmail={userEmail}
+            userName={userName}
+            onNotificationSent={(success) => {
+              console.log('Notification sent:', success)
+            }}
+          />
         </div>
       )}
     </div>

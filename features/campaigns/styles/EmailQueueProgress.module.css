@@ -1,0 +1,350 @@
+.emailQueueProgress {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.titleIcon {
+  color: #f59e0b;
+}
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.progressSection {
+  margin-bottom: 2rem;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.progressLabel {
+  font-weight: 500;
+  color: #374151;
+}
+
+.progressPercentage {
+  font-weight: 600;
+  color: #059669;
+}
+
+.progressBar {
+  height: 0.75rem;
+  border-radius: 0.375rem;
+  background-color: #f3f4f6;
+  overflow: hidden;
+}
+
+.progressBar > div {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transition: width 0.3s ease;
+}
+
+.progressStats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.progressText {
+  color: #6b7280;
+}
+
+.failedText {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.statCard:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.statIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.375rem;
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.statIconSuccess {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.statIconPending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.statIconFailed {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.estimatedSection {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+}
+
+.estimatedHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.estimatedIcon {
+  color: #3b82f6;
+}
+
+.estimatedLabel {
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.estimatedTime {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.limitsSection {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 0.5rem;
+}
+
+.limitsHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.limitsIcon {
+  color: #d97706;
+}
+
+.limitsLabel {
+  font-weight: 500;
+  color: #92400e;
+}
+
+.limitsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.limitItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.limitValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.limitLabel {
+  font-size: 0.75rem;
+  color: #a16207;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .limitsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    padding: 0.75rem;
+  }
+
+  .statValue {
+    font-size: 1.25rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .emailQueueProgress {
+    border: 2px solid #000;
+  }
+
+  .statCard {
+    border: 2px solid #000;
+  }
+
+  .estimatedSection,
+  .limitsSection {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .emailQueueProgress {
+    animation: none;
+  }
+
+  .progressBar > div {
+    transition: none;
+  }
+
+  .actionButton:hover {
+    transform: none;
+  }
+} 

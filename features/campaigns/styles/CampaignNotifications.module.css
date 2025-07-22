@@ -1,0 +1,292 @@
+.campaignNotifications {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.headerIcon {
+  color: #6b7280;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.statusText {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.content {
+  space-y: 1rem;
+}
+
+.notificationInfo {
+  margin-bottom: 1.5rem;
+}
+
+.infoText {
+  color: #374151;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.notificationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  space-y: 0.5rem;
+}
+
+.notificationList li {
+  position: relative;
+  padding-left: 1.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.notificationList li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.resultCard {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  animation: slideInUp 0.2s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resultCard.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.resultCard.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.resultIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.resultCard.success .resultIcon {
+  color: #059669;
+}
+
+.resultCard.error .resultIcon {
+  color: #dc2626;
+}
+
+.resultTitle {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.resultCard.success .resultTitle {
+  color: #065f46;
+}
+
+.resultCard.error .resultTitle {
+  color: #991b1b;
+}
+
+.resultMessage {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.resultCard.success .resultMessage {
+  color: #047857;
+}
+
+.resultCard.error .resultMessage {
+  color: #b91c1c;
+}
+
+.messageId {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionButton:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.resetButton {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.resetButton:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+@media (max-width: 768px) {
+  .campaignNotifications {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .statusIndicator {
+    align-self: flex-start;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 1rem;
+  }
+
+  .notificationList li {
+    font-size: 0.8rem;
+  }
+
+  .resultMessage {
+    font-size: 0.8rem;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .campaignNotifications {
+    border-width: 2px;
+  }
+
+  .actionButton {
+    border-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campaignNotifications,
+  .resultCard {
+    animation: none;
+  }
+
+  .actionButton {
+    transition: none;
+  }
+} 

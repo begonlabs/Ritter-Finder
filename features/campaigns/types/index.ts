@@ -254,3 +254,32 @@ export interface PaginationInfo {
 export type PaginationReturn<T> = {
   currentItems: T[]
 } & PaginationState & PaginationActions & PaginationInfo
+
+// Email Queue Types
+export interface EmailQueueItem {
+  id: string
+  campaignId: string
+  campaignName: string
+  leadId: string
+  email: string
+  name: string
+  status: 'pending' | 'sent' | 'failed'
+  createdAt: Date
+  sentAt?: Date
+  error?: string
+  priority: number
+}
+
+export type QueueStatus = 'idle' | 'starting' | 'running' | 'paused' | 'resuming' | 'completed' | 'error'
+
+export interface QueueProgress {
+  total: number
+  sent: number
+  failed: number
+  pending: number
+  currentBatch: number
+  estimatedCompletion: Date
+  isRunning: boolean
+  isPaused: boolean
+  isCompleted: boolean
+}

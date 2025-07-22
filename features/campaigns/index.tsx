@@ -6,6 +6,7 @@ export { ComposeTab } from './components/ComposeTab'
 export { PreviewTab } from './components/PreviewTab'
 export { RecipientsTab } from './components/RecipientsTab'
 export { EmailHistory } from './components/EmailHistory'
+export { CampaignNotifications } from './components/CampaignNotifications'
 
 // Pages
 export { CampaignPage } from './pages/CampaignPage'
@@ -15,6 +16,7 @@ export { useEmailComposer } from './hooks/useEmailComposer'
 export { useEmailTemplates } from './hooks/useEmailTemplates'
 export { useLeadAdapter } from './hooks/useLeadAdapter'
 export { useCampaignHistory } from './hooks/useCampaignHistory'
+export { useNotifications } from './hooks/useNotifications'
 
 // Types
 export type {
