@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Users, 
   Shield, 
-  Mail
+  Mail,
+  Database
 } from "lucide-react"
 import type { AdminDashboardProps, AdminTab } from "../types"
 import styles from "../styles/AdminDashboard.module.css"
@@ -15,6 +16,7 @@ import styles from "../styles/AdminDashboard.module.css"
 import { UserManagement } from "./UserManagement"
 import { RoleManagement } from "./RoleManagement"
 import { TemplateManagement } from "./TemplateManagement"
+import { LeadImport } from "./LeadImport"
 
 export function AdminDashboard({ className = "" }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState("users")
@@ -42,6 +44,13 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
       component: TemplateManagement,
       permissions: ["admin.templates.view"],
     },
+    {
+      id: "leads",
+      label: "Importar Leads",
+      icon: Database,
+      component: LeadImport,
+      permissions: ["admin.leads.view"],
+    },
   ]
 
   const activeTabData = adminTabs.find(tab => tab.id === activeTab)
@@ -64,7 +73,7 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
 
       {/* Admin Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className={styles.adminTabs}>
-        <TabsList className={`${styles.tabsList} grid w-full grid-cols-3 lg:w-fit lg:grid-cols-none lg:flex`}>
+        <TabsList className={`${styles.tabsList} grid w-full grid-cols-4 lg:w-fit lg:grid-cols-none lg:flex`}>
           {adminTabs.map((tab) => {
             const Icon = tab.icon
             return (

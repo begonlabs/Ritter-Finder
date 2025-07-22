@@ -261,4 +261,33 @@ export interface RoleManagementProps {
 
 export interface TemplateManagementProps {
   className?: string
+}
+
+// Lead Import Types
+export interface LeadData {
+  company_name: string
+  email?: string
+  verified_email: boolean
+  phone?: string
+  verified_phone: boolean
+  company_website?: string
+  verified_website: boolean
+  address?: string
+  state?: string
+  country?: string
+  activity: string
+  description?: string
+  category?: string
+  data_quality_score?: number
+  created_at?: string
+}
+
+export interface ValidationError {
+  row: number
+  field: string
+  message: string
+}
+
+export interface LeadImportProps {
+  className?: string
 } 

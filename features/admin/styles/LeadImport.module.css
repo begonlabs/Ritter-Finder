@@ -1,0 +1,587 @@
+/* LeadImport Component Styles - RitterFinder Admin Feature */
+
+.leadImport {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.importHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+  animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.importTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1A1E25; /* ritter-dark */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.importDescription {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Tabs */
+.importTabs {
+  padding: 2rem;
+}
+
+.tabsList {
+  display: flex;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.tabsTrigger {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tabsTrigger:hover:not([data-state="active"]) {
+  background: #e2e8f0;
+}
+
+.tabsTrigger[data-state="active"] {
+  background: white;
+  color: #1A1E25;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabsContent {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Manual Creation Card */
+.manualCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.formSection {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 1.5rem;
+}
+
+.formSection:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1A1E25;
+  margin: 0 0 1rem 0;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formLabel {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.formInput {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #F2B705; /* ritter-gold */
+  box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.1);
+}
+
+.formInput.inputError {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.formSelect {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.formSelect:focus {
+  outline: none;
+  border-color: #F2B705;
+  box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.1);
+}
+
+.formTextarea {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: #F2B705;
+  box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.1);
+}
+
+.verificationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.verificationItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 1.5rem;
+}
+
+.resetButton {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.resetButton:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.createButton {
+  padding: 0.75rem 1.5rem;
+  background: #F2B705; /* ritter-gold */
+  color: #1A1E25; /* ritter-dark */
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.createButton:hover:not(:disabled) {
+  background: #e6a800;
+  transform: translateY(-1px);
+}
+
+.createButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* CSV Import Card */
+.csvCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.csvUpload {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.uploadArea {
+  position: relative;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.uploadArea:hover {
+  border-color: #F2B705;
+  background: #fefbf0;
+}
+
+.fileInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.uploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.uploadText {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.uploadHint {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.importActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.importStats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.importBadge {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.errorBadge {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.clearButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.importButton {
+  padding: 0.5rem 1rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.importButton:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.importButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Preview Card */
+.previewCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.emptyPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.previewTable {
+  overflow-x: auto;
+}
+
+.previewRow {
+  transition: all 0.2s ease;
+}
+
+.previewRow:hover {
+  background: #f8fafc;
+}
+
+.leadCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.leadName {
+  font-weight: 500;
+  color: #1A1E25;
+}
+
+.leadWebsite {
+  font-size: 0.75rem;
+  color: #3b82f6;
+}
+
+.leadContact {
+  display: flex;
+  flex-direction: column;
+}
+
+.leadEmail {
+  color: #3b82f6;
+  font-size: 0.875rem;
+}
+
+.leadPhone {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.noData {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.leadActivity {
+  max-width: 200px;
+}
+
+.activityText {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.leadStatus {
+  display: flex;
+  align-items: center;
+}
+
+.validBadge {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.previewFooter {
+  padding: 1rem;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+}
+
+.previewInfo {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .importHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    justify-content: center;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .verificationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .importActions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .actionButtons {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tabsList {
+    flex-direction: column;
+  }
+
+  .tabsTrigger {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .importHeader {
+    padding: 1rem;
+  }
+
+  .importTabs {
+    padding: 1rem;
+  }
+
+  .uploadArea {
+    padding: 2rem 1rem;
+  }
+
+  .uploadText {
+    font-size: 1rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .manualCard,
+  .csvCard,
+  .previewCard {
+    border: 2px solid #d1d5db;
+  }
+
+  .formInput:focus,
+  .formSelect:focus,
+  .formTextarea:focus {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .leadImport,
+  .importHeader,
+  .tabsContent {
+    animation: none;
+  }
+
+  .formInput,
+  .formSelect,
+  .formTextarea,
+  .createButton,
+  .importButton {
+    transition: none;
+  }
+
+  .createButton:hover,
+  .importButton:hover {
+    transform: none;
+  }
+} 
