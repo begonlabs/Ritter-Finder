@@ -262,6 +262,17 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
       throw new Error('No hay destinatarios seleccionados');
     }
 
+    // Filtrar leads con emails válidos
+    const validLeads = leads.filter(lead => lead.email && lead.email.trim() !== '');
+    
+    if (validLeads.length === 0) {
+      throw new Error('No hay emails válidos para enviar');
+    }
+
+    console.log('Enviando campaña a', validLeads.length, 'destinatarios válidos');
+    console.log('Asunto:', data.subject);
+    console.log('Modo de contenido:', data.contentMode);
+
     setIsSending(true);
     try {
       // Enviar campaña usando Campaign Client
@@ -271,14 +282,19 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
         htmlContent: data.contentMode === 'html' ? data.content : undefined,
         senderName: process.env.NEXT_PUBLIC_BREVO_SENDER_NAME || 'RitterFinder Team',
         senderEmail: process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy',
-        recipients: leads.map(lead => ({
+        recipients: validLeads.map(lead => ({
           email: lead.email || '',
           name: lead.name || lead.company_name
-        })).filter(recipient => recipient.email) // Solo emails válidos
+        }))
       });
 
+      console.log('Resultado de la campaña:', result);
+
       if (!result.success) {
-        throw new Error(`Error al enviar campaña: ${result.failedCount} emails fallaron`);
+        const errorMessage = result.failedCount > 0 
+          ? `${result.failedCount} emails fallaron de ${result.sentCount + result.failedCount} intentos`
+          : 'Error al enviar campaña';
+        throw new Error(errorMessage);
       }
       
       setData(prev => ({ ...prev, emailSent: true }));

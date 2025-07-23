@@ -8,29 +8,19 @@ let apiKey = process.env.BREVO_API_KEY;
 let senderEmail = process.env.BREVO_SENDER_EMAIL || 'info@rittermor.energy';
 let senderName = process.env.BREVO_SENDER_NAME || 'RitterFinder Team';
 
-// Verificar que las variables estén configuradas
-if (!apiKey) {
-  console.warn('⚠️ BREVO_API_KEY no está configurada');
-}
-if (!senderEmail) {
-  console.warn('⚠️ BREVO_SENDER_EMAIL no está configurada');
-}
-if (!senderName) {
-  console.warn('⚠️ BREVO_SENDER_NAME no está configurada');
-}
-
 // Función para configurar la API key
 function configureApiKey() {
   apiKey = process.env.BREVO_API_KEY;
   senderEmail = process.env.BREVO_SENDER_EMAIL || 'info@rittermor.energy';
   senderName = process.env.BREVO_SENDER_NAME || 'RitterFinder Team';
   
-  if (!apiKey) {
-    throw new Error('BREVO_API_KEY no está configurada en las variables de entorno');
+  if (apiKey) {
+    apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, apiKey);
   }
-  
-  apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, apiKey);
 }
+
+// Configurar API key al inicializar
+configureApiKey();
 
 export interface EmailData {
   to: string;
@@ -75,32 +65,40 @@ class BrevoService {
    * Enviar un email individual
    */
   async sendEmail(emailData: EmailData): Promise<SendEmailResult> {
-    // Configurar API key si no está configurada
-    if (!apiKey) {
-      configureApiKey();
-    }
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    
-    sendSmtpEmail.subject = emailData.subject;
-    sendSmtpEmail.htmlContent = emailData.htmlContent;
-    sendSmtpEmail.textContent = emailData.textContent;
-    sendSmtpEmail.sender = {
-      name: senderName,
-      email: senderEmail
-    };
-    sendSmtpEmail.to = [{
-      email: emailData.to,
-      name: emailData.name || emailData.to.split('@')[0]
-    }];
-
     try {
+      // Validar que la API key esté configurada
+      if (!apiKey) {
+        console.error('BREVO_API_KEY no está configurada en las variables de entorno');
+        return {
+          success: false,
+          error: 'API key no configurada. Verifica BREVO_API_KEY en tu archivo .env'
+        };
+      }
+
+      const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = emailData.subject;
+      sendSmtpEmail.htmlContent = emailData.htmlContent;
+      sendSmtpEmail.textContent = emailData.textContent;
+      sendSmtpEmail.sender = {
+        name: senderName,
+        email: senderEmail
+      };
+      sendSmtpEmail.to = [{
+        email: emailData.to,
+        name: emailData.name || emailData.to.split('@')[0]
+      }];
+
+      console.log('Enviando email a:', emailData.to);
       const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log('Email enviado exitosamente:', data);
+      
       return {
         success: true,
         messageId: (data as any).messageId || 'unknown'
       };
     } catch (error: any) {
-      console.error('Error sending email:', error);
+      console.error('Error sending email to', emailData.to, ':', error);
       return {
         success: false,
         error: error.message || 'Error desconocido al enviar email'
@@ -112,6 +110,10 @@ class BrevoService {
    * Enviar una campaña a múltiples destinatarios
    */
   async sendCampaign(campaignData: CampaignData): Promise<SendCampaignResult> {
+    console.log('Iniciando envío de campaña a', campaignData.recipients.length, 'destinatarios');
+    console.log('Asunto:', campaignData.subject);
+    console.log('Remitente:', campaignData.senderName, '<', campaignData.senderEmail, '>');
+    
     const results: Array<{
       email: string;
       success: boolean;
@@ -123,7 +125,10 @@ class BrevoService {
     let failedCount = 0;
 
     // Enviar emails uno por uno para mejor control de errores
-    for (const recipient of campaignData.recipients) {
+    for (let i = 0; i < campaignData.recipients.length; i++) {
+      const recipient = campaignData.recipients[i];
+      console.log(`Enviando email ${i + 1}/${campaignData.recipients.length} a:`, recipient.email);
+      
       try {
         const result = await this.sendEmail({
           to: recipient.email,
@@ -135,6 +140,7 @@ class BrevoService {
 
         if (result.success) {
           sentCount++;
+          console.log('✅ Email enviado exitosamente a:', recipient.email);
           results.push({
             email: recipient.email,
             success: true,
@@ -142,6 +148,7 @@ class BrevoService {
           });
         } else {
           failedCount++;
+          console.log('❌ Error al enviar email a:', recipient.email, '-', result.error);
           results.push({
             email: recipient.email,
             success: false,
@@ -150,9 +157,13 @@ class BrevoService {
         }
 
         // Pausa entre emails para evitar rate limiting
-        await new Promise(resolve => setTimeout(resolve, 100));
+        if (i < campaignData.recipients.length - 1) {
+          console.log('Esperando 100ms antes del siguiente email...');
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       } catch (error: any) {
         failedCount++;
+        console.log('❌ Excepción al enviar email a:', recipient.email, '-', error.message);
         results.push({
           email: recipient.email,
           success: false,
@@ -161,6 +172,8 @@ class BrevoService {
       }
     }
 
+    console.log(`Campaña completada: ${sentCount} enviados, ${failedCount} fallidos`);
+    
     return {
       success: sentCount > 0,
       sentCount,
@@ -201,14 +214,23 @@ class BrevoService {
    */
   async validateConfiguration(): Promise<boolean> {
     try {
-      // Intentar enviar un email de prueba
-      const testResult = await this.sendEmail({
-        to: 'test@example.com',
-        subject: 'Test Configuration',
-        textContent: 'This is a test email to validate Brevo configuration.'
-      });
+      // Verificar que la API key esté configurada
+      if (!apiKey) {
+        console.error('BREVO_API_KEY no está configurada');
+        return false;
+      }
+
+      // Verificar que las variables de entorno estén configuradas
+      if (!senderEmail || !senderName) {
+        console.error('BREVO_SENDER_EMAIL o BREVO_SENDER_NAME no están configuradas');
+        return false;
+      }
+
+      console.log('Configuración de Brevo validada correctamente');
+      console.log('Sender Email:', senderEmail);
+      console.log('Sender Name:', senderName);
       
-      return testResult.success;
+      return true;
     } catch (error) {
       console.error('Error validating Brevo configuration:', error);
       return false;

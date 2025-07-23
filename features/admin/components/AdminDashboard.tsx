@@ -37,13 +37,13 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
       component: RoleManagement,
       permissions: ["admin.roles.view"],
     },
-    {
-      id: "templates",
-      label: "Plantillas",
-      icon: Mail,
-      component: TemplateManagement,
-      permissions: ["admin.templates.view"],
-    },
+    // {
+    //   id: "templates",
+    //   label: "Plantillas",
+    //   icon: Mail,
+    //   component: TemplateManagement,
+    //   permissions: ["admin.templates.view"],
+    // },
     {
       id: "leads",
       label: "Importar Leads",
