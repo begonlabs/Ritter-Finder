@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import { EmailTemplate, TemplateFilters } from '../types';
 
+// Obtener el dominio desde las variables de entorno
+const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'https://ritterfinder.begonlabs.com';
+
 interface UseEmailTemplatesReturn {
   // Data
   templates: EmailTemplate[];
@@ -39,622 +42,109 @@ const DEFAULT_FILTERS: TemplateFilters = {
 const MOCK_TEMPLATES: EmailTemplate[] = [
   {
     id: 'tpl_001',
-    name: 'Propuesta Comercial Premium',
-    description: 'Template profesional para envío de propuestas comerciales con detalles del servicio',
-    subject: 'Propuesta Comercial - {{company_name}} | RitterFinder',
+    name: 'Contacto Inicial',
+    description: 'Template básico para primer contacto con leads',
+    subject: 'Soluciones Energéticas para {{lead.company_name}} - RitterFinder',
     htmlContent: `
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: #f59e0b; color: white; padding: 20px; text-align: center; }
-        .content { padding: 30px; }
-        .highlight { background: #fef3c7; padding: 10px; border-left: 4px solid #f59e0b; margin: 20px 0; }
-        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RitterFinder - Soluciones Energéticas</title>
 </head>
-<body>
-    <div class="header">
-        <h1>RitterFinder</h1>
-        <p>Soluciones Profesionales</p>
-    </div>
-    
-    <div class="content">
-        <h2>Estimado/a {{contact_name}},</h2>
-        
-        <p>Es un placer contactarle en nombre de <strong>{{company_name}}</strong>. Hemos preparado una propuesta personalizada que consideramos será de gran valor para su organización.</p>
-        
-        <div class="highlight">
-            <h3>Propuesta: {{service_name}}</h3>
-            <p><strong>Valor de la inversión:</strong> {{service_price}}</p>
-            <p><strong>Tiempo de implementación:</strong> {{implementation_time}}</p>
+<body style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; margin: 0; padding: 20px; background-color: #f9fafb;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 30px 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: bold;">🌱 RitterFinder</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Soluciones Energéticas Profesionales</p>
         </div>
-        
-        <p>Nuestro equipo está disponible para una presentación personalizada donde podemos discutir los detalles específicos y responder cualquier pregunta que pueda tener.</p>
-        
-        <p>Cordialmente,<br><strong>{{sender_name}}</strong><br>{{sender_position}}<br>RitterFinder</p>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 RitterFinder. Todos los derechos reservados.</p>
-        <p>Este email fue enviado a {{contact_email}}</p>
-    </div>
-</body>
-</html>`,
-    plainTextContent: `
-Estimado/a {{contact_name}},
 
-Es un placer contactarle en nombre de {{company_name}}. Hemos preparado una propuesta personalizada que consideramos será de gran valor para su organización.
+        <!-- Content -->
+        <div style="padding: 30px 20px;">
+            <p>Hola <strong>{{lead.greeting}}</strong>,</p>
 
-PROPUESTA: {{service_name}}
-Valor de la inversión: {{service_price}}
-Tiempo de implementación: {{implementation_time}}
+            <p>Te escribo desde <strong>RitterFinder</strong>, donde ayudamos a empresas
+               de <em>{{lead.category}}</em> a <strong>optimizar su consumo energético y reducir costes</strong> mediante
+               soluciones renovables personalizadas.</p>
 
-Nuestro equipo está disponible para una presentación personalizada donde podemos discutir los detalles específicos y responder cualquier pregunta que pueda tener.
+            <p>Encontramos tu contacto público y creemos que
+               esta idea podría ser útil para <strong>{{lead.company_name}}</strong>:</p>
 
-Cordialmente,
-{{sender_name}}
-{{sender_position}}
-RitterFinder
-
-© 2025 RitterFinder. Todos los derechos reservados.
-Este email fue enviado a {{contact_email}}
-`,
-    category: 'sales',
-    isActive: true,
-    variables: [
-      // Variables automáticas: contact_name, company_name, contact_email se cargan automáticamente
-      { key: 'service_name', label: 'Nombre del servicio propuesto', description: 'Nombre del servicio propuesto', required: true, defaultValue: '', type: 'text' },
-      { key: 'service_price', label: 'Precio del servicio', description: 'Precio del servicio', required: true, defaultValue: '', type: 'text' },
-      { key: 'implementation_time', label: 'Tiempo de implementación', description: 'Tiempo de implementación', required: false, defaultValue: '2-4 semanas', type: 'text' },
-      { key: 'sender_name', label: 'Nombre del remitente', description: 'Nombre del remitente', required: true, defaultValue: '', type: 'text' },
-      { key: 'sender_position', label: 'Cargo del remitente', description: 'Cargo del remitente', required: false, defaultValue: 'Consultor Comercial', type: 'text' }
-    ],
-    usageCount: 45,
-    createdBy: 'admin',
-    createdAt: new Date('2024-12-01'),
-    updatedAt: new Date('2024-12-15')
-  },
-  {
-    id: 'tpl_002',
-    name: 'Follow-up Post Reunión',
-    description: 'Template para seguimiento después de reuniones comerciales',
-    subject: 'Seguimiento de nuestra reunión - {{meeting_date}}',
-    htmlContent: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: #3b82f6; color: white; padding: 20px; text-align: center; }
-        .content { padding: 30px; }
-        .next-steps { background: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0; }
-        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>RitterFinder</h1>
-        <p>Seguimiento Profesional</p>
-    </div>
-    
-    <div class="content">
-        <h2>Hola {{contact_name}},</h2>
-        
-        <p>Gracias por el tiempo dedicado en nuestra reunión del {{meeting_date}}. Fue muy productivo discutir sobre {{meeting_topic}}.</p>
-        
-        <div class="next-steps">
-            <h3>Próximos Pasos:</h3>
-            <ul>
-                <li>{{next_step_1}}</li>
-                <li>{{next_step_2}}</li>
-                <li>{{next_step_3}}</li>
+            <ul style="background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 20px 0;">
+                <li style="margin-bottom: 10px;"><strong>Problema típico:</strong> Altos costes energéticos y dependencia de combustibles fósiles</li>
+                <li style="margin-bottom: 10px;"><strong>Nuestra solución:</strong> Instalaciones solares fotovoltaicas llave en mano</li>
+                <li style="margin-bottom: 0;"><strong>Resultados:</strong> 40-60% de ahorro energético en 5-7 años</li>
             </ul>
+
+            <p>Basándonos en que {{lead.company_name}} se dedica a <strong>{{lead.activity}}</strong> 
+               en <strong>{{lead.location_display}}</strong>, creemos que nuestras soluciones 
+               pueden ser de gran valor para su organización.</p>
+
+            <p>¿Te interesa? Responde a este correo </p>
+
+            <div style="background: #fef3c7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0; font-size: 0.9em; color: #92400e;">
+                   ⚠️ Si prefieres no recibir más mensajes, haz clic
+                   <a href="${DOMAIN}/unsubscribe?email={{lead.contact_email}}" style="color: #d97706;">aquí</a>.
+                </p>
+            </div>
         </div>
-        
-        <p>He adjuntado {{attachment_description}} como mencionamos en la reunión.</p>
-        
-        <p>Quedo a su disposición para cualquier consulta.</p>
-        
-        <p>Saludos cordiales,<br><strong>{{sender_name}}</strong></p>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 RitterFinder. Todos los derechos reservados.</p>
-    </div>
-</body>
-</html>`,
-    plainTextContent: `
-Hola {{contact_name}},
 
-Gracias por el tiempo dedicado en nuestra reunión del {{meeting_date}}. Fue muy productivo discutir sobre {{meeting_topic}}.
-
-PRÓXIMOS PASOS:
-- {{next_step_1}}
-- {{next_step_2}}
-- {{next_step_3}}
-
-He adjuntado {{attachment_description}} como mencionamos en la reunión.
-
-Quedo a su disposición para cualquier consulta.
-
-Saludos cordiales,
-{{sender_name}}
-
-© 2025 RitterFinder. Todos los derechos reservados.
-`,
-    category: 'follow-up',
-    isActive: true,
-    variables: [
-      { key: 'contact_name', label: 'Nombre del contacto', description: 'Nombre del contacto', required: true, defaultValue: '', type: 'text' },
-      { key: 'meeting_date', label: 'Fecha de la reunión', description: 'Fecha de la reunión', required: true, defaultValue: '', type: 'date' },
-      { key: 'meeting_topic', label: 'Tema principal de la reunión', description: 'Tema principal de la reunión', required: true, defaultValue: '', type: 'text' },
-      { key: 'next_step_1', label: 'Primer paso a seguir', description: 'Primer paso a seguir', required: true, defaultValue: '', type: 'text' },
-      { key: 'next_step_2', label: 'Segundo paso a seguir', description: 'Segundo paso a seguir', required: false, defaultValue: '', type: 'text' },
-      { key: 'next_step_3', label: 'Tercer paso a seguir', description: 'Tercer paso a seguir', required: false, defaultValue: '', type: 'text' },
-      { key: 'attachment_description', label: 'Descripción del adjunto', description: 'Descripción del adjunto', required: false, defaultValue: 'la información solicitada', type: 'text' },
-      { key: 'sender_name', label: 'Nombre del remitente', description: 'Nombre del remitente', required: true, defaultValue: '', type: 'text' }
-    ],
-    usageCount: 32,
-    createdBy: 'admin',
-    createdAt: new Date('2024-11-15'),
-    updatedAt: new Date('2024-12-10')
-  },
-  {
-    id: 'tpl_003',
-    name: 'Newsletter Mensual',
-    description: 'Template para newsletters mensuales con noticias y actualizaciones',
-    subject: 'RitterFinder Newsletter - {{month}} {{year}}',
-    htmlContent: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: #10b981; color: white; padding: 20px; text-align: center; }
-        .content { padding: 30px; }
-        .news-item { border-bottom: 1px solid #e5e7eb; padding: 20px 0; }
-        .cta { background: #10b981; color: white; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0; }
-        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>RitterFinder Newsletter</h1>
-        <p>{{month}} {{year}}</p>
-    </div>
-    
-    <div class="content">
-        <h2>¡Hola {{subscriber_name}}!</h2>
-        
-        <p>Este mes tenemos noticias emocionantes que compartir contigo:</p>
-        
-        <div class="news-item">
-            <h3>{{news_title_1}}</h3>
-            <p>{{news_content_1}}</p>
-        </div>
-        
-        <div class="news-item">
-            <h3>{{news_title_2}}</h3>
-            <p>{{news_content_2}}</p>
-        </div>
-        
-        <div class="cta">
-            <h3>{{cta_title}}</h3>
-            <p>{{cta_description}}</p>
-        </div>
-        
-        <p>Gracias por ser parte de la comunidad RitterFinder.</p>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 RitterFinder. Todos los derechos reservados.</p>
-        <p>Si no deseas recibir más newsletters, puedes <a href="#">darte de baja aquí</a></p>
-    </div>
-</body>
-</html>`,
-    plainTextContent: `
-RITTERFINDER NEWSLETTER - {{month}} {{year}}
-
-¡Hola {{subscriber_name}}!
-
-Este mes tenemos noticias emocionantes que compartir contigo:
-
-{{news_title_1}}
-{{news_content_1}}
-
-{{news_title_2}}  
-{{news_content_2}}
-
-{{cta_title}}
-{{cta_description}}
-
-Gracias por ser parte de la comunidad RitterFinder.
-
-© 2025 RitterFinder. Todos los derechos reservados.
-Si no deseas recibir más newsletters, puedes darte de baja respondiendo a este email.
-`,
-    category: 'marketing',
-    isActive: true,
-    variables: [
-      { key: 'subscriber_name', label: 'Nombre del suscriptor', description: 'Nombre del suscriptor', required: true, defaultValue: '', type: 'text' },
-      { key: 'month', label: 'Mes actual', description: 'Mes actual', required: true, defaultValue: '', type: 'text' },
-      { key: 'year', label: 'Año actual', description: 'Año actual', required: true, defaultValue: '2025', type: 'number' },
-      { key: 'news_title_1', label: 'Título de la primera noticia', description: 'Título de la primera noticia', required: true, defaultValue: '', type: 'text' },
-      { key: 'news_content_1', label: 'Contenido de la primera noticia', description: 'Contenido de la primera noticia', required: true, defaultValue: '', type: 'text' },
-      { key: 'news_title_2', label: 'Título de la segunda noticia', description: 'Título de la segunda noticia', required: false, defaultValue: '', type: 'text' },
-      { key: 'news_content_2', label: 'Contenido de la segunda noticia', description: 'Contenido de la segunda noticia', required: false, defaultValue: '', type: 'text' },
-      { key: 'cta_title', label: 'Título del call-to-action', description: 'Título del call-to-action', required: true, defaultValue: '', type: 'text' },
-      { key: 'cta_description', label: 'Descripción del call-to-action', description: 'Descripción del call-to-action', required: true, defaultValue: '', type: 'text' }
-    ],
-    usageCount: 12,
-    createdBy: 'admin',
-    createdAt: new Date('2024-10-01'),
-    updatedAt: new Date('2024-12-01')
-  },
-  {
-    id: 'tpl_004',
-    name: 'Bienvenida Nuevo Cliente',
-    description: 'Template de bienvenida para nuevos clientes',
-    subject: '¡Bienvenido/a a RitterFinder, {{client_name}}!',
-    htmlContent: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: #8b5cf6; color: white; padding: 20px; text-align: center; }
-        .content { padding: 30px; }
-        .welcome-box { background: #f3e8ff; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-        .steps { background: #fafbfc; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>¡Bienvenido/a a RitterFinder!</h1>
-    </div>
-    
-    <div class="content">
-        <div class="welcome-box">
-            <h2>¡Hola {{client_name}}!</h2>
-            <p>Estamos emocionados de tenerte como parte de nuestra familia.</p>
-        </div>
-        
-        <p>Tu cuenta ha sido configurada exitosamente. Aquí tienes todo lo que necesitas saber para comenzar:</p>
-        
-        <div class="steps">
-            <h3>Próximos Pasos:</h3>
-            <ol>
-                <li>{{step_1}}</li>
-                <li>{{step_2}}</li>
-                <li>{{step_3}}</li>
-            </ol>
-        </div>
-        
-        <p><strong>Tu representante asignado:</strong> {{account_manager}}<br>
-        <strong>Email de contacto:</strong> {{manager_email}}<br>
-        <strong>Teléfono:</strong> {{manager_phone}}</p>
-        
-        <p>Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte.</p>
-        
-        <p>¡Bienvenido/a al equipo!</p>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 RitterFinder. Todos los derechos reservados.</p>
-    </div>
-</body>
-</html>`,
-    plainTextContent: `
-¡BIENVENIDO/A A RITTERFINDER!
-
-¡Hola {{client_name}}!
-
-Estamos emocionados de tenerte como parte de nuestra familia.
-
-Tu cuenta ha sido configurada exitosamente. Aquí tienes todo lo que necesitas saber para comenzar:
-
-PRÓXIMOS PASOS:
-1. {{step_1}}
-2. {{step_2}}
-3. {{step_3}}
-
-Tu representante asignado: {{account_manager}}
-Email de contacto: {{manager_email}}
-Teléfono: {{manager_phone}}
-
-Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte.
-
-¡Bienvenido/a al equipo!
-
-© 2025 RitterFinder. Todos los derechos reservados.
-`,
-    category: 'welcome',
-    isActive: true,
-    variables: [
-      { key: 'client_name', label: 'Nombre del cliente', description: 'Nombre del cliente', required: true, defaultValue: '', type: 'text' },
-      { key: 'step_1', label: 'Primer paso a seguir', description: 'Primer paso a seguir', required: true, defaultValue: '', type: 'text' },
-      { key: 'step_2', label: 'Segundo paso a seguir', description: 'Segundo paso a seguir', required: true, defaultValue: '', type: 'text' },
-      { key: 'step_3', label: 'Tercer paso a seguir', description: 'Tercer paso a seguir', required: true, defaultValue: '', type: 'text' },
-      { key: 'account_manager', label: 'Nombre del gestor de cuenta', description: 'Nombre del gestor de cuenta', required: true, defaultValue: '', type: 'text' },
-      { key: 'manager_email', label: 'Email del gestor', description: 'Email del gestor', required: true, defaultValue: '', type: 'email' },
-      { key: 'manager_phone', label: 'Teléfono del gestor', description: 'Teléfono del gestor', required: false, defaultValue: '', type: 'text' }
-    ],
-    usageCount: 23,
-    createdBy: 'admin',
-    createdAt: new Date('2024-09-15'),
-    updatedAt: new Date('2024-11-30')
-  },
-  {
-    id: 'tpl_005',
-    name: 'Energías Renovables - Consultoría',
-    description: 'Template especializado para empresas del sector de energías renovables',
-    subject: 'Soluciones en Energías Renovables para {{company_name}} - RitterFinder',
-    htmlContent: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: #10b981; color: white; padding: 20px; text-align: center; }
-        .content { padding: 30px; }
-        .highlight { background: #d1fae5; padding: 15px; border-left: 4px solid #10b981; margin: 20px 0; }
-        .benefits { background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🌱 RitterFinder</h1>
-        <p>Consultoría en Energías Renovables</p>
-    </div>
-    
-    <div class="content">
-        <h2>Estimado/a {{contact_name}},</h2>
-        
-        <p>Hemos identificado a <strong>{{company_name}}</strong> como una empresa dedicada a {{activity}} ubicada en {{state}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.</p>
-        
-        <div class="highlight">
-            <h3>🔋 {{service_type}} para su empresa</h3>
-            <p><strong>Ahorro estimado:</strong> {{estimated_savings}}</p>
-            <p><strong>Retorno de inversión:</strong> {{roi_period}}</p>
-            <p><strong>Reducción de CO₂:</strong> {{co2_reduction}}</p>
-        </div>
-        
-                  <div class="benefits">
-            <h3>Beneficios específicos para {{category}}:</h3>
-            <ul>
-                <li>✅ Reducción de costes energéticos hasta un 70%</li>
-                <li>✅ Independencia energética y sostenibilidad</li>
-                <li>✅ Cumplimiento de normativas medioambientales</li>
-                <li>✅ Mejora de la imagen corporativa</li>
-                <li>✅ Subvenciones y incentivos fiscales disponibles</li>
-            </ul>
-        </div>
-        
-        <p>Conociendo las necesidades específicas de su empresa, podemos ofrecerle una consultoría personalizada <strong>sin compromiso</strong>.</p>
-        
-        <p>¿Le interesaría conocer más detalles sobre cómo las energías renovables pueden transformar el consumo energético de {{company_name}}?</p>
-        
-        <p>Cordialmente,<br><strong>{{consultant_name}}</strong><br>{{consultant_title}}<br>RitterFinder - Consultoría Energética</p>
-    </div>
-    
-    <div class="footer">
-              <p>🌍 © 2025 RitterFinder. Especialistas en transición energética.</p>
-      <p>Este email fue enviado a {{contact_email}}</p>
-    </div>
-</body>
-</html>`,
-    plainTextContent: `
-🌱 RITTERFINDER - CONSULTORÍA EN ENERGÍAS RENOVABLES
-
-Estimado/a {{contact_name}},
-
-Hemos identificado a {{company_name}} como una empresa dedicada a {{activity}} ubicada en {{state}}. Creemos que nuestras soluciones en energías renovables pueden ser de gran valor para su organización.
-
-🔋 {{service_type}} para su empresa:
-- Ahorro estimado: {{estimated_savings}}
-- Retorno de inversión: {{roi_period}}  
-- Reducción de CO₂: {{co2_reduction}}
-
-BENEFICIOS ESPECÍFICOS PARA {{category}}:
-✅ Reducción de costes energéticos hasta un 70%
-✅ Independencia energética y sostenibilidad
-✅ Cumplimiento de normativas medioambientales
-✅ Mejora de la imagen corporativa
-✅ Subvenciones y incentivos fiscales disponibles
-
-Conociendo las necesidades específicas de su empresa, podemos ofrecerle una consultoría personalizada sin compromiso.
-
-¿Le interesaría conocer más detalles sobre cómo las energías renovables pueden transformar el consumo energético de {{company_name}}?
-
-Cordialmente,
-{{consultant_name}}
-{{consultant_title}}
-RitterFinder - Consultoría Energética
-
-🌍 © 2025 RitterFinder. Especialistas en transición energética.
-Este email fue enviado a {{contact_email}}
-`,
-    category: 'sales',
-    isActive: true,
-    variables: [
-      // Variables automáticas: contact_name, company_name, activity, state, category, contact_email
-      { key: 'service_type', label: 'Tipo de servicio energético', description: 'Instalación Solar, Aerotermia, etc.', required: true, defaultValue: 'Instalación Solar Fotovoltaica', type: 'text' },
-      { key: 'estimated_savings', label: 'Ahorro estimado', description: 'Porcentaje o cantidad de ahorro', required: true, defaultValue: '40-60%', type: 'text' },
-      { key: 'roi_period', label: 'Período de retorno de inversión', description: 'Tiempo para recuperar la inversión', required: true, defaultValue: '5-7 años', type: 'text' },
-      { key: 'co2_reduction', label: 'Reducción de CO₂', description: 'Reducción de emisiones anuales', required: true, defaultValue: '3-5 toneladas/año', type: 'text' },
-      { key: 'consultant_name', label: 'Nombre del consultor', description: 'Nombre del especialista en energías renovables', required: true, defaultValue: '', type: 'text' },
-      { key: 'consultant_title', label: 'Cargo del consultor', description: 'Título del especialista', required: false, defaultValue: 'Especialista en Energías Renovables', type: 'text' }
-    ],
-    usageCount: 15,
-    createdBy: 'admin',
-    createdAt: new Date('2024-12-20'),
-    updatedAt: new Date('2025-01-01')
-  },
-  {
-    id: 'tpl_006',
-    name: 'Template Personalizado Simple',
-    description: 'Template básico personalizable para cualquier propósito',
-    subject: '{{custom_subject}}',
-    htmlContent: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px; }
-        .content { max-width: 600px; margin: 0 auto; }
-        .header { border-bottom: 2px solid #f59e0b; padding-bottom: 20px; margin-bottom: 30px; }
-        .footer { border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; font-size: 12px; color: #6b7280; }
-    </style>
-</head>
-<body>
-    <div class="content">
-        <div class="header">
-            <h1>{{header_title}}</h1>
-        </div>
-        
-        <p>{{greeting}} {{contact_name}},</p>
-        
-        <p>{{main_message}}</p>
-        
-        <p>{{closing_message}}</p>
-        
-        <p>{{signature_name}}<br>{{signature_title}}</p>
-        
-        <div class="footer">
-            <p>{{footer_text}}</p>
+        <!-- Footer -->
+        <div style="background: #f3f4f6; padding: 20px; border-top: 1px solid #e5e7eb;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 0.9em; color: #6b7280;">
+                    <strong>Equipo RitterFinder</strong> · Consultores Energéticos · RitterFinder Energy<br/>
+                    📞 +34 900 123 456 · ✉️ info@ritterfinder.com<br/>
+                    🌐 <a href="${DOMAIN}" style="color: #3b82f6;">${DOMAIN.replace('https://', '')}</a>
+                </p>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #d1d5db; margin: 15px 0;" />
+            
+            <p style="font-size: 0.8em; color: #6b7280; margin: 0; text-align: center;">
+                <strong>Información legal y protección de datos</strong><br/>
+                Este mensaje se dirige a empresas cuyos datos de contacto se encuentran publicados en fuentes públicas. 
+                La base jurídica del tratamiento es el interés legítimo para comunicaciones profesionales (art. 6.1.f RGPD y art. 21.2 LSSI).<br/>
+                Puedes ejercer tus derechos de acceso, rectificación, supresión u oposición escribiéndonos a: 
+                <a href="mailto:info@rittermor.energy" style="color: #3b82f6;">info@rittermor.energy</a>
+            </p>
         </div>
     </div>
 </body>
 </html>`,
     plainTextContent: `
-{{header_title}}
+🌱 RITTERFINDER - SOLUCIONES ENERGÉTICAS PROFESIONALES
 
-{{greeting}} {{contact_name}},
+Hola {{lead.greeting}},
 
-{{main_message}}
+Te escribo desde RitterFinder, donde ayudamos a empresas de {{lead.category}} a optimizar su consumo energético y reducir costes mediante soluciones renovables personalizadas.
 
-{{closing_message}}
+Encontramos tu contacto público y creemos que esta idea podría ser útil para {{lead.company_name}}:
 
-{{signature_name}}
-{{signature_title}}
+PROBLEMA TÍPICO: Altos costes energéticos y dependencia de combustibles fósiles
+NUESTRA SOLUCIÓN: Instalaciones solares fotovoltaicas llave en mano
+RESULTADOS: 40-60% de ahorro energético en 5-7 años
 
-{{footer_text}}
-`,
-    category: 'custom',
-    isActive: true,
-    variables: [
-      // Variables automáticas: contact_name, company_name, activity, category se cargan automáticamente
-      { key: 'custom_subject', label: 'Asunto personalizado', description: 'Asunto personalizado', required: true, defaultValue: '', type: 'text' },
-      { key: 'header_title', label: 'Título del encabezado', description: 'Título del encabezado', required: true, defaultValue: '', type: 'text' },
-      { key: 'greeting', label: 'Saludo (Estimado/a, Hola, etc.)', description: 'Saludo (Estimado/a, Hola, etc.)', required: false, defaultValue: 'Estimado/a', type: 'text' },
-      { key: 'main_message', label: 'Mensaje principal', description: 'Mensaje principal', required: true, defaultValue: '', type: 'text' },
-      { key: 'closing_message', label: 'Mensaje de cierre', description: 'Mensaje de cierre', required: false, defaultValue: 'Gracias por su tiempo.', type: 'text' },
-      { key: 'signature_name', label: 'Nombre en la firma', description: 'Nombre en la firma', required: true, defaultValue: '', type: 'text' },
-      { key: 'signature_title', label: 'Cargo en la firma', description: 'Cargo en la firma', required: false, defaultValue: '', type: 'text' },
-      { key: 'footer_text', label: 'Texto del pie de página', description: 'Texto del pie de página', required: false, defaultValue: '© 2025 RitterFinder. Todos los derechos reservados.', type: 'text' }
-    ],
-    usageCount: 3,
-    createdBy: 'admin',
-    createdAt: new Date('2025-01-01'),
-    updatedAt: new Date('2025-01-01')
-  },
-  {
-    id: 'tpl_007',
-    name: 'Template con Variables Dinámicas',
-    description: 'Template que demuestra el uso de todas las variables dinámicas disponibles',
-    subject: 'Oferta Personalizada para {{lead.company_name}} - RitterFinder',
-    htmlContent: `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: #3b82f6; color: white; padding: 20px; text-align: center; }
-        .content { padding: 30px; }
-        .company-info { background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0; }
-        .data-quality { background: #fef3c7; padding: 10px; border-radius: 6px; margin: 15px 0; }
-        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🌱 RitterFinder</h1>
-        <p>Soluciones Energéticas Personalizadas</p>
-    </div>
-    
-    <div class="content">
-        <h2>{{lead.greeting}},</h2>
-        
-        <p>Hemos identificado a <strong>{{lead.company_name}}</strong> como una empresa dedicada a <strong>{{lead.activity}}</strong> ubicada en <strong>{{lead.location_display}}</strong>.</p>
-        
-        <div class="company-info">
-            <h3>📋 Información de su empresa:</h3>
-            <ul>
-                <li><strong>Actividad:</strong> {{lead.activity}}</li>
-                <li><strong>Categoría:</strong> {{lead.category}}</li>
-                <li><strong>Sitio web:</strong> {{lead.company_website}}</li>
-                <li><strong>Ubicación:</strong> {{lead.address}}, {{lead.state}}, {{lead.country}}</li>
-            </ul>
-        </div>
-        
-        <div class="data-quality">
-            <h4>📊 Calidad de datos:</h4>
-            <p>Email validado: {{lead.email_validated}} | Teléfono validado: {{lead.phone_validated}} | Sitio web: {{lead.website_exists}}</p>
-            <p>Puntuación de calidad: {{lead.data_quality_score}}/5 ({{lead.data_quality_percentage}})</p>
-        </div>
-        
-        <p>Basándonos en su actividad de <strong>{{lead.activity}}</strong> y ubicación en <strong>{{lead.state}}</strong>, creemos que nuestras soluciones en energías renovables pueden ser de gran valor para {{lead.company_name}}.</p>
-        
-        <p>¿Le interesaría conocer más detalles sobre cómo podemos ayudar a {{lead.company_name}} a optimizar su consumo energético?</p>
-        
-        <p>Cordialmente,<br><strong>Equipo RitterFinder</strong></p>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 RitterFinder. Especialistas en transición energética.</p>
-        <p>Este email fue enviado a {{lead.contact_email}}</p>
-    </div>
-</body>
-</html>`,
-    plainTextContent: `
-🌱 RITTERFINDER - SOLUCIONES ENERGÉTICAS PERSONALIZADAS
+Basándonos en que {{lead.company_name}} se dedica a {{lead.activity}} en {{lead.location_display}}, creemos que nuestras soluciones pueden ser de gran valor para su organización.
 
-{{lead.greeting}},
+¿Te interesa? Responde a este correo
 
-Hemos identificado a {{lead.company_name}} como una empresa dedicada a {{lead.activity}} ubicada en {{lead.location_display}}.
+⚠️ Si prefieres no recibir más mensajes, haz clic aquí: ${DOMAIN}/unsubscribe?email={{lead.contact_email}}.
 
-📋 INFORMACIÓN DE SU EMPRESA:
-- Actividad: {{lead.activity}}
-- Categoría: {{lead.category}}
-- Sitio web: {{lead.company_website}}
-- Ubicación: {{lead.address}}, {{lead.state}}, {{lead.country}}
+---
 
-📊 CALIDAD DE DATOS:
-- Email validado: {{lead.email_validated}}
-- Teléfono validado: {{lead.phone_validated}}
-- Sitio web: {{lead.website_exists}}
-- Puntuación de calidad: {{lead.data_quality_score}}/5 ({{lead.data_quality_percentage}})
+Equipo RitterFinder · Consultores Energéticos · RitterFinder Energy
+📞 +34 900 123 456 · ✉️ info@ritterfinder.com
+🌐 ${DOMAIN}
 
-Basándonos en su actividad de {{lead.activity}} y ubicación en {{lead.state}}, creemos que nuestras soluciones en energías renovables pueden ser de gran valor para {{lead.company_name}}.
+---
 
-¿Le interesaría conocer más detalles sobre cómo podemos ayudar a {{lead.company_name}} a optimizar su consumo energético?
-
-Cordialmente,
-Equipo RitterFinder
-
-© 2025 RitterFinder. Especialistas en transición energética.
-Este email fue enviado a {{lead.contact_email}}
+INFORMACIÓN LEGAL Y PROTECCIÓN DE DATOS
+Este mensaje se dirige a empresas cuyos datos de contacto se encuentran publicados en fuentes públicas. La base jurídica del tratamiento es el interés legítimo para comunicaciones profesionales (art. 6.1.f RGPD y art. 21.2 LSSI).
+Puedes ejercer tus derechos de acceso, rectificación, supresión u oposición escribiéndonos a: info@rittermor.energy
 `,
     category: 'sales',
     isActive: true,
@@ -664,7 +154,7 @@ Este email fue enviado a {{lead.contact_email}}
       { key: 'sender_name', label: 'Nombre del remitente', description: 'Nombre del remitente', required: true, defaultValue: 'Equipo RitterFinder', type: 'text' },
       { key: 'sender_position', label: 'Cargo del remitente', description: 'Cargo del remitente', required: false, defaultValue: 'Consultor Energético', type: 'text' }
     ],
-    usageCount: 8,
+    usageCount: 0,
     createdBy: 'admin',
     createdAt: new Date('2025-01-15'),
     updatedAt: new Date('2025-01-15')

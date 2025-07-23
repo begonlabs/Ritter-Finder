@@ -7,4 +7,5 @@ export { useLeadAdapter } from './useLeadAdapter'
 export { usePagination } from './usePagination'
 
 // Notification Hooks
-export { useNotifications } from './useNotifications' 
+export { useNotifications } from './useNotifications'
+export { useUnsubscribe } from './useUnsubscribe' 

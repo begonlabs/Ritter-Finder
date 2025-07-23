@@ -25,10 +25,12 @@ import {
   Copy,
   Check,
   Code,
-  Type
+  Type,
+  FileCode
 } from 'lucide-react';
-import { Lead } from '../types';
+import { Lead, EmailTemplate } from '../types';
 import { UseEmailComposerReturn } from '../hooks/useEmailComposer';
+import { useEmailTemplates } from '../hooks/useEmailTemplates';
 import styles from '../styles/ComposeTab.module.css';
 
 // Componente para mostrar variables disponibles
@@ -191,6 +193,7 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
   } = composer;
 
   const [showVariables, setShowVariables] = useState(false);
+  const { templates, getTemplatesByCategory } = useEmailTemplates();
 
   React.useEffect(() => {
     updateField('recipientCount', selectedLeads.length);
@@ -244,6 +247,21 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
     }
   };
 
+  const handleTemplateSelect = (templateId: string) => {
+    const selectedTemplate = templates.find(template => template.id === templateId);
+    if (selectedTemplate) {
+      // Cargar el contenido HTML de la plantilla
+      updateField('content', selectedTemplate.htmlContent);
+      // También actualizar el asunto si está vacío
+      if (!data.subject.trim()) {
+        updateField('subject', selectedTemplate.subject);
+      }
+    }
+  };
+
+  // Obtener plantillas organizadas por categoría
+  const templatesByCategory = getTemplatesByCategory();
+
   return (
     <div className={styles.composeTab}>
       {/* Header */}
@@ -294,6 +312,47 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
               </div>
             </div>
           </section>
+
+          {/* Template Selector - Solo visible en modo HTML */}
+          {data.contentMode === 'html' && (
+            <section className={styles.templateSection}>
+              <div className={styles.templateHeader}>
+                <div className={styles.templateTitle}>
+                  <FileCode className={styles.templateIcon} size={18} />
+                  <h3 className={styles.templateTitleText}>Seleccionar Plantilla HTML</h3>
+                </div>
+                <p className={styles.templateDescription}>
+                  Elige una plantilla para empezar con un diseño profesional
+                </p>
+              </div>
+
+              <div className={styles.templateSelector}>
+                <Select onValueChange={handleTemplateSelect}>
+                  <SelectTrigger className={styles.templateSelect}>
+                    <SelectValue placeholder="Selecciona una plantilla..." />
+                  </SelectTrigger>
+                  <SelectContent className={styles.templateDropdown}>
+                    {templates.map((template) => (
+                      <SelectItem 
+                        key={template.id} 
+                        value={template.id}
+                        className={styles.templateOption}
+                      >
+                        <div className={styles.templateOptionContent}>
+                          <div className={styles.templateOptionInfo}>
+                            <span className={styles.templateOptionName}>{template.name}</span>
+                            <span className={styles.templateOptionDescription}>
+                              {template.description}
+                            </span>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </section>
+          )}
 
           {/* Form Fields */}
           <div className={styles.formGroup}>

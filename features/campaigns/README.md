@@ -251,3 +251,159 @@ Equipo RitterFinder
 - [Templates Profesionales](./TEMPLATES.md)
 - [Mejores Prácticas](./BEST_PRACTICES.md)
 - [API de Campañas](./API.md) 
+
+## 🎨 **ComposeTab - Composición de Emails**
+
+### **Funcionalidades Principales**
+
+#### **1. Modo de Contenido**
+- **Texto Plano**: Para emails simples sin formato
+- **HTML**: Para emails con diseño profesional
+- **Toggle Switch**: Cambio fácil entre modos
+
+#### **2. Selector de Plantillas HTML** ✨
+- **Solo visible en modo HTML**
+- **Plantilla disponible**:
+  - 📧 **Contacto Inicial**: Template básico para primer contacto con leads
+
+- **Información de la plantilla**:
+  - Nombre y descripción
+  - Diseño limpio y profesional
+  - Compatible con variables dinámicas
+
+- **Carga automática**:
+  - Al seleccionar plantilla → se carga en el editor
+  - Si no hay asunto → se carga el asunto de la plantilla
+  - Listo para editar y personalizar
+
+#### **3. Variables Dinámicas**
+- **Botón "Mostrar Variables"**: Toggle para mostrar/ocultar
+- **Categorías organizadas**:
+  - 📧 Información de Contacto
+  - 🏢 Información de Empresa  
+  - 📍 Ubicación
+  - 🏭 Actividad y Categoría
+  - 👋 Saludos Personalizados
+  - ✅ Validación de Datos
+
+- **Funcionalidades**:
+  - **Clic para copiar**: Copia variable al portapapeles
+  - **Inserción automática**: Se inserta en el cursor
+  - **Tooltips informativos**: Descripción de cada variable
+  - **Iconos visuales**: Fácil identificación por categoría
+
+#### **4. Editor de Contenido**
+- **Textarea responsivo**: Se adapta al contenido
+- **Modo HTML**: Soporte para etiquetas HTML y CSS inline
+- **Placeholder dinámico**: Cambia según el modo
+- **Validación en tiempo real**: Advertencias sobre longitud
+
+#### **5. Validación y Feedback**
+- **Validación de asunto**: Advertencia si es muy largo (>78 caracteres)
+- **Validación de contenido**: Verifica que no esté vacío
+- **Modo HTML**: Información sobre uso de HTML
+- **Variables**: Sugerencias de uso
+
+#### **6. Información de Envío**
+- **Contador de destinatarios**: Muestra total de leads
+- **Tiempo estimado**: "Envío inmediato"
+- **Modo actual**: Texto o HTML
+- **Botón de envío**: Con estado de carga
+
+### **Flujo de Trabajo Recomendado**
+
+1. **Seleccionar modo HTML** si quieres diseño profesional
+2. **Elegir una plantilla** del selector (solo en modo HTML)
+3. **Personalizar el contenido** con variables dinámicas
+4. **Revisar en la pestaña Vista Previa**
+5. **Enviar la campaña**
+
+### **Ejemplo de Uso**
+
+```typescript
+// El usuario cambia a modo HTML
+updateField('contentMode', 'html')
+
+// Aparece el selector de plantillas
+// Usuario selecciona "Template con Variables Dinámicas"
+
+// Se carga automáticamente:
+updateField('content', template.htmlContent)
+updateField('subject', template.subject)
+
+// Usuario puede editar y personalizar
+// Usar variables como {{lead.company_name}}
+``` 
+
+## 📧 **Sistema de Unsubscribe**
+
+### **Base de Datos - Tabla unsubscribe**
+
+```sql
+-- Crear tabla unsubscribe en Supabase
+CREATE TABLE public.unsubscribe (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    company_name VARCHAR(255),
+    unsubscribe_reason VARCHAR(100),
+    ip_address INET,
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Crear índices para mejor performance
+CREATE INDEX idx_unsubscribe_email ON public.unsubscribe(email);
+CREATE INDEX idx_unsubscribe_created_at ON public.unsubscribe(created_at);
+
+-- Habilitar RLS (Row Level Security)
+ALTER TABLE public.unsubscribe ENABLE ROW LEVEL SECURITY;
+
+-- Política para permitir inserciones públicas
+CREATE POLICY "Allow public inserts" ON public.unsubscribe
+    FOR INSERT WITH CHECK (true);
+
+-- Política para permitir consultas públicas (solo para verificar si existe)
+CREATE POLICY "Allow public select" ON public.unsubscribe
+    FOR SELECT USING (true);
+
+-- Trigger para actualizar updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_unsubscribe_updated_at 
+    BEFORE UPDATE ON public.unsubscribe 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```
+
+### **Vista Pública - Página de Unsubscribe**
+
+La vista pública se encuentra en: `/unsubscribe?email=correo@ejemplo.com`
+
+#### **Características:**
+- **Confirmación visual**: Pregunta de confirmación clara
+- **Información del email**: Muestra qué email se va a dar de baja
+- **Botones de acción**: Confirmar o Cancelar
+- **Feedback visual**: Mensaje de éxito después de confirmar
+- **Redirección**: Opción de volver al sitio principal
+
+#### **Flujo de Trabajo:**
+1. Usuario hace clic en enlace de unsubscribe
+2. Se abre página con confirmación
+3. Usuario confirma la baja
+4. Se guarda en tabla `unsubscribe`
+5. Se muestra mensaje de éxito
+6. Opción de volver al sitio principal
+
+### **Variables de Entorno Requeridas**
+
+```bash
+# .env.local
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+``` 
