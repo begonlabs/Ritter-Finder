@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { useUnsubscribe } from '@/features/campaigns/hooks/useUnsubscribe'
 
-export default function UnsubscribePage() {
+function UnsubscribeContent() {
   const searchParams = useSearchParams()
   const email = searchParams?.get('email')
   
@@ -186,5 +186,34 @@ export default function UnsubscribePage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+// Loading component
+function UnsubscribeLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+          <CardTitle className="text-xl text-gray-900">Cargando...</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center">
+          <p className="text-gray-600">
+            Procesando tu solicitud...
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function UnsubscribePage() {
+  return (
+    <Suspense fallback={<UnsubscribeLoading />}>
+      <UnsubscribeContent />
+    </Suspense>
   )
 } 
