@@ -1,15 +1,171 @@
 "use client"
 
-import React from 'react';
-import { Button } from '../../../components/ui/button';
-import { Textarea } from '../../../components/ui/textarea';
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
-import { Switch } from '../../../components/ui/switch';
-import { Send, Mail, Code, Type } from 'lucide-react';
-import type { Lead } from '../types';
-import type { UseEmailComposerReturn } from '../hooks/useEmailComposer';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Switch } from '@/components/ui/switch';
+import { 
+  Send, 
+  Eye, 
+  Users, 
+  FileText, 
+  Mail, 
+  Building, 
+  MapPin, 
+  Activity, 
+  Tag,
+  Info,
+  Copy,
+  Check,
+  Code,
+  Type
+} from 'lucide-react';
+import { Lead } from '../types';
+import { UseEmailComposerReturn } from '../hooks/useEmailComposer';
 import styles from '../styles/ComposeTab.module.css';
+
+// Componente para mostrar variables disponibles
+const VariablesHelper = ({ onInsertVariable }: { onInsertVariable: (variable: string) => void }) => {
+  const [copiedVariable, setCopiedVariable] = useState<string | null>(null);
+
+  const variableCategories = [
+    {
+      title: 'Información de Contacto',
+      icon: <Mail className="w-4 h-4" />,
+      variables: [
+        { key: '{{lead.contact_name}}', description: 'Nombre del contacto' },
+        { key: '{{lead.contact_email}}', description: 'Email del contacto' },
+        { key: '{{lead.contact_phone}}', description: 'Teléfono del contacto' },
+      ]
+    },
+    {
+      title: 'Información de Empresa',
+      icon: <Building className="w-4 h-4" />,
+      variables: [
+        { key: '{{lead.company_name}}', description: 'Nombre de la empresa' },
+        { key: '{{lead.company_website}}', description: 'Sitio web de la empresa' },
+        { key: '{{lead.company_description}}', description: 'Descripción de la empresa' },
+      ]
+    },
+    {
+      title: 'Ubicación',
+      icon: <MapPin className="w-4 h-4" />,
+      variables: [
+        { key: '{{lead.address}}', description: 'Dirección' },
+        { key: '{{lead.state}}', description: 'Estado/Provincia' },
+        { key: '{{lead.country}}', description: 'País' },
+        { key: '{{lead.location_display}}', description: 'Ubicación formateada' },
+      ]
+    },
+    {
+      title: 'Actividad y Categoría',
+      icon: <Activity className="w-4 h-4" />,
+      variables: [
+        { key: '{{lead.activity}}', description: 'Actividad principal' },
+        { key: '{{lead.category}}', description: 'Categoría de la empresa' },
+        { key: '{{lead.industry}}', description: 'Industria' },
+      ]
+    },
+    {
+      title: 'Saludos Personalizados',
+      icon: <FileText className="w-4 h-4" />,
+      variables: [
+        { key: '{{lead.greeting}}', description: 'Saludo formal personalizado' },
+        { key: '{{lead.formal_greeting}}', description: 'Saludo formal' },
+        { key: '{{lead.casual_greeting}}', description: 'Saludo casual' },
+      ]
+    },
+    {
+      title: 'Validación de Datos',
+      icon: <Check className="w-4 h-4" />,
+      variables: [
+        { key: '{{lead.email_validated}}', description: 'Email validado (Sí/No)' },
+        { key: '{{lead.phone_validated}}', description: 'Teléfono validado (Sí/No)' },
+        { key: '{{lead.website_exists}}', description: 'Sitio web existe (Sí/No)' },
+        { key: '{{lead.data_quality_score}}', description: 'Puntuación de calidad (1-5)' },
+        { key: '{{lead.data_quality_percentage}}', description: 'Porcentaje de calidad' },
+      ]
+    }
+  ];
+
+  const handleCopyVariable = async (variable: string) => {
+    try {
+      await navigator.clipboard.writeText(variable);
+      setCopiedVariable(variable);
+      setTimeout(() => setCopiedVariable(null), 2000);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+    }
+  };
+
+  return (
+    <div className={styles.variablesHelper}>
+      <div className={styles.variablesHeader}>
+        <h4 className={styles.variablesTitle}>
+          <Info className="w-4 h-4 mr-2" />
+          Variables Disponibles
+        </h4>
+        <p className={styles.variablesDescription}>
+          Haz clic en cualquier variable para copiarla al portapapeles
+        </p>
+      </div>
+      
+      <div className={styles.variablesGrid}>
+        {variableCategories.map((category) => (
+          <Card key={category.title} className={styles.variableCategory}>
+            <CardHeader className={styles.categoryHeader}>
+              <div className={styles.categoryIcon}>
+                {category.icon}
+              </div>
+              <CardTitle className={styles.categoryTitle}>
+                {category.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className={styles.categoryContent}>
+              <div className={styles.variablesList}>
+                {category.variables.map((variable) => (
+                  <TooltipProvider key={variable.key}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={styles.variableButton}
+                          onClick={() => {
+                            handleCopyVariable(variable.key);
+                            onInsertVariable(variable.key);
+                          }}
+                        >
+                          <span className={styles.variableKey}>{variable.key}</span>
+                          {copiedVariable === variable.key && (
+                            <Check className="w-3 h-3 ml-2 text-green-600" />
+                          )}
+                          {copiedVariable !== variable.key && (
+                            <Copy className="w-3 h-3 ml-2 opacity-50" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{variable.description}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 interface ComposeTabProps {
   composer: UseEmailComposerReturn;
@@ -33,6 +189,8 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
     sendEmail,
     isSending
   } = composer;
+
+  const [showVariables, setShowVariables] = useState(false);
 
   React.useEffect(() => {
     updateField('recipientCount', selectedLeads.length);
@@ -65,6 +223,24 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
       onSuccess?.();
     } catch (error) {
       console.error('Error sending email:', error);
+    }
+  };
+
+  const handleInsertVariable = (variable: string) => {
+    const textarea = document.getElementById('content') as HTMLTextAreaElement;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const currentValue = data.content;
+      
+      const newValue = currentValue.substring(0, start) + variable + currentValue.substring(end);
+      updateField('content', newValue);
+      
+      // Set cursor position after the inserted variable
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + variable.length, start + variable.length);
+      }, 0);
     }
   };
 
@@ -154,9 +330,26 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
           </div>
 
           <div className={styles.formGroup}>
-            <Label htmlFor="content" className={styles.formLabel}>
-              Contenido del Email <span style={{ color: '#ef4444' }}>*</span>
-            </Label>
+            <div className={styles.formLabel}>
+              <Label htmlFor="content">
+                Contenido del Email <span style={{ color: '#ef4444' }}>*</span>
+              </Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowVariables(!showVariables)}
+                className={styles.variablesToggle}
+              >
+                <Tag className="w-4 h-4 mr-2" />
+                {showVariables ? 'Ocultar' : 'Mostrar'} Variables
+              </Button>
+            </div>
+            
+            {showVariables && (
+              <VariablesHelper onInsertVariable={handleInsertVariable} />
+            )}
+            
             <Textarea
               id="content"
               className={`${styles.formTextarea} ${data.contentMode === 'html' ? styles.htmlMode : ''}`}
@@ -174,6 +367,9 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
                 ℹ️ Modo HTML activo. Puedes usar etiquetas HTML y CSS inline.
               </div>
             )}
+            <div className={styles.helperText}>
+              💡 Usa variables como {'{{lead.company_name}}'} para personalizar automáticamente cada email.
+            </div>
           </div>
         </form>
       </div>

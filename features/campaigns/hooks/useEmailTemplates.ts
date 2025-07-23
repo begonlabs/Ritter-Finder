@@ -567,6 +567,107 @@ Este email fue enviado a {{contact_email}}
     createdBy: 'admin',
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01')
+  },
+  {
+    id: 'tpl_007',
+    name: 'Template con Variables Dinámicas',
+    description: 'Template que demuestra el uso de todas las variables dinámicas disponibles',
+    subject: 'Oferta Personalizada para {{lead.company_name}} - RitterFinder',
+    htmlContent: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background: #3b82f6; color: white; padding: 20px; text-align: center; }
+        .content { padding: 30px; }
+        .company-info { background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .data-quality { background: #fef3c7; padding: 10px; border-radius: 6px; margin: 15px 0; }
+        .footer { background: #f3f4f6; padding: 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌱 RitterFinder</h1>
+        <p>Soluciones Energéticas Personalizadas</p>
+    </div>
+    
+    <div class="content">
+        <h2>{{lead.greeting}},</h2>
+        
+        <p>Hemos identificado a <strong>{{lead.company_name}}</strong> como una empresa dedicada a <strong>{{lead.activity}}</strong> ubicada en <strong>{{lead.location_display}}</strong>.</p>
+        
+        <div class="company-info">
+            <h3>📋 Información de su empresa:</h3>
+            <ul>
+                <li><strong>Actividad:</strong> {{lead.activity}}</li>
+                <li><strong>Categoría:</strong> {{lead.category}}</li>
+                <li><strong>Sitio web:</strong> {{lead.company_website}}</li>
+                <li><strong>Ubicación:</strong> {{lead.address}}, {{lead.state}}, {{lead.country}}</li>
+            </ul>
+        </div>
+        
+        <div class="data-quality">
+            <h4>📊 Calidad de datos:</h4>
+            <p>Email validado: {{lead.email_validated}} | Teléfono validado: {{lead.phone_validated}} | Sitio web: {{lead.website_exists}}</p>
+            <p>Puntuación de calidad: {{lead.data_quality_score}}/5 ({{lead.data_quality_percentage}})</p>
+        </div>
+        
+        <p>Basándonos en su actividad de <strong>{{lead.activity}}</strong> y ubicación en <strong>{{lead.state}}</strong>, creemos que nuestras soluciones en energías renovables pueden ser de gran valor para {{lead.company_name}}.</p>
+        
+        <p>¿Le interesaría conocer más detalles sobre cómo podemos ayudar a {{lead.company_name}} a optimizar su consumo energético?</p>
+        
+        <p>Cordialmente,<br><strong>Equipo RitterFinder</strong></p>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 RitterFinder. Especialistas en transición energética.</p>
+        <p>Este email fue enviado a {{lead.contact_email}}</p>
+    </div>
+</body>
+</html>`,
+    plainTextContent: `
+🌱 RITTERFINDER - SOLUCIONES ENERGÉTICAS PERSONALIZADAS
+
+{{lead.greeting}},
+
+Hemos identificado a {{lead.company_name}} como una empresa dedicada a {{lead.activity}} ubicada en {{lead.location_display}}.
+
+📋 INFORMACIÓN DE SU EMPRESA:
+- Actividad: {{lead.activity}}
+- Categoría: {{lead.category}}
+- Sitio web: {{lead.company_website}}
+- Ubicación: {{lead.address}}, {{lead.state}}, {{lead.country}}
+
+📊 CALIDAD DE DATOS:
+- Email validado: {{lead.email_validated}}
+- Teléfono validado: {{lead.phone_validated}}
+- Sitio web: {{lead.website_exists}}
+- Puntuación de calidad: {{lead.data_quality_score}}/5 ({{lead.data_quality_percentage}})
+
+Basándonos en su actividad de {{lead.activity}} y ubicación en {{lead.state}}, creemos que nuestras soluciones en energías renovables pueden ser de gran valor para {{lead.company_name}}.
+
+¿Le interesaría conocer más detalles sobre cómo podemos ayudar a {{lead.company_name}} a optimizar su consumo energético?
+
+Cordialmente,
+Equipo RitterFinder
+
+© 2025 RitterFinder. Especialistas en transición energética.
+Este email fue enviado a {{lead.contact_email}}
+`,
+    category: 'sales',
+    isActive: true,
+    variables: [
+      // Variables automáticas: todas las variables lead.* se cargan automáticamente
+      { key: 'custom_message', label: 'Mensaje personalizado adicional', description: 'Mensaje personalizado adicional', required: false, defaultValue: '', type: 'text' },
+      { key: 'sender_name', label: 'Nombre del remitente', description: 'Nombre del remitente', required: true, defaultValue: 'Equipo RitterFinder', type: 'text' },
+      { key: 'sender_position', label: 'Cargo del remitente', description: 'Cargo del remitente', required: false, defaultValue: 'Consultor Energético', type: 'text' }
+    ],
+    usageCount: 8,
+    createdBy: 'admin',
+    createdAt: new Date('2025-01-15'),
+    updatedAt: new Date('2025-01-15')
   }
 ];
 

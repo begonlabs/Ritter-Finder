@@ -196,10 +196,18 @@
 }
 
 .formLabel {
-  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
   font-weight: 500;
   color: #374151;
-  line-height: 1.4;
+}
+
+.variablesToggle {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  height: auto;
 }
 
 .formInput {
@@ -528,5 +536,140 @@
 
      .loadingSpinner {
      animation: none;
+  }
+} 
+
+/* Variables Helper Styles */
+.variablesHelper {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.variablesHeader {
+  margin-bottom: 1.5rem;
+}
+
+.variablesTitle {
+  display: flex;
+  align-items: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.variablesDescription {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.variablesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.variableCategory {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.variableCategory:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.categoryHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
+
+.categoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.categoryTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.categoryContent {
+  padding: 1rem;
+}
+
+.variablesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.variableButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.variableButton:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.variableKey {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .variablesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .variableCategory {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .variablesHelper {
+    padding: 1rem;
+  }
+  
+  .variablesGrid {
+    gap: 0.75rem;
+  }
+  
+  .categoryHeader {
+    padding: 0.75rem;
+  }
+  
+  .categoryContent {
+    padding: 0.75rem;
   }
 } 

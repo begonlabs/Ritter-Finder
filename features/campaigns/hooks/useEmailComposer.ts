@@ -143,13 +143,77 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
   const personalizeEmail = useCallback((content: string, lead: Lead) => {
     if (!content || !lead) return content;
 
-    return content
+    // Variables básicas (legacy support)
+    let personalizedContent = content
       .replace(/\{\{name\}\}/g, lead.name || lead.company_name || '')
       .replace(/\{\{company\}\}/g, lead.company || lead.company_name || '')
       .replace(/\{\{email\}\}/g, lead.email || '')
       .replace(/\{\{position\}\}/g, lead.position || lead.activity || '')
       .replace(/\{\{industry\}\}/g, lead.industry || lead.category || '')
       .replace(/\{\{location\}\}/g, lead.location || '');
+
+    // Nuevas variables dinámicas usando lead.field_name
+    const leadVariables = {
+      // Información de contacto
+      'lead.contact_name': lead.name || lead.company_name || '',
+      'lead.contact_email': lead.email || '',
+      'lead.contact_phone': lead.phone || '',
+      
+      // Información de la empresa
+      'lead.company_name': lead.company_name || lead.company || '',
+      'lead.company_website': lead.company_website || lead.website || '',
+      'lead.company_description': lead.description || '',
+      
+      // Información de ubicación
+      'lead.address': lead.address || '',
+      'lead.state': lead.state || '',
+      'lead.country': lead.country || '',
+      'lead.location': lead.location || `${lead.address || ''} ${lead.state || ''} ${lead.country || ''}`.trim(),
+      
+      // Información de actividad y categoría
+      'lead.activity': lead.activity || lead.position || '',
+      'lead.category': lead.category || lead.industry || '',
+      'lead.industry': lead.industry || lead.category || '',
+      
+      // Información de validación
+      'lead.email_validated': lead.emailValidated || lead.verified_email ? 'Sí' : 'No',
+      'lead.phone_validated': lead.phoneValidated || lead.verified_phone ? 'Sí' : 'No',
+      'lead.website_exists': lead.websiteExists || lead.verified_website ? 'Sí' : 'No',
+      
+      // Puntuación de calidad de datos
+      'lead.data_quality_score': lead.data_quality_score?.toString() || '',
+      'lead.data_quality_percentage': lead.data_quality_score ? `${(lead.data_quality_score / 5) * 100}%` : '',
+      
+      // Información del sistema
+      'lead.created_at': lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-ES') : '',
+      'lead.updated_at': lead.updated_at ? new Date(lead.updated_at).toLocaleDateString('es-ES') : '',
+      'lead.last_contacted_at': lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleDateString('es-ES') : '',
+      
+      // Campos adicionales
+      'lead.tags': lead.tags?.join(', ') || '',
+      'lead.score': lead.score?.toString() || '',
+      'lead.status': lead.status || 'nuevo',
+      
+      // Variables computadas
+      'lead.full_name': lead.name || lead.company_name || 'Cliente',
+      'lead.company_display': lead.company_name || lead.company || 'Empresa',
+      'lead.activity_display': lead.activity || lead.position || 'Actividad',
+      'lead.category_display': lead.category || lead.industry || 'Categoría',
+      'lead.location_display': `${lead.state || ''} ${lead.country || ''}`.trim() || 'Ubicación',
+      
+      // Variables para saludos personalizados
+      'lead.greeting': lead.name ? `Estimado/a ${lead.name}` : `Estimado/a representante de ${lead.company_name || 'su empresa'}`,
+      'lead.formal_greeting': lead.name ? `Estimado/a ${lead.name}` : 'Estimado/a representante',
+      'lead.casual_greeting': lead.name ? `Hola ${lead.name}` : 'Hola',
+    };
+
+    // Reemplazar todas las variables dinámicas
+    Object.entries(leadVariables).forEach(([variable, value]) => {
+      const regex = new RegExp(`\\{\\{${variable}\\}\\}`, 'g');
+      personalizedContent = personalizedContent.replace(regex, value);
+    });
+
+    return personalizedContent;
   }, []);
 
   const renderHtmlContent = useCallback((lead: Lead) => {
