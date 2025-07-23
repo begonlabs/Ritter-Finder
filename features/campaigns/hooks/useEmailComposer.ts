@@ -348,7 +348,9 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
         senderEmail: process.env.NEXT_PUBLIC_BREVO_SENDER_EMAIL || 'info@rittermor.energy',
         recipients: validLeads.map(lead => ({
           email: lead.email || '',
-          name: lead.name || lead.company_name
+          name: lead.name || lead.company_name,
+          // Pasar todos los datos del lead para personalización
+          ...lead
         }))
       });
 

@@ -708,3 +708,25 @@
     padding: 0.75rem;
   }
 } 
+
+.testPersonalization {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  border-radius: 6px;
+}
+
+.testButton {
+  background: #0ea5e9;
+  color: white;
+  border-color: #0ea5e9;
+  font-size: 0.875rem;
+  padding: 6px 12px;
+  height: auto;
+}
+
+.testButton:hover {
+  background: #0284c7;
+  border-color: #0284c7;
+} 

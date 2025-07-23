@@ -130,12 +130,48 @@ class BrevoService {
       console.log(`Enviando email ${i + 1}/${campaignData.recipients.length} a:`, recipient.email);
       
       try {
+        // Personalizar contenido para este destinatario específico
+        const personalizedHtmlContent = campaignData.htmlContent 
+          ? this.personalizeContent(campaignData.htmlContent, recipient)
+          : undefined;
+        
+        const personalizedTextContent = campaignData.content
+          ? this.personalizeContent(campaignData.content, recipient)
+          : undefined;
+
+        console.log('Contenido personalizado para', recipient.email, ':', {
+          htmlLength: personalizedHtmlContent?.length || 0,
+          textLength: personalizedTextContent?.length || 0,
+          recipientData: {
+            name: recipient.name,
+            company_name: (recipient as any).company_name,
+            activity: (recipient as any).activity,
+            category: (recipient as any).category,
+            location_display: (recipient as any).location_display
+          }
+        });
+
+        // Debug: mostrar algunas variables personalizadas
+        if (personalizedHtmlContent) {
+          const hasGreeting = personalizedHtmlContent.includes('Estimado/a') || personalizedHtmlContent.includes('Hola');
+          const hasCompany = personalizedHtmlContent.includes((recipient as any).company_name || '');
+          const hasActivity = personalizedHtmlContent.includes((recipient as any).activity || '');
+          
+          console.log('Variables personalizadas verificadas:', {
+            hasGreeting,
+            hasCompany,
+            hasActivity,
+            companyName: (recipient as any).company_name,
+            activity: (recipient as any).activity
+          });
+        }
+
         const result = await this.sendEmail({
           to: recipient.email,
           name: recipient.name,
           subject: campaignData.subject,
-          htmlContent: campaignData.htmlContent,
-          textContent: campaignData.content
+          htmlContent: personalizedHtmlContent,
+          textContent: personalizedTextContent
         });
 
         if (result.success) {
@@ -188,13 +224,57 @@ class BrevoService {
   personalizeContent(content: string, lead: any): string {
     if (!content || !lead) return content;
 
-    return content
-      .replace(/\{\{name\}\}/g, lead.name || lead.company_name || '')
-      .replace(/\{\{company\}\}/g, lead.company || lead.company_name || '')
-      .replace(/\{\{email\}\}/g, lead.email || '')
-      .replace(/\{\{position\}\}/g, lead.position || lead.activity || '')
-      .replace(/\{\{industry\}\}/g, lead.industry || lead.category || '')
-      .replace(/\{\{location\}\}/g, lead.location || '');
+    // Variables básicas del lead
+    const leadVariables = {
+      // Información de contacto
+      'lead.contact_name': lead.name || lead.contact_name || '',
+      'lead.contact_email': lead.email || lead.contact_email || '',
+      'lead.contact_phone': lead.phone || lead.contact_phone || '',
+      
+      // Información de empresa
+      'lead.company_name': lead.company_name || lead.company || '',
+      'lead.company_website': lead.company_website || lead.website || '',
+      'lead.company_description': lead.description || lead.company_description || '',
+      
+      // Ubicación
+      'lead.address': lead.address || '',
+      'lead.state': lead.state || '',
+      'lead.country': lead.country || '',
+      'lead.location_display': `${lead.state || ''} ${lead.country || ''}`.trim() || 'Ubicación',
+      
+      // Actividad y categoría
+      'lead.activity': lead.activity || lead.position || 'Actividad',
+      'lead.category': lead.category || lead.industry || 'Categoría',
+      'lead.industry': lead.industry || lead.category || 'Industria',
+      
+      // Saludos personalizados
+      'lead.greeting': lead.name ? `Estimado/a ${lead.name}` : `Estimado/a representante de ${lead.company_name || 'su empresa'}`,
+      'lead.formal_greeting': lead.name ? `Estimado/a ${lead.name}` : 'Estimado/a representante',
+      'lead.casual_greeting': lead.name ? `Hola ${lead.name}` : 'Hola',
+      
+      // Validación de datos
+      'lead.email_validated': lead.verified_email ? 'Sí' : 'No',
+      'lead.phone_validated': lead.verified_phone ? 'Sí' : 'No',
+      'lead.website_exists': lead.verified_website ? 'Sí' : 'No',
+      'lead.data_quality_score': lead.data_quality_score || 'N/A',
+      'lead.data_quality_percentage': lead.data_quality_score ? `${(lead.data_quality_score / 5) * 100}%` : 'N/A',
+      
+      // Variables legacy para compatibilidad
+      'name': lead.name || lead.company_name || '',
+      'company': lead.company || lead.company_name || '',
+      'email': lead.email || '',
+      'position': lead.position || lead.activity || '',
+      'industry': lead.industry || lead.category || '',
+      'location': lead.location || `${lead.state || ''} ${lead.country || ''}`.trim(),
+    };
+
+    // Reemplazar todas las variables dinámicas
+    Object.entries(leadVariables).forEach(([variable, value]) => {
+      const regex = new RegExp(`\\{\\{${variable}\\}\\}`, 'g');
+      content = content.replace(regex, value);
+    });
+
+    return content;
   }
 
   /**

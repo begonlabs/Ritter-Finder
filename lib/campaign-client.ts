@@ -15,6 +15,7 @@ export interface CampaignData {
   recipients: Array<{
     email: string;
     name?: string;
+    [key: string]: any; // Permitir datos adicionales del lead para personalización
   }>;
 }
 

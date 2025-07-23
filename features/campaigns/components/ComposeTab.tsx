@@ -429,6 +429,27 @@ export const ComposeTab: React.FC<ComposeTabProps> = ({
             <div className={styles.helperText}>
               💡 Usa variables como {'{{lead.company_name}}'} para personalizar automáticamente cada email.
             </div>
+            
+            {/* Botón de prueba de personalización */}
+            {selectedLeads.length > 0 && data.content.trim() && (
+              <div className={styles.testPersonalization}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const testLead = selectedLeads[0];
+                    const personalizedContent = composer.personalizeEmail(data.content, testLead);
+                    console.log('Contenido original:', data.content);
+                    console.log('Contenido personalizado para', testLead.company_name, ':', personalizedContent);
+                    alert(`Personalización de prueba para ${testLead.company_name}:\n\n${personalizedContent.substring(0, 200)}...`);
+                  }}
+                  className={styles.testButton}
+                >
+                  🧪 Probar Personalización
+                </Button>
+              </div>
+            )}
           </div>
         </form>
       </div>
