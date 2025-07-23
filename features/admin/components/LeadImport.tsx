@@ -51,6 +51,7 @@ import {
 import { useLeadImport } from "../hooks/useLeadImport"
 import { ConfirmDialog } from "./ConfirmDialog"
 import { useConfirmDialog } from "../hooks/useConfirmDialog"
+import { CategorySelector } from "./CategorySelector"
 import type { LeadData } from "../types"
 import styles from "../styles/LeadImport.module.css"
 
@@ -353,19 +354,13 @@ export function LeadImport({ className = "" }: LeadImportProps) {
                       <Label htmlFor="category" className={styles.formLabel}>
                         Categoría
                       </Label>
-                      <Select 
-                        value={formData.category || ''} 
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-                      >
-                        <SelectTrigger className={styles.formSelect}>
-                          <SelectValue placeholder="Seleccionar categoría" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Empresas Axesor">Empresas Axesor</SelectItem>
-                          <SelectItem value="Empresas CNAE">Empresas CNAE</SelectItem>
-                          <SelectItem value="Empresas Personalizadas">Empresas Personalizadas</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <CategorySelector
+                        value={formData.category || ''}
+                        onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                        placeholder="Seleccionar o crear categoría..."
+                        showLeadCount={true}
+                        className={styles.categorySelector}
+                      />
                     </div>
                   </div>
                   <div className={styles.formGroup}>

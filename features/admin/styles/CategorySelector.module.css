@@ -1,0 +1,467 @@
+.categorySelector {
+    width: 100%;
+  }
+  
+  .selectorContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .trigger {
+    flex: 1;
+    justify-content: space-between;
+    height: auto;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    transition: all 0.2s ease;
+  }
+  
+  .trigger:hover:not(:disabled) {
+    border-color: #9ca3af;
+    background-color: #f9fafb;
+  }
+  
+  .trigger:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  .loadingState {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+  }
+  
+  .loadingSpinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .selectedValue {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  
+  .categoryIcon {
+    width: 1rem;
+    height: 1rem;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+  
+  .categoryName {
+    font-weight: 500;
+    color: #111827;
+    flex: 1;
+    text-align: left;
+  }
+  
+  .leadCount {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border-radius: 0.25rem;
+    flex-shrink: 0;
+  }
+  
+  .placeholder {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ca3af;
+    flex: 1;
+  }
+  
+  .placeholderIcon {
+    width: 1rem;
+    height: 1rem;
+    color: #9ca3af;
+    flex-shrink: 0;
+  }
+  
+  .chevronIcon {
+    width: 1rem;
+    height: 1rem;
+    color: #6b7280;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  
+  .trigger[data-state="open"] .chevronIcon {
+    transform: rotate(180deg);
+  }
+  
+  .popoverContent {
+    width: 20rem;
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background-color: white;
+  }
+  
+  .commandInput {
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    border-radius: 0;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .commandInput:focus {
+    outline: none;
+    border-bottom-color: #3b82f6;
+  }
+  
+  .commandList {
+    max-height: 12rem;
+    overflow-y: auto;
+  }
+  
+  .commandEmpty {
+    padding: 1rem;
+    text-align: center;
+    color: #6b7280;
+  }
+  
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .emptyIcon {
+    width: 2rem;
+    height: 2rem;
+    color: #d1d5db;
+  }
+  
+  .createButton {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .createIcon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .commandGroup {
+    padding: 0.25rem;
+  }
+  
+  .commandItem {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .commandItem:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .commandItem[data-selected="true"] {
+    background-color: #eff6ff;
+  }
+  
+  .itemContent {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .checkIcon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+  
+  .checkIcon.checked {
+    color: #059669;
+  }
+  
+  .checkIcon.unchecked {
+    color: transparent;
+  }
+  
+  .newIcon {
+    width: 1rem;
+    height: 1rem;
+    color: #3b82f6;
+    flex-shrink: 0;
+  }
+  
+  .itemText {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .itemLabel {
+    font-weight: 500;
+    color: #111827;
+    font-size: 0.875rem;
+  }
+  
+  .itemDescription {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.125rem;
+  }
+  
+  .itemBadge {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border-radius: 0.25rem;
+    flex-shrink: 0;
+  }
+  
+  .clearButton {
+    padding: 0.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 0.375rem;
+    color: #6b7280;
+    transition: all 0.2s ease;
+  }
+  
+  .clearButton:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+  
+  .clearIcon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .dialogContent {
+    max-width: 24rem;
+  }
+  
+  .dialogTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .dialogIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #3b82f6;
+  }
+  
+  .dialogDescription {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  
+  .dialogForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .formLabel {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  .required {
+    color: #ef4444;
+  }
+  
+  .formInput {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .formInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .errorMessage {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.375rem;
+    color: #dc2626;
+    font-size: 0.875rem;
+  }
+  
+  .errorIcon {
+    width: 1rem;
+    height: 1rem;
+    color: #dc2626;
+    flex-shrink: 0;
+  }
+  
+  .dialogFooter {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+  
+  .cancelButton {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .cancelButton:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+  }
+  
+  .createButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    background-color: #3b82f6;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .createButton:hover:not(:disabled) {
+    background-color: #2563eb;
+  }
+  
+  .createButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .loadingSpinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  .errorContainer {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.375rem;
+  }
+  
+  .errorText {
+    color: #dc2626;
+    font-size: 0.875rem;
+  }
+  
+  @media (max-width: 640px) {
+    .popoverContent {
+      width: calc(100vw - 2rem);
+      max-width: 20rem;
+    }
+  
+    .dialogContent {
+      margin: 1rem;
+      max-width: calc(100vw - 2rem);
+    }
+  
+    .trigger {
+      font-size: 0.8rem;
+    }
+  
+    .categoryName {
+      font-size: 0.8rem;
+    }
+  
+    .leadCount {
+      font-size: 0.7rem;
+    }
+  }
+  
+  @media (prefers-contrast: high) {
+    .trigger {
+      border-width: 2px;
+    }
+  
+    .trigger:focus-visible {
+      outline-width: 3px;
+    }
+  
+    .commandItem:hover {
+      background-color: #e5e7eb;
+    }
+  
+    .formInput:focus {
+      border-width: 2px;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .trigger,
+    .chevronIcon,
+    .commandItem,
+    .clearButton,
+    .cancelButton,
+    .createButton {
+      transition: none;
+    }
+  
+    .loadingSpinner {
+      animation: none;
+    }
+  }

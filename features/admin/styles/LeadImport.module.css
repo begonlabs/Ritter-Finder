@@ -673,4 +673,8 @@
   .notification {
     animation: none;
   }
+
+  .categorySelector {
+    width: 100%;
+  }
 } 

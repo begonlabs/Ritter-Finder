@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import Papa from 'papaparse'
 import { createClient } from '@supabase/supabase-js'
+import { useCategories } from './useCategories'
 
 // Configuración de Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -98,6 +99,9 @@ export function useLeadImport(): UseLeadImportReturn {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([])
   const [formData, setFormDataState] = useState<Partial<LeadData>>(DEFAULT_FORM_DATA)
   const [notifications, setNotifications] = useState<Notification[]>([])
+  
+  // Integrar categorías
+  const categories = useCategories()
 
   const setFormData = useCallback((data: Partial<LeadData> | ((prev: Partial<LeadData>) => Partial<LeadData>)) => {
     if (typeof data === 'function') {
