@@ -310,7 +310,7 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
       }
       
       // Increment email count for single email
-      incrementEmailCount();
+      await incrementEmailCount();
       
       setData(prev => ({ ...prev, emailSent: true }));
     } catch (error) {
@@ -369,9 +369,7 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
       
       // Increment email count for each successfully sent email
       if (result.sentCount > 0) {
-        for (let i = 0; i < result.sentCount; i++) {
-          incrementEmailCount();
-        }
+        await incrementEmailCount(result.sentCount);
       }
       
       setData(prev => ({ ...prev, emailSent: true }));
