@@ -11,6 +11,7 @@ export { default as DashboardNavigationStyles } from "./styles/DashboardNavigati
 export { default as DashboardLayoutStyles } from "./styles/DashboardLayout.module.css"
 export { default as DashboardHeaderStyles } from "./styles/DashboardHeader.module.css"
 export { default as UserProfileStyles } from "./styles/UserProfile.module.css"
+export { default as EmailLimitsIndicatorStyles } from "./styles/EmailLimitsIndicator.module.css"
 
 // Components
 export { DashboardHeader } from "./components/DashboardHeader"
@@ -18,6 +19,7 @@ export { DashboardNavigation } from "./components/DashboardNavigation"
 export { Sidebar } from "./components/Sidebar"
 export { DashboardLayout } from "./components/DashboardLayout"
 export { UserProfile as UserProfileComponent } from "./components/UserProfile"
+export { EmailLimitsIndicator } from "./components/EmailLimitsIndicator"
 
 // Hooks
 export { useLayout } from "./hooks/useLayout"

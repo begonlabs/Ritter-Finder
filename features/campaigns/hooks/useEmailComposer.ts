@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { campaignClient } from '../../../lib/campaign-client';
+import { incrementEmailCount } from './useEmailLimits';
 import type { Lead, Campaign } from "../types"
 
 interface EmailComposerData {
@@ -308,6 +309,9 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
         throw new Error(result.error || 'Error al enviar email');
       }
       
+      // Increment email count for single email
+      incrementEmailCount();
+      
       setData(prev => ({ ...prev, emailSent: true }));
     } catch (error) {
       console.error('Error sending email:', error);
@@ -361,6 +365,13 @@ export const useEmailComposer = (): UseEmailComposerReturn => {
           ? `${result.failedCount} emails fallaron de ${result.sentCount + result.failedCount} intentos`
           : 'Error al enviar campaña';
         throw new Error(errorMessage);
+      }
+      
+      // Increment email count for each successfully sent email
+      if (result.sentCount > 0) {
+        for (let i = 0; i < result.sentCount; i++) {
+          incrementEmailCount();
+        }
       }
       
       setData(prev => ({ ...prev, emailSent: true }));

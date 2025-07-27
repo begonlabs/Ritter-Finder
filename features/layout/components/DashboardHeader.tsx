@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { LanguageSelector } from "@/components/language-selector"
 import { useLanguage } from "@/lib/language-context"
 import { useLayout } from "../hooks/useLayout"
+import { EmailLimitsIndicator } from "./EmailLimitsIndicator"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import type { HeaderProps } from "../types"
@@ -79,6 +80,7 @@ export function DashboardHeader({
 
         {/* Desktop Actions */}
         <div className={styles.desktopActions}>
+          <EmailLimitsIndicator compact />
           <LanguageSelector />
 
           {/* Profile */}

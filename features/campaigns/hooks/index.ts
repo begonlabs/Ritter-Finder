@@ -2,6 +2,7 @@
 export { useEmailComposer } from './useEmailComposer'
 export { useEmailTemplates } from './useEmailTemplates'
 export { useEmailQueue } from './useEmailQueue'
+export { useEmailLimits, incrementEmailCount } from './useEmailLimits'
 export { useCampaignHistory } from './useCampaignHistory'
 export { useLeadAdapter } from './useLeadAdapter'
 export { usePagination } from './usePagination'

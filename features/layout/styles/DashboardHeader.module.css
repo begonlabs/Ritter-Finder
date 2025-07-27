@@ -63,7 +63,7 @@
 .desktopActions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   justify-self: end;
   animation: fadeInRight 0.4s ease-out 0.1s both;
 }
