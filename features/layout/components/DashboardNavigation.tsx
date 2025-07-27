@@ -24,7 +24,13 @@ export function DashboardNavigation({
   compact = false 
 }: DashboardNavigationProps) {
   const { t } = useLanguage()
-  const { isMobile } = useResponsive()
+  const { 
+    isMobile, 
+    isSmallScreen, 
+    isMediumScreen, 
+    isLargeScreen,
+    utils 
+  } = useResponsive()
   const { state } = useLayout()
   
   // Use the new navigation hook with permissions
@@ -42,10 +48,20 @@ export function DashboardNavigation({
     }
   }
 
+  // Determine if we should show icons only, text only, or both
+  const showIconsOnly = isSmallScreen || (compact && isMediumScreen)
+  const showFullLabels = isLargeScreen && !compact
+  const shouldCollapse = utils.shouldCollapseNavigation()
+
   const containerClasses = cn(
     styles.navigationContainer,
     compact ? styles.compact : styles.normal,
-    className
+    className,
+    isSmallScreen && styles.mobile,
+    isMediumScreen && styles.tablet,
+    isLargeScreen && styles.desktop,
+    showIconsOnly && styles.iconsOnly,
+    shouldCollapse && styles.collapsed
   )
 
   const wrapperClasses = cn(
@@ -67,7 +83,12 @@ export function DashboardNavigation({
             compact ? styles.compact : styles.normal,
             isActive ? styles.active : styles.inactive,
             isDisabled && styles.disabled,
-            !hasPermissions && styles.unauthorized
+            !hasPermissions && styles.unauthorized,
+            // Responsive classes
+            isSmallScreen && styles.itemMobile,
+            isMediumScreen && styles.itemTablet,
+            isLargeScreen && styles.itemDesktop,
+            showIconsOnly && styles.itemIconOnly
           )
 
           return (
@@ -81,20 +102,32 @@ export function DashboardNavigation({
             >
               <IconComponent className={cn(
                 styles.navigationIcon,
-                compact ? styles.compact : styles.normal
+                compact ? styles.compact : styles.normal,
+                isSmallScreen && styles.iconMobile,
+                isMediumScreen && styles.iconTablet,
+                isLargeScreen && styles.iconDesktop
               )} />
+              {!showIconsOnly && (
               <span className={cn(
                 styles.navigationLabel,
-                compact ? styles.compact : styles.normal
+                  compact ? styles.compact : styles.normal,
+                  isSmallScreen && styles.labelMobile,
+                  isMediumScreen && styles.labelTablet,
+                  isLargeScreen && styles.labelDesktop,
+                  utils.getTextSize('sm')
               )}>
                 {item.label}
               </span>
+              )}
 
               {/* Badge */}
-              {item.badge && hasPermissions && (
+              {item.badge && hasPermissions && (!showIconsOnly || isLargeScreen) && (
                 <div className={cn(
                   styles.navigationBadge,
-                  compact ? styles.compact : styles.normal
+                  compact ? styles.compact : styles.normal,
+                  isSmallScreen && styles.badgeMobile,
+                  isMediumScreen && styles.badgeTablet,
+                  isLargeScreen && styles.badgeDesktop
                 )}>
                   {item.badge}
                 </div>

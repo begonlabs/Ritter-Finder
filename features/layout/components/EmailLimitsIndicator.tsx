@@ -4,8 +4,10 @@ import { Mail, Clock, Calendar, AlertTriangle, Wifi, WifiOff } from "lucide-reac
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { useEmailLimits } from "@/features/campaigns/hooks/useEmailLimits"
+import { useResponsive } from "../hooks/useResponsive"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 import styles from "../styles/EmailLimitsIndicator.module.css"
 
 interface EmailLimitsIndicatorProps {
@@ -22,6 +24,13 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
     isDailyLimitReached,
     isConnected
   } = useEmailLimits()
+  
+  const { 
+    isSmallScreen, 
+    isMediumScreen, 
+    isLargeScreen,
+    utils 
+  } = useResponsive()
 
   const getHourlyStatus = () => {
     if (isHourlyLimitReached) return 'blocked'
@@ -38,11 +47,17 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
   const hourlyStatus = getHourlyStatus()
   const dailyStatus = getDailyStatus()
 
+  // Determine responsive properties
+  const iconSize = isSmallScreen ? 10 : isMediumScreen ? 12 : 14
+  const shouldShowLabels = !isSmallScreen
+  const tooltipSide = isSmallScreen ? "bottom" : "bottom"
+  
   const getStatusIcon = (status: string) => {
+    const iconClass = `h-${iconSize < 12 ? '3' : '4'} w-${iconSize < 12 ? '3' : '4'}`
     switch (status) {
-      case 'blocked': return <AlertTriangle className="h-3 w-3" />
-      case 'warning': return <AlertTriangle className="h-3 w-3" />
-      default: return <Mail className="h-3 w-3" />
+      case 'blocked': return <AlertTriangle className={iconClass} />
+      case 'warning': return <AlertTriangle className={iconClass} />
+      default: return <Mail className={iconClass} />
     }
   }
 
@@ -51,27 +66,49 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`${styles.limitsIndicator} ${styles.compact} ${className}`}>
-              <div className={`${styles.limitItem} ${styles[hourlyStatus]}`}>
-                <span className={styles.limitCount}>{limits.hourlyCount}</span>
+            <div className={cn(
+              styles.limitsIndicator, 
+              styles.compact, 
+              className,
+              isSmallScreen && styles.compactMobile,
+              isMediumScreen && styles.compactTablet,
+              isLargeScreen && styles.compactDesktop
+            )}>
+              <div className={cn(
+                styles.limitItem, 
+                styles[hourlyStatus],
+                isSmallScreen && styles.limitItemMobile
+              )}>
+                <span className={cn(styles.limitCount, utils.getTextSize('sm'))}>{limits.hourlyCount}</span>
                 <span className={styles.limitSeparator}>/</span>
-                <span className={styles.limitMax}>{limits.hourlyLimit}</span>
+                <span className={cn(styles.limitMax, utils.getTextSize('sm'))}>{limits.hourlyLimit}</span>
               </div>
-              <div className={`${styles.limitItem} ${styles[dailyStatus]}`}>
-                <span className={styles.limitCount}>{limits.dailyCount}</span>
+              <div className={cn(
+                styles.limitItem, 
+                styles[dailyStatus],
+                isSmallScreen && styles.limitItemMobile
+              )}>
+                <span className={cn(styles.limitCount, utils.getTextSize('sm'))}>{limits.dailyCount}</span>
                 <span className={styles.limitSeparator}>/</span>
-                <span className={styles.limitMax}>{limits.dailyLimit}</span>
+                <span className={cn(styles.limitMax, utils.getTextSize('sm'))}>{limits.dailyLimit}</span>
               </div>
-              <div className={styles.connectionIndicator}>
+              <div className={cn(
+                styles.connectionIndicator,
+                isSmallScreen && styles.connectionIndicatorMobile
+              )}>
                 {isConnected ? (
-                  <Wifi className={`${styles.connectionIcon} ${styles.connected}`} size={12} />
+                  <Wifi className={cn(styles.connectionIcon, styles.connected)} size={iconSize} />
                 ) : (
-                  <WifiOff className={`${styles.connectionIcon} ${styles.disconnected}`} size={12} />
+                  <WifiOff className={cn(styles.connectionIcon, styles.disconnected)} size={iconSize} />
                 )}
               </div>
             </div>
           </TooltipTrigger>
-          <TooltipContent side="bottom" align="end" className={styles.tooltip}>
+          <TooltipContent side={tooltipSide} align={isSmallScreen ? "center" : "end"} className={cn(
+            styles.tooltip,
+            isSmallScreen && styles.tooltipMobile,
+            isMediumScreen && styles.tooltipTablet
+          )}>
             <div className={styles.tooltipContent}>
               <div className={styles.tooltipSection}>
                 <div className={styles.tooltipHeader}>
@@ -128,11 +165,6 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
                   )}
                   <span className={styles.tooltipTitle}>
                     {isConnected ? 'Conectado en Tiempo Real' : 'Reconectando...'}
-                  </span>
-                </div>
-                <div className={styles.tooltipStats}>
-                  <span className={`${styles.tooltipCount} ${isConnected ? styles.connected : styles.disconnected}`}>
-                    {isConnected ? '🟢 Datos actualizados en vivo' : '🟡 Usando datos en caché'}
                   </span>
                 </div>
               </div>

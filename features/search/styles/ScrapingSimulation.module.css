@@ -1,6 +1,6 @@
 /* ScrapingSimulation Styles - RitterFinder Search Feature */
 
-/* Main Container */
+/* Main Container - Responsive */
 .scrapingSimulation {
   margin-top: 2rem;
   border: none;
@@ -8,18 +8,51 @@
   border-radius: 12px;
   background: white;
   animation: slideInUp 0.4s ease-out;
+  transition: all 0.3s ease;
+}
+
+.scrapingSimulationMobile {
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+.scrapingSimulationTablet {
+  margin-top: 1.75rem;
+  border-radius: 11px;
+}
+
+.scrapingSimulationDesktop {
+  margin-top: 2rem;
+  border-radius: 12px;
 }
 
 .content {
   padding: 1.5rem;
+  transition: padding 0.3s ease;
 }
 
-/* Header */
+.contentMobile {
+  padding: 1rem;
+}
+
+/* Header - Responsive */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  transition: margin 0.3s ease;
+}
+
+.headerMobile {
+  margin-bottom: 0.75rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
 }
 
 .title {
@@ -27,6 +60,11 @@
   font-weight: 600;
   color: #1f2937;
   margin: 0;
+  transition: font-size 0.3s ease;
+}
+
+.titleMobile {
+  font-size: 1rem;
 }
 
 .progressPercentage {
@@ -38,12 +76,24 @@
   border-radius: 4px;
   min-width: 3rem;
   text-align: center;
+  transition: all 0.3s ease;
 }
 
-/* Progress Bar Container */
+.progressPercentageMobile {
+  font-size: 0.8125rem;
+  min-width: 2.5rem;
+  padding: 0.1875rem 0.375rem;
+}
+
+/* Progress Bar Container - Responsive */
 .progressContainer {
   position: relative;
   margin-bottom: 1rem;
+  transition: margin 0.3s ease;
+}
+
+.progressContainerMobile {
+  margin-bottom: 0.75rem;
 }
 
 .progressBar {
@@ -53,6 +103,12 @@
   border-radius: 4px;
   overflow: hidden;
   position: relative;
+  transition: height 0.3s ease;
+}
+
+.progressBarMobile {
+  height: 6px;
+  border-radius: 3px;
 }
 
 .progressBarFill {
@@ -64,12 +120,18 @@
   animation: shimmer 2s infinite;
 }
 
-/* Messages Container */
+/* Messages Container - Responsive */
 .messagesContainer {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   min-height: 3rem;
+  transition: all 0.3s ease;
+}
+
+.messagesContainerMobile {
+  gap: 0.375rem;
+  min-height: 2.5rem;
 }
 
 /* Current Website Message */
@@ -93,7 +155,7 @@
   font-size: 0.8125rem;
 }
 
-/* Step Message */
+/* Step Message - Responsive */
 .stepMessage {
   font-size: 0.875rem;
   color: #6b7280;
@@ -102,6 +164,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.stepMessageMobile {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0;
+  gap: 0.375rem;
 }
 
 .stepIcon {

@@ -36,10 +36,26 @@ export function DashboardLayout({
   navigationProps = {}
 }: ExtendedDashboardLayoutProps) {
   const { state } = useLayout()
-  const { isMobile } = useResponsive()
+  const { 
+    isMobile, 
+    isTablet, 
+    isDesktop,
+    isSmallScreen,
+    isMediumScreen,
+    isLargeScreen,
+    utils,
+    windowSize
+  } = useResponsive()
 
   return (
-    <div className={cn(styles.dashboardLayout, className)}>
+    <div className={cn(
+      styles.dashboardLayout, 
+      className,
+      // Responsive layout classes
+      isSmallScreen && styles.mobileLayout,
+      isMediumScreen && styles.tabletLayout,
+      isLargeScreen && styles.desktopLayout
+    )}>
       {/* Header */}
       <DashboardHeader 
         user={user}
@@ -49,9 +65,12 @@ export function DashboardLayout({
         {...headerProps}
       />
 
-      <div className={styles.layoutContainer}>
-        {/* Sidebar (optional) */}
-        {showSidebar && !isMobile && (
+      <div className={cn(
+        styles.layoutContainer,
+        utils.getLayoutDirection() === 'column' && styles.stackedLayout
+      )}>
+        {/* Sidebar (conditional based on screen size) */}
+        {showSidebar && utils.shouldShowSidebar() && (
           <Sidebar
             items={sidebarItems}
             activeItem={activeTab}
@@ -62,19 +81,55 @@ export function DashboardLayout({
             }}
             className={cn(
               "sticky top-16 h-[calc(100vh-4rem)]",
-              state.sidebarCollapsed ? "w-16" : "w-64"
+              state.sidebarCollapsed ? "w-16" : "w-64",
+              // Responsive sidebar
+              isMediumScreen && state.sidebarCollapsed ? "w-12" : isMediumScreen ? "w-48" : "",
+              isLargeScreen && "shadow-lg"
             )}
           />
+        )}
+
+        {/* Mobile Navigation Drawer (if needed) */}
+        {showSidebar && utils.shouldShowMobileNav() && (
+          <div className={cn(
+            styles.mobileDrawer,
+            state.mobileMenuOpen ? styles.mobileDrawerOpen : styles.mobileDrawerClosed
+          )}>
+            <Sidebar
+              items={sidebarItems}
+              activeItem={activeTab}
+              onItemClick={(item) => {
+                if (item.id && typeof onTabChange === 'function') {
+                  onTabChange(item.id)
+                }
+              }}
+              className="w-full h-full"
+            />
+          </div>
         )}
 
         {/* Main Content */}
         <main className={cn(
           styles.mainContent,
-          showSidebar && !isMobile && (state.sidebarCollapsed ? styles.withSidebarCollapsed : styles.withSidebarExpanded)
+          showSidebar && utils.shouldShowSidebar() && (state.sidebarCollapsed ? styles.withSidebarCollapsed : styles.withSidebarExpanded),
+          // Responsive main content
+          isSmallScreen && styles.mobileMain,
+          isMediumScreen && styles.tabletMain,
+          isLargeScreen && styles.desktopMain
         )}>
-          <div className={styles.contentContainer}>
+          <div className={cn(
+            styles.contentContainer,
+            utils.getContainerClass(),
+            // Responsive container
+            isSmallScreen && styles.mobileContainer,
+            isMediumScreen && styles.tabletContainer,
+            isLargeScreen && styles.desktopContainer
+          )}>
             {/* Navigation */}
-            <div className={styles.navigationSection}>
+            <div className={cn(
+              styles.navigationSection,
+              utils.shouldCollapseNavigation() && styles.collapsedNavigation
+            )}>
               <DashboardNavigation
                 activeTab={activeTab}
                 onTabChange={onTabChange}
@@ -85,8 +140,16 @@ export function DashboardLayout({
             </div>
 
             {/* Page Content */}
-            <div className={styles.pageContent}>
-              <div className={styles.contentArea}>
+            <div className={cn(
+              styles.pageContent,
+              // Responsive spacing
+              `gap-[${utils.getSpacing('md')}]`
+            )}>
+              <div className={cn(
+                styles.contentArea,
+                // Responsive content area
+                utils.shouldStackElements() && styles.stackedContent
+              )}>
                 {children}
               </div>
             </div>

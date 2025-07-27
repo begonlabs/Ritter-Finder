@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { useLanguage, formatMessage } from "@/lib/language-context"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
+import { cn } from "@/lib/utils"
 import styles from "../styles/ScrapingSimulation.module.css"
 
 interface ScrapingSimulationProps {
@@ -12,6 +14,7 @@ interface ScrapingSimulationProps {
 
 export function ScrapingSimulation({}: ScrapingSimulationProps = {}) {
   const { t } = useLanguage()
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
   const [progress, setProgress] = useState(0)
   const [message, setMessage] = useState("")
 
@@ -50,19 +53,59 @@ export function ScrapingSimulation({}: ScrapingSimulationProps = {}) {
   }, [progress, t])
 
   return (
-    <Card className={styles.scrapingSimulation}>
-      <CardContent className={styles.content}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>{t("search.progress")}</h3>
-          <span className={styles.progressPercentage}>{progress}%</span>
+    <Card className={cn(
+      styles.scrapingSimulation,
+      isSmallScreen && styles.scrapingSimulationMobile,
+      isMediumScreen && styles.scrapingSimulationTablet,
+      isLargeScreen && styles.scrapingSimulationDesktop
+    )}>
+      <CardContent className={cn(
+        styles.content,
+        isSmallScreen && styles.contentMobile
+      )}>
+        <div className={cn(
+          styles.header,
+          isSmallScreen && styles.headerMobile
+        )}>
+          <h3 className={cn(
+            styles.title,
+            isSmallScreen && styles.titleMobile
+          )}>
+            {t("search.progress")}
+          </h3>
+          <span className={cn(
+            styles.progressPercentage,
+            isSmallScreen && styles.progressPercentageMobile
+          )}>
+            {progress}%
+          </span>
         </div>
 
-        <div className={styles.progressContainer}>
-          <Progress value={progress} className={styles.progressBar} />
+        <div className={cn(
+          styles.progressContainer,
+          isSmallScreen && styles.progressContainerMobile
+        )}>
+          <Progress 
+            value={progress} 
+            className={cn(
+              styles.progressBar,
+              isSmallScreen && styles.progressBarMobile
+            )} 
+          />
         </div>
 
-        <div className={styles.messagesContainer}>
-          {message && <p className={styles.stepMessage}>{message}</p>}
+        <div className={cn(
+          styles.messagesContainer,
+          isSmallScreen && styles.messagesContainerMobile
+        )}>
+          {message && (
+            <p className={cn(
+              styles.stepMessage,
+              isSmallScreen && styles.stepMessageMobile
+            )}>
+              {message}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

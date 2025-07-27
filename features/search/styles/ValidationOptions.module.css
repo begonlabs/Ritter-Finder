@@ -1,6 +1,6 @@
 /* ValidationOptions Styles - RitterFinder Search Feature */
 
-/* Main Container */
+/* Main Container - Responsive */
 .validationOptions {
   border: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -15,12 +15,35 @@
   transform: translateY(-1px);
 }
 
-/* Header */
+.validationOptionsMobile {
+  border-radius: 10px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+.validationOptionsTablet {
+  border-radius: 11px;
+}
+
+.validationOptionsDesktop {
+  border-radius: 12px;
+}
+
+/* Header - Responsive */
 .header {
   padding-bottom: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: padding 0.3s ease;
+}
+
+.headerMobile {
+  padding-bottom: 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
 
 .title {
@@ -31,12 +54,28 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  transition: font-size 0.3s ease;
+}
+
+.titleMobile {
+  font-size: 1rem;
+  gap: 0.375rem;
+}
+
+.titleTablet {
+  font-size: 1.0625rem;
 }
 
 .titleIcon {
   width: 1.25rem;
   height: 1.25rem;
   color: #f59e0b;
+  transition: all 0.3s ease;
+}
+
+.titleIconMobile {
+  width: 1rem;
+  height: 1rem;
 }
 
 .clearButton {
@@ -53,6 +92,11 @@
   gap: 0.25rem;
 }
 
+.clearButtonMobile {
+  font-size: 0.8125rem;
+  padding: 0.1875rem 0.375rem;
+}
+
 .clearButton:hover {
   color: #b91c1c;
   background: #fee2e2;
@@ -61,13 +105,24 @@
 .clearButtonIcon {
   height: 0.75rem;
   width: 0.75rem;
+  transition: all 0.3s ease;
 }
 
-/* Content */
+.clearButtonIconMobile {
+  height: 0.625rem;
+  width: 0.625rem;
+}
+
+/* Content - Responsive */
 .content {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  transition: gap 0.3s ease;
+}
+
+.contentMobile {
+  gap: 1rem;
 }
 
 /* Single Column Layout */
@@ -77,7 +132,7 @@
     gap: 1.5rem;
 }
 
-/* Sections */
+/* Sections - Responsive */
 .section {
   display: flex;
   flex-direction: column;
@@ -87,6 +142,12 @@
   border-radius: 8px;
   border: 1px solid #f3f4f6;
   transition: all 0.2s ease;
+}
+
+.sectionMobile {
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
 }
 
 .section:hover {
@@ -100,6 +161,14 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.sectionHeaderMobile {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin-bottom: 0.375rem;
 }
 
 .sectionTitle {
@@ -110,12 +179,24 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  transition: font-size 0.3s ease;
+}
+
+.sectionTitleMobile {
+  font-size: 0.9375rem;
+  gap: 0.375rem;
 }
 
 .sectionIcon {
   width: 1rem;
   height: 1rem;
   color: #f59e0b;
+  transition: all 0.3s ease;
+}
+
+.sectionIconMobile {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 .sectionClearButton {
@@ -132,6 +213,11 @@
   gap: 0.25rem;
 }
 
+.sectionClearButtonMobile {
+  font-size: 0.75rem;
+  padding: 0.1875rem 0.375rem;
+}
+
 .sectionClearButton:hover {
   color: #dc2626;
   background: #fee2e2;
@@ -142,24 +228,43 @@
   color: #6b7280;
   margin: 0;
   line-height: 1.4;
+  transition: font-size 0.3s ease;
+}
+
+.sectionDescriptionMobile {
+  font-size: 0.8125rem;
 }
 
 
 
-/* Options Grid */
+/* Options Grid - Responsive */
 .optionsGrid {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  transition: gap 0.3s ease;
 }
 
-/* Option Item */
+.optionsGridMobile {
+  gap: 0.75rem;
+}
+
+.optionsGridTablet {
+  gap: 0.875rem;
+}
+
+/* Option Item - Responsive */
 .optionItem {
   padding: 0.875rem;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   transition: all 0.2s ease;
   background: white;
+}
+
+.optionItemMobile {
+  padding: 0.75rem;
+  border-radius: 5px;
 }
 
 .optionItem:hover {
@@ -179,6 +284,12 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.optionHeaderMobile {
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
 }
 
 .optionCheckbox {
@@ -187,6 +298,11 @@
   accent-color: #f59e0b;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.optionCheckboxMobile {
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 .optionCheckbox:focus {
@@ -205,6 +321,11 @@
   transition: color 0.2s ease;
 }
 
+.optionLabelMobile {
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+}
+
 .optionLabel:hover {
   color: #92400e;
 }
@@ -216,17 +337,28 @@
   transition: color 0.2s ease;
 }
 
+.optionIconMobile {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
 .optionItem:has(.optionCheckbox:checked) .optionIcon {
   color: #f59e0b;
 }
 
-/* Option Description */
+/* Option Description - Responsive */
 .optionDescription {
   font-size: 0.875rem;
   color: #6b7280;
   line-height: 1.4;
   margin: 0;
   margin-left: 2rem;
+  transition: all 0.3s ease;
+}
+
+.optionDescriptionMobile {
+  font-size: 0.8125rem;
+  margin-left: 1.5rem;
 }
 
 .optionItem:has(.optionCheckbox:checked) .optionDescription {
@@ -271,13 +403,19 @@
   font-weight: 500;
 }
 
-/* Validation Summary */
+/* Validation Summary - Responsive */
 .validationSummary {
   padding: 1rem;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   border-radius: 8px;
   animation: fadeInScale 0.3s ease-out;
+  transition: all 0.3s ease;
+}
+
+.validationSummaryMobile {
+  padding: 0.75rem;
+  border-radius: 6px;
 }
 
 @keyframes fadeInScale {
@@ -296,18 +434,34 @@
   font-weight: 600;
   color: #166534;
   margin: 0 0 0.75rem 0;
+  transition: font-size 0.3s ease;
+}
+
+.summaryTitleMobile {
+  font-size: 0.8125rem;
+  margin: 0 0 0.5rem 0;
 }
 
 .summaryContent {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  transition: gap 0.3s ease;
+}
+
+.summaryContentMobile {
+  gap: 0.5rem;
 }
 
 .summarySection {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  transition: gap 0.3s ease;
+}
+
+.summarySectionMobile {
+  gap: 0.375rem;
 }
 
 .summarySubtitle {
@@ -318,12 +472,24 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
+  transition: font-size 0.3s ease;
+}
+
+.summarySubtitleMobile {
+  font-size: 0.75rem;
+  gap: 0.25rem;
 }
 
 .summarySubIcon {
   width: 0.75rem;
   height: 0.75rem;
   color: #16a34a;
+  transition: all 0.3s ease;
+}
+
+.summarySubIconMobile {
+  width: 0.625rem;
+  height: 0.625rem;
 }
 
 .summaryList {
@@ -334,6 +500,12 @@
   flex-direction: column;
   gap: 0.375rem;
   margin-left: 1rem;
+  transition: all 0.3s ease;
+}
+
+.summaryListMobile {
+  gap: 0.25rem;
+  margin-left: 0.75rem;
 }
 
 .summaryItem {
@@ -343,6 +515,12 @@
   font-size: 0.8125rem;
   color: #166534;
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.summaryItemMobile {
+  gap: 0.375rem;
+  font-size: 0.75rem;
 }
 
 .summaryIcon {
@@ -350,6 +528,12 @@
   height: 0.875rem;
   color: #16a34a;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.summaryIconMobile {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 /* Animations */

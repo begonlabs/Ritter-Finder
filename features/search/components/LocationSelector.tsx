@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
 import { useLocations } from "../hooks"
 import styles from "../styles/LocationSelector.module.css"
 
@@ -19,6 +20,7 @@ interface LocationSelectorProps {
 export function LocationSelector({ selectedLocations, setSelectedLocations }: LocationSelectorProps) {
   const { t } = useLanguage()
   const { locations, isLoading, error, refetch } = useLocations()
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
 
   const handleSelect = (value: string) => {
     if (value === "all") {
@@ -50,43 +52,85 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
   }
 
   return (
-    <Card className={styles.locationSelector}>
-      <CardHeader className={styles.header}>
-        <CardTitle className={styles.title}>
-          <MapPin className={styles.titleIcon} />
+    <Card className={cn(
+      styles.locationSelector,
+      isSmallScreen && styles.locationSelectorMobile,
+      isMediumScreen && styles.locationSelectorTablet,
+      isLargeScreen && styles.locationSelectorDesktop
+    )}>
+      <CardHeader className={cn(
+        styles.header,
+        isSmallScreen && styles.headerMobile
+      )}>
+        <CardTitle className={cn(
+          styles.title,
+          isSmallScreen && styles.titleMobile,
+          isMediumScreen && styles.titleTablet
+        )}>
+          <MapPin className={cn(
+            styles.titleIcon,
+            isSmallScreen && styles.titleIconMobile
+          )} />
           Ubicación de Búsqueda
           <div className={styles.headerActions}>
             <Button
               variant="ghost"
-              size="sm"
+              size={isSmallScreen ? "sm" : "sm"}
               onClick={refetch}
               disabled={isLoading}
-              className={styles.refreshButton}
+              className={cn(
+                styles.refreshButton,
+                isSmallScreen && styles.refreshButtonMobile
+              )}
             >
-              <RefreshCw className={cn(styles.refreshIcon, isLoading && "animate-spin")} />
+              <RefreshCw className={cn(
+                styles.refreshIcon, 
+                isLoading && "animate-spin",
+                isSmallScreen && styles.refreshIconMobile
+              )} />
             </Button>
           </div>
         </CardTitle>
         {error && (
-          <p className={styles.errorText}>
+          <p className={cn(
+            styles.errorText,
+            isSmallScreen && styles.errorTextMobile
+          )}>
             {error} - Usando datos de respaldo
           </p>
         )}
       </CardHeader>
-      <CardContent className={styles.content}>
+      <CardContent className={cn(
+        styles.content,
+        isSmallScreen && styles.contentMobile
+      )}>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" role="combobox" className={styles.dropdownTrigger}>
+            <Button 
+              variant="outline" 
+              role="combobox" 
+              className={cn(
+                styles.dropdownTrigger,
+                isSmallScreen && styles.dropdownTriggerMobile,
+                isMediumScreen && styles.dropdownTriggerTablet
+              )}
+            >
               {selectedLocations.length === 0 
                 ? "Seleccionar ubicaciones..." 
                 : selectedLocations.includes("all")
                   ? "Toda España"
                   : `${selectedLocations.length} ubicación${selectedLocations.length > 1 ? 'es' : ''} seleccionada${selectedLocations.length > 1 ? 's' : ''}`
               }
-              <ChevronsUpDown className={styles.dropdownIcon} />
+              <ChevronsUpDown className={cn(
+                styles.dropdownIcon,
+                isSmallScreen && styles.dropdownIconMobile
+              )} />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className={styles.popoverContent} align="start">
+          <PopoverContent className={cn(
+            styles.popoverContent,
+            isSmallScreen && styles.popoverContentMobile
+          )} align="start">
             <Command>
               <CommandInput placeholder="Buscar ubicación..." />
               <CommandList>
@@ -160,25 +204,63 @@ export function LocationSelector({ selectedLocations, setSelectedLocations }: Lo
 
         {/* Selected Locations */}
         {selectedLocations.length > 0 && (
-          <div className={styles.selectedSection}>
-            <div className={styles.selectedHeader}>
-              <span className={styles.selectedLabel}>Ubicaciones seleccionadas:</span>
-              <Button variant="ghost" size="sm" onClick={clearAll} className={styles.clearButton}>
-                <X className={styles.clearButtonIcon} />
-                Limpiar todo
+          <div className={cn(
+            styles.selectedSection,
+            isSmallScreen && styles.selectedSectionMobile
+          )}>
+            <div className={cn(
+              styles.selectedHeader,
+              isSmallScreen && styles.selectedHeaderMobile
+            )}>
+              <span className={cn(
+                styles.selectedLabel,
+                isSmallScreen && styles.selectedLabelMobile
+              )}>
+                Ubicaciones seleccionadas:
+              </span>
+              <Button 
+                variant="ghost" 
+                size={isSmallScreen ? "sm" : "sm"} 
+                onClick={clearAll} 
+                className={cn(
+                  styles.clearButton,
+                  isSmallScreen && styles.clearButtonMobile
+                )}
+              >
+                <X className={cn(
+                  styles.clearButtonIcon,
+                  isSmallScreen && styles.clearButtonIconMobile
+                )} />
+                {!isSmallScreen && "Limpiar todo"}
               </Button>
             </div>
-            <div className={styles.badgeContainer}>
+            <div className={cn(
+              styles.badgeContainer,
+              isSmallScreen && styles.badgeContainerMobile
+            )}>
               {selectedLocations.map((locationValue) => (
-                <Badge key={locationValue} variant="secondary" className={styles.badge}>
+                <Badge 
+                  key={locationValue} 
+                  variant="secondary" 
+                  className={cn(
+                    styles.badge,
+                    isSmallScreen && styles.badgeMobile
+                  )}
+                >
                   {getLocationLabel(locationValue)}
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={styles.badgeRemoveButton}
+                    className={cn(
+                      styles.badgeRemoveButton,
+                      isSmallScreen && styles.badgeRemoveButtonMobile
+                    )}
                     onClick={() => handleRemove(locationValue)}
                   >
-                    <X className={styles.badgeRemoveIcon} />
+                    <X className={cn(
+                      styles.badgeRemoveIcon,
+                      isSmallScreen && styles.badgeRemoveIconMobile
+                    )} />
                   </Button>
                 </Badge>
               ))}

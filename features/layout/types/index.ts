@@ -249,13 +249,67 @@ export interface UseLayoutReturn {
   actions: LayoutActions
 }
 
+export interface ResponsiveUtils {
+  above: (breakpoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl') => boolean
+  below: (breakpoint: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl') => boolean
+  between: (min: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl', max: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl') => boolean
+  getGridCols: () => number
+  getContainerClass: () => string
+  getTextSize: (scale: 'sm' | 'base' | 'lg' | 'xl') => string
+  getButtonSize: () => 'sm' | 'default' | 'lg'
+  shouldShowMobileNav: () => boolean
+  shouldShowSidebar: () => boolean
+  shouldCollapseNavigation: () => boolean
+  getLayoutDirection: () => 'column' | 'row'
+  shouldStackElements: () => boolean
+  shouldReduceMotion: () => boolean
+  getSpacing: (scale: 'sm' | 'md' | 'lg') => string
+}
+
 export interface UseResponsiveReturn {
+  // Legacy API (for backwards compatibility)
   isMobile: boolean
   isTablet: boolean
   isDesktop: boolean
   breakpoint: keyof ResponsiveBreakpoints
   width: number
   height: number
+  
+  // Extended breakpoints
+  isXs: boolean
+  isSm: boolean
+  isMd: boolean
+  isLg: boolean
+  isXl: boolean
+  is2xl: boolean
+  is3xl: boolean
+  isWide: boolean
+  
+  // Utility flags
+  isSmallScreen: boolean
+  isMediumScreen: boolean
+  isLargeScreen: boolean
+  
+  // Device detection
+  isTouchDevice: boolean
+  
+  // Orientation
+  isLandscape: boolean
+  isPortrait: boolean
+  
+  // Aspect ratio categories
+  isUltraWide: boolean
+  isWideScreen: boolean
+  isStandardRatio: boolean
+  isSquareish: boolean
+  isTallScreen: boolean
+  
+  // Extended API
+  utils: ResponsiveUtils
+  breakpoints: Record<string, number>
+  windowSize: { width: number; height: number }
+  currentBreakpoint: keyof ResponsiveBreakpoints
+  aspectRatio: number
 }
 
 // Enhanced User Profile Props

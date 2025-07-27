@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/language-context"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
 import { useClientTypes } from "../hooks"
 import styles from "../styles/ClientTypeSelector.module.css"
 
@@ -19,6 +20,7 @@ interface ClientTypeSelectorProps {
 export function ClientTypeSelector({ selectedClientTypes, setSelectedClientTypes }: ClientTypeSelectorProps) {
   const { t } = useLanguage()
   const { clientTypes, isLoading, error, refetch } = useClientTypes()
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
 
   const handleSelect = (value: string) => {
     if (selectedClientTypes.includes(value)) {
@@ -42,45 +44,83 @@ export function ClientTypeSelector({ selectedClientTypes, setSelectedClientTypes
   }
 
   return (
-    <Card className={styles.clientTypeSelector}>
-      <CardHeader className={styles.header}>
-        <CardTitle className={styles.title}>
-          <Users className={styles.titleIcon} />
+    <Card className={cn(
+      styles.clientTypeSelector,
+      isSmallScreen && styles.clientTypeSelectorMobile,
+      isMediumScreen && styles.clientTypeSelectorTablet,
+      isLargeScreen && styles.clientTypeSelectorDesktop
+    )}>
+      <CardHeader className={cn(
+        styles.header,
+        isSmallScreen && styles.headerMobile
+      )}>
+        <CardTitle className={cn(
+          styles.title,
+          isSmallScreen && styles.titleMobile,
+          isMediumScreen && styles.titleTablet
+        )}>
+          <Users className={cn(
+            styles.titleIcon,
+            isSmallScreen && styles.titleIconMobile
+          )} />
           Tipos de Cliente Objetivo
           <div className={styles.headerActions}>
             <Button
               variant="ghost"
-              size="sm"
+              size={isSmallScreen ? "sm" : "sm"}
               onClick={refetch}
               disabled={isLoading}
-              className={styles.refreshButton}
+              className={cn(
+                styles.refreshButton,
+                isSmallScreen && styles.refreshButtonMobile
+              )}
             >
-              <RefreshCw className={cn(styles.refreshIcon, isLoading && "animate-spin")} />
+              <RefreshCw className={cn(
+                styles.refreshIcon, 
+                isLoading && "animate-spin",
+                isSmallScreen && styles.refreshIconMobile
+              )} />
             </Button>
           </div>
         </CardTitle>
         {error && (
-          <p className={styles.errorText}>
+          <p className={cn(
+            styles.errorText,
+            isSmallScreen && styles.errorTextMobile
+          )}>
             {error} - Usando datos de respaldo
           </p>
         )}
       </CardHeader>
-      <CardContent className={styles.content}>
+      <CardContent className={cn(
+        styles.content,
+        isSmallScreen && styles.contentMobile
+      )}>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
-              className={styles.dropdownTrigger}
+              className={cn(
+                styles.dropdownTrigger,
+                isSmallScreen && styles.dropdownTriggerMobile,
+                isMediumScreen && styles.dropdownTriggerTablet
+              )}
             >
               {selectedClientTypes.length === 0 
                 ? "Selecciona tipos de cliente..." 
                 : `${selectedClientTypes.length} tipo${selectedClientTypes.length > 1 ? 's' : ''} seleccionado${selectedClientTypes.length > 1 ? 's' : ''}`
               }
-              <ChevronsUpDown className={styles.dropdownIcon} />
+              <ChevronsUpDown className={cn(
+                styles.dropdownIcon,
+                isSmallScreen && styles.dropdownIconMobile
+              )} />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className={styles.popoverContent} align="start">
+          <PopoverContent className={cn(
+            styles.popoverContent,
+            isSmallScreen && styles.popoverContentMobile
+          )} align="start">
             <Command>
               <CommandInput placeholder="Buscar tipos de cliente..." />
               <CommandList>
@@ -141,25 +181,63 @@ export function ClientTypeSelector({ selectedClientTypes, setSelectedClientTypes
 
         {/* Selected Client Types */}
         {selectedClientTypes.length > 0 && (
-          <div className={styles.selectedTypes}>
-            <div className={styles.selectedTypesHeader}>
-              <span className={styles.selectedTypesLabel}>Tipos seleccionados:</span>
-              <Button variant="ghost" size="sm" onClick={clearAll} className={styles.clearButton}>
-                <X className={styles.clearButtonIcon} />
-                Limpiar todo
+          <div className={cn(
+            styles.selectedTypes,
+            isSmallScreen && styles.selectedTypesMobile
+          )}>
+            <div className={cn(
+              styles.selectedTypesHeader,
+              isSmallScreen && styles.selectedTypesHeaderMobile
+            )}>
+              <span className={cn(
+                styles.selectedTypesLabel,
+                isSmallScreen && styles.selectedTypesLabelMobile
+              )}>
+                Tipos seleccionados:
+              </span>
+              <Button 
+                variant="ghost" 
+                size={isSmallScreen ? "sm" : "sm"} 
+                onClick={clearAll} 
+                className={cn(
+                  styles.clearButton,
+                  isSmallScreen && styles.clearButtonMobile
+                )}
+              >
+                <X className={cn(
+                  styles.clearButtonIcon,
+                  isSmallScreen && styles.clearButtonIconMobile
+                )} />
+                {!isSmallScreen && "Limpiar todo"}
               </Button>
             </div>
-            <div className={styles.badgeContainer}>
+            <div className={cn(
+              styles.badgeContainer,
+              isSmallScreen && styles.badgeContainerMobile
+            )}>
               {selectedClientTypes.map((clientType) => (
-                <Badge key={clientType} variant="secondary" className={styles.badge}>
+                <Badge 
+                  key={clientType} 
+                  variant="secondary" 
+                  className={cn(
+                    styles.badge,
+                    isSmallScreen && styles.badgeMobile
+                  )}
+                >
                   {getClientTypeLabel(clientType)}
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={styles.badgeRemoveButton}
+                    className={cn(
+                      styles.badgeRemoveButton,
+                      isSmallScreen && styles.badgeRemoveButtonMobile
+                    )}
                     onClick={() => handleRemove(clientType)}
                   >
-                    <X className={styles.badgeRemoveIcon} />
+                    <X className={cn(
+                      styles.badgeRemoveIcon,
+                      isSmallScreen && styles.badgeRemoveIconMobile
+                    )} />
                   </Button>
                 </Badge>
               ))}

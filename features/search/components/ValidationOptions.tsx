@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
 
 import styles from "../styles/ValidationOptions.module.css"
 
@@ -28,6 +30,8 @@ export function ValidationOptions({
   setRequirePhone
 }: ValidationOptionsProps) {
   
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
+  
   const clearAllFilters = () => {
     setRequireWebsite(false)
     setRequireEmail(false)
@@ -37,91 +41,213 @@ export function ValidationOptions({
   const hasAnyFilter = requireWebsite || requireEmail || requirePhone
 
   return (
-    <Card className={styles.validationOptions}>
-      <CardHeader className={styles.header}>
-        <CardTitle className={styles.title}>
-          <Shield className={styles.titleIcon} />
+    <Card className={cn(
+      styles.validationOptions,
+      isSmallScreen && styles.validationOptionsMobile,
+      isMediumScreen && styles.validationOptionsTablet,
+      isLargeScreen && styles.validationOptionsDesktop
+    )}>
+      <CardHeader className={cn(
+        styles.header,
+        isSmallScreen && styles.headerMobile
+      )}>
+        <CardTitle className={cn(
+          styles.title,
+          isSmallScreen && styles.titleMobile,
+          isMediumScreen && styles.titleTablet
+        )}>
+          <Shield className={cn(
+            styles.titleIcon,
+            isSmallScreen && styles.titleIconMobile
+          )} />
           Filtros de Datos
         </CardTitle>
         {hasAnyFilter && (
-          <Button variant="ghost" size="sm" onClick={clearAllFilters} className={styles.clearButton}>
-            <X className={styles.clearButtonIcon} />
-            Limpiar todo
+          <Button 
+            variant="ghost" 
+            size={isSmallScreen ? "sm" : "sm"} 
+            onClick={clearAllFilters} 
+            className={cn(
+              styles.clearButton,
+              isSmallScreen && styles.clearButtonMobile
+            )}
+          >
+            <X className={cn(
+              styles.clearButtonIcon,
+              isSmallScreen && styles.clearButtonIconMobile
+            )} />
+            {!isSmallScreen && "Limpiar todo"}
           </Button>
         )}
       </CardHeader>
-      <CardContent className={styles.content}>
-          <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>
-                <Filter className={styles.sectionIcon} />
+      <CardContent className={cn(
+        styles.content,
+        isSmallScreen && styles.contentMobile
+      )}>
+          <div className={cn(
+            styles.section,
+            isSmallScreen && styles.sectionMobile
+          )}>
+            <div className={cn(
+              styles.sectionHeader,
+              isSmallScreen && styles.sectionHeaderMobile
+            )}>
+              <h3 className={cn(
+                styles.sectionTitle,
+                isSmallScreen && styles.sectionTitleMobile
+              )}>
+                <Filter className={cn(
+                  styles.sectionIcon,
+                  isSmallScreen && styles.sectionIconMobile
+                )} />
                 Filtros de Datos
               </h3>
               {hasAnyFilter && (
-                <Button variant="ghost" size="sm" onClick={clearAllFilters} className={styles.sectionClearButton}>
-                  <X className={styles.clearButtonIcon} />
-                  Limpiar
+                <Button 
+                  variant="ghost" 
+                  size={isSmallScreen ? "sm" : "sm"} 
+                  onClick={clearAllFilters} 
+                  className={cn(
+                    styles.sectionClearButton,
+                    isSmallScreen && styles.sectionClearButtonMobile
+                  )}
+                >
+                  <X className={cn(
+                    styles.clearButtonIcon,
+                    isSmallScreen && styles.clearButtonIconMobile
+                  )} />
+                  {!isSmallScreen && "Limpiar"}
                 </Button>
               )}
             </div>
-            <p className={styles.sectionDescription}>
+            <p className={cn(
+              styles.sectionDescription,
+              isSmallScreen && styles.sectionDescriptionMobile
+            )}>
               Mostrar solo empresas que tengan estos tipos de información
             </p>
             
-            <div className={styles.optionsGrid}>
+            <div className={cn(
+              styles.optionsGrid,
+              isSmallScreen && styles.optionsGridMobile,
+              isMediumScreen && styles.optionsGridTablet
+            )}>
               {/* Require Website Filter */}
-              <div className={styles.optionItem}>
-                <div className={styles.optionHeader}>
+              <div className={cn(
+                styles.optionItem,
+                isSmallScreen && styles.optionItemMobile
+              )}>
+                <div className={cn(
+                  styles.optionHeader,
+                  isSmallScreen && styles.optionHeaderMobile
+                )}>
                   <Checkbox
                     id="require-website"
                     checked={requireWebsite}
                     onCheckedChange={setRequireWebsite}
-                    className={styles.optionCheckbox}
+                    className={cn(
+                      styles.optionCheckbox,
+                      isSmallScreen && styles.optionCheckboxMobile
+                    )}
                   />
-                  <Label htmlFor="require-website" className={styles.optionLabel}>
-                    <Globe className={styles.optionIcon} />
+                  <Label 
+                    htmlFor="require-website" 
+                    className={cn(
+                      styles.optionLabel,
+                      isSmallScreen && styles.optionLabelMobile
+                    )}
+                  >
+                    <Globe className={cn(
+                      styles.optionIcon,
+                      isSmallScreen && styles.optionIconMobile
+                    )} />
                     Solo con sitio web
                   </Label>
                 </div>
-                <p className={styles.optionDescription}>
+                <p className={cn(
+                  styles.optionDescription,
+                  isSmallScreen && styles.optionDescriptionMobile
+                )}>
                   ✅ Filtrar solo empresas que tengan un sitio web registrado
                 </p>
               </div>
 
               {/* Require Email Filter */}
-              <div className={styles.optionItem}>
-                <div className={styles.optionHeader}>
+              <div className={cn(
+                styles.optionItem,
+                isSmallScreen && styles.optionItemMobile
+              )}>
+                <div className={cn(
+                  styles.optionHeader,
+                  isSmallScreen && styles.optionHeaderMobile
+                )}>
                   <Checkbox
                     id="require-email"
                     checked={requireEmail}
                     onCheckedChange={setRequireEmail}
-                    className={styles.optionCheckbox}
+                    className={cn(
+                      styles.optionCheckbox,
+                      isSmallScreen && styles.optionCheckboxMobile
+                    )}
                   />
-                  <Label htmlFor="require-email" className={styles.optionLabel}>
-                    <Mail className={styles.optionIcon} />
+                  <Label 
+                    htmlFor="require-email" 
+                    className={cn(
+                      styles.optionLabel,
+                      isSmallScreen && styles.optionLabelMobile
+                    )}
+                  >
+                    <Mail className={cn(
+                      styles.optionIcon,
+                      isSmallScreen && styles.optionIconMobile
+                    )} />
                     Solo con email
                   </Label>
                 </div>
-                <p className={styles.optionDescription}>
+                <p className={cn(
+                  styles.optionDescription,
+                  isSmallScreen && styles.optionDescriptionMobile
+                )}>
                   ✅ Filtrar solo empresas que tengan una dirección de email registrada
                 </p>
               </div>
 
               {/* Require Phone Filter */}
-              <div className={styles.optionItem}>
-                <div className={styles.optionHeader}>
+              <div className={cn(
+                styles.optionItem,
+                isSmallScreen && styles.optionItemMobile
+              )}>
+                <div className={cn(
+                  styles.optionHeader,
+                  isSmallScreen && styles.optionHeaderMobile
+                )}>
                   <Checkbox
                     id="require-phone"
                     checked={requirePhone}
                     onCheckedChange={setRequirePhone}
-                    className={styles.optionCheckbox}
+                    className={cn(
+                      styles.optionCheckbox,
+                      isSmallScreen && styles.optionCheckboxMobile
+                    )}
                   />
-                  <Label htmlFor="require-phone" className={styles.optionLabel}>
-                    <Phone className={styles.optionIcon} />
+                  <Label 
+                    htmlFor="require-phone" 
+                    className={cn(
+                      styles.optionLabel,
+                      isSmallScreen && styles.optionLabelMobile
+                    )}
+                  >
+                    <Phone className={cn(
+                      styles.optionIcon,
+                      isSmallScreen && styles.optionIconMobile
+                    )} />
                     Solo con teléfono
                   </Label>
                 </div>
-                <p className={styles.optionDescription}>
+                <p className={cn(
+                  styles.optionDescription,
+                  isSmallScreen && styles.optionDescriptionMobile
+                )}>
                   ✅ Filtrar solo empresas que tengan un número de teléfono registrado
                 </p>
             </div>
@@ -130,30 +256,71 @@ export function ValidationOptions({
 
         {/* SUMMARY */}
         {hasAnyFilter && (
-          <div className={styles.validationSummary}>
-            <h4 className={styles.summaryTitle}>Resumen de filtros seleccionados:</h4>
-            <div className={styles.summaryContent}>
-                <div className={styles.summarySection}>
-                  <h5 className={styles.summarySubtitle}>
-                    <Filter className={styles.summarySubIcon} />
+          <div className={cn(
+            styles.validationSummary,
+            isSmallScreen && styles.validationSummaryMobile
+          )}>
+            <h4 className={cn(
+              styles.summaryTitle,
+              isSmallScreen && styles.summaryTitleMobile
+            )}>
+              Resumen de filtros seleccionados:
+            </h4>
+            <div className={cn(
+              styles.summaryContent,
+              isSmallScreen && styles.summaryContentMobile
+            )}>
+                <div className={cn(
+                  styles.summarySection,
+                  isSmallScreen && styles.summarySectionMobile
+                )}>
+                  <h5 className={cn(
+                    styles.summarySubtitle,
+                    isSmallScreen && styles.summarySubtitleMobile
+                  )}>
+                    <Filter className={cn(
+                      styles.summarySubIcon,
+                      isSmallScreen && styles.summarySubIconMobile
+                    )} />
                     Filtros:
                   </h5>
-                  <ul className={styles.summaryList}>
+                  <ul className={cn(
+                    styles.summaryList,
+                    isSmallScreen && styles.summaryListMobile
+                  )}>
                     {requireWebsite && (
-                      <li className={styles.summaryItem}>
-                        <Globe className={styles.summaryIcon} />
+                      <li className={cn(
+                        styles.summaryItem,
+                        isSmallScreen && styles.summaryItemMobile
+                      )}>
+                        <Globe className={cn(
+                          styles.summaryIcon,
+                          isSmallScreen && styles.summaryIconMobile
+                        )} />
                         Solo empresas con sitio web
                       </li>
                     )}
                     {requireEmail && (
-                      <li className={styles.summaryItem}>
-                        <Mail className={styles.summaryIcon} />
+                      <li className={cn(
+                        styles.summaryItem,
+                        isSmallScreen && styles.summaryItemMobile
+                      )}>
+                        <Mail className={cn(
+                          styles.summaryIcon,
+                          isSmallScreen && styles.summaryIconMobile
+                        )} />
                         Solo empresas con email
                       </li>
                     )}
                     {requirePhone && (
-                      <li className={styles.summaryItem}>
-                        <Phone className={styles.summaryIcon} />
+                      <li className={cn(
+                        styles.summaryItem,
+                        isSmallScreen && styles.summaryItemMobile
+                      )}>
+                        <Phone className={cn(
+                          styles.summaryIcon,
+                          isSmallScreen && styles.summaryIconMobile
+                        )} />
                         Solo empresas con teléfono
                       </li>
                     )}

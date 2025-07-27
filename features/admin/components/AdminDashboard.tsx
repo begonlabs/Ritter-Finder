@@ -9,6 +9,8 @@ import {
   Mail,
   Database
 } from "lucide-react"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
+import { cn } from "@/lib/utils"
 import type { AdminDashboardProps, AdminTab } from "../types"
 import styles from "../styles/AdminDashboard.module.css"
 
@@ -20,6 +22,7 @@ import { LeadImport } from "./LeadImport"
 
 export function AdminDashboard({ className = "" }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState("users")
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
 
   // Configurable admin tabs - easy to extend
   const adminTabs: AdminTab[] = [
@@ -57,23 +60,56 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
   const ActiveComponent = activeTabData?.component || UserManagement
 
   return (
-    <div className={`${styles.adminDashboard} ${className} space-y-6`}>
+    <div className={cn(
+      styles.adminDashboard,
+      isSmallScreen && styles.adminDashboardMobile,
+      isMediumScreen && styles.adminDashboardTablet,
+      isLargeScreen && styles.adminDashboardDesktop,
+      className,
+      "space-y-6"
+    )}>
       {/* Header */}
-      <div className={`${styles.adminHeader} flex items-center justify-between`}>
+      <div className={cn(
+        styles.adminHeader,
+        isSmallScreen && styles.adminHeaderMobile,
+        "flex items-center justify-between"
+      )}>
         <div>
-          <h1 className={`${styles.adminTitle} text-3xl font-bold text-gray-900 flex items-center gap-3`}>
-            <Shield className="h-8 w-8 text-ritter-gold" />
+          <h1 className={cn(
+            styles.adminTitle,
+            isSmallScreen && styles.adminTitleMobile,
+            isMediumScreen && styles.adminTitleTablet,
+            "text-3xl font-bold text-gray-900 flex items-center gap-3"
+          )}>
+            <Shield className={cn(
+              "h-8 w-8 text-ritter-gold",
+              isSmallScreen && "h-6 w-6"
+            )} />
             Dashboard de Administración
           </h1>
-          <p className={`${styles.adminDescription} text-gray-600 mt-2`}>
+          <p className={cn(
+            styles.adminDescription,
+            isSmallScreen && styles.adminDescriptionMobile,
+            "text-gray-600 mt-2"
+          )}>
             Gestiona usuarios, roles y configuración del sistema
           </p>
         </div>
       </div>
 
       {/* Admin Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={styles.adminTabs}>
-        <TabsList className={`${styles.tabsList} grid w-full grid-cols-4 lg:w-fit lg:grid-cols-none lg:flex`}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
+        styles.adminTabs,
+        isSmallScreen && styles.adminTabsMobile
+      )}>
+        <TabsList className={cn(
+          styles.tabsList,
+          isSmallScreen && styles.tabsListMobile,
+          isMediumScreen && styles.tabsListTablet,
+          isLargeScreen && styles.tabsListDesktop,
+          "grid w-full",
+          isSmallScreen ? "grid-cols-3" : "grid-cols-4 lg:w-fit lg:grid-cols-none lg:flex"
+        )}>
           {adminTabs.map((tab) => {
             const Icon = tab.icon
             return (
@@ -81,14 +117,28 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
                 key={tab.id}
                 value={tab.id}
                 disabled={tab.disabled}
-                className={`${styles.tabsTrigger} flex items-center gap-2 relative`}
+                className={cn(
+                  styles.tabsTrigger,
+                  isSmallScreen && styles.tabsTriggerMobile,
+                  isMediumScreen && styles.tabsTriggerTablet,
+                  "flex items-center gap-2 relative"
+                )}
               >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <Icon className={cn(
+                  "h-4 w-4",
+                  isSmallScreen && "h-3 w-3"
+                )} />
+                <span className={cn(
+                  isSmallScreen ? "hidden" : "hidden sm:inline"
+                )}>{tab.label}</span>
                 {tab.badge && tab.badge > 0 && (
                   <Badge 
                     variant="secondary" 
-                    className={`${styles.tabBadge} ml-1 h-5 min-w-5 text-xs`}
+                    className={cn(
+                      styles.tabBadge,
+                      isSmallScreen && styles.tabBadgeMobile,
+                      "ml-1 h-5 min-w-5 text-xs"
+                    )}
                   >
                     {tab.badge}
                   </Badge>
@@ -100,7 +150,11 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
 
         {/* Tab Content */}
         {adminTabs.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id} className={styles.tabsContent}>
+          <TabsContent key={tab.id} value={tab.id} className={cn(
+            styles.tabsContent,
+            isSmallScreen && styles.tabsContentMobile,
+            isMediumScreen && styles.tabsContentTablet
+          )}>
             <ActiveComponent />
           </TabsContent>
         ))}

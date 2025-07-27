@@ -2,7 +2,9 @@ import React from 'react'
 import { CheckCircle, MapPin, Activity, BarChart3, Star } from 'lucide-react'
 import { SearchForm } from '../components/SearchForm'
 import { useSearch } from '../hooks/useSearch'
+import { useResponsive } from '../../layout/hooks/useResponsive'
 import { LayoutPage, PageContainer, SectionCard } from '../../layout'
+import { cn } from '@/lib/utils'
 import styles from '../styles/SearchPage.module.css'
 
 export const SearchPage: React.FC = () => {
@@ -16,17 +18,26 @@ export const SearchPage: React.FC = () => {
     searchComplete,
     currentSearchId
   } = useSearch()
+  
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
 
   // Use enhanced results if available, fall back to legacy
   const enhancedResults = searchResults || results
 
   return (
-    <div className={styles.searchPage}>
+    <div className={cn(
+      styles.searchPage,
+      isSmallScreen && styles.searchPageMobile,
+      isMediumScreen && styles.searchPageTablet,
+      isLargeScreen && styles.searchPageDesktop
+    )}>
       <LayoutPage 
         title="Lead Search"
         subtitle="Configure your search parameters and find potential leads"
       >
-        <PageContainer>
+        <PageContainer className={cn(
+          isSmallScreen && 'container-responsive'
+        )}>
           <SectionCard title="Search Configuration">
             <SearchForm 
               state={state}
@@ -38,26 +49,54 @@ export const SearchPage: React.FC = () => {
           </SectionCard>
 
           {enhancedResults && (
-            <div className={styles.resultsSection}>
+            <div className={cn(
+              styles.resultsSection,
+              isSmallScreen && styles.resultsSectionMobile
+            )}>
               <SectionCard title="Search Results">
-                <div className={styles.successState}>
-                  <p className={styles.successMessage}>
-                    <CheckCircle className={styles.successIcon} />
+                <div className={cn(
+                  styles.successState,
+                  isSmallScreen && styles.successStateMobile
+                )}>
+                  <p className={cn(
+                    styles.successMessage,
+                    isSmallScreen && styles.successMessageMobile
+                  )}>
+                    <CheckCircle className={cn(
+                      styles.successIcon,
+                      isSmallScreen && styles.successIconMobile
+                    )} />
                     ✓ Found {enhancedResults.leads?.length || 0} potential leads
                   </p>
-                  <p className={styles.successDetails}>
+                  <p className={cn(
+                    styles.successDetails,
+                    isSmallScreen && styles.successDetailsMobile
+                  )}>
                     Search completed in {(enhancedResults.searchTime / 1000).toFixed(1)} seconds
                   </p>
                 </div>
 
                 {/* Enhanced Search Metrics - only show if available */}
                 {searchResults && (
-                  <div className={styles.enhancedMetrics}>
+                  <div className={cn(
+                    styles.enhancedMetrics,
+                    isSmallScreen && styles.enhancedMetricsMobile,
+                    isMediumScreen && styles.enhancedMetricsTablet
+                  )}>
                     {/* Quality Distribution */}
                     {searchResults.qualityDistribution && (
-                      <div className={styles.metricCard}>
-                        <h4 className={styles.metricTitle}>
-                          <Star className={styles.metricIcon} />
+                      <div className={cn(
+                        styles.metricCard,
+                        isSmallScreen && styles.metricCardMobile
+                      )}>
+                        <h4 className={cn(
+                          styles.metricTitle,
+                          isSmallScreen && styles.metricTitleMobile
+                        )}>
+                          <Star className={cn(
+                            styles.metricIcon,
+                            isSmallScreen && styles.metricIconMobile
+                          )} />
                           Quality Distribution
                         </h4>
                         <div className={styles.qualityGrid}>

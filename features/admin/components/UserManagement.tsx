@@ -53,6 +53,8 @@ import {
   Check,
   Info
 } from "lucide-react"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
+import { cn } from "@/lib/utils"
 import type { UserManagementProps, User as UserType, SystemRoleType } from "../types"
 import { useUserManagement } from "../hooks/useUserManagement"
 import { useConfirmDialog } from "../hooks/useConfirmDialog"
@@ -96,6 +98,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
     verifyUserData
   } = useUserManagement()
 
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -287,15 +290,33 @@ export function UserManagement({ className = "" }: UserManagementProps) {
   }
 
   return (
-    <div className={`${styles.userManagement} ${className} space-y-6`}>
+    <div className={cn(
+      styles.userManagement,
+      isSmallScreen && styles.userManagementMobile,
+      isMediumScreen && styles.userManagementTablet,
+      className,
+      "space-y-6"
+    )}>
       {/* Header */}
-      <div className={styles.userHeader}>
+      <div className={cn(
+        styles.userHeader,
+        isSmallScreen && styles.userHeaderMobile
+      )}>
         <div>
-          <h2 className={styles.userTitle}>
-            <Users className="h-6 w-6 text-ritter-gold" />
+          <h2 className={cn(
+            styles.userTitle,
+            isSmallScreen && styles.userTitleMobile
+          )}>
+            <Users className={cn(
+              "h-6 w-6 text-ritter-gold",
+              isSmallScreen && "h-5 w-5"
+            )} />
             Gestión de Usuarios
           </h2>
-          <p className={styles.userDescription}>
+          <p className={cn(
+            styles.userDescription,
+            isSmallScreen && styles.userDescriptionMobile
+          )}>
             Administra usuarios y roles del sistema
           </p>
         </div>
@@ -303,17 +324,26 @@ export function UserManagement({ className = "" }: UserManagementProps) {
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button 
-              className={styles.addUserButton}
+              className={cn(
+                styles.addUserButton,
+                isSmallScreen && styles.addUserButtonMobile
+              )}
               onClick={() => {
                 console.log('Button clicked, current modal state:', isCreateModalOpen)
                 setIsCreateModalOpen(true)
               }}
             >
-          <Plus className="h-4 w-4" />
-          Nuevo Usuario
+          <Plus className={cn(
+            "h-4 w-4",
+            isSmallScreen && "h-3 w-3"
+          )} />
+          {isSmallScreen ? "Nuevo" : "Nuevo Usuario"}
         </Button>
           </DialogTrigger>
-          <DialogContent className={styles.createUserModal}>
+          <DialogContent className={cn(
+            styles.createUserModal,
+            isSmallScreen && styles.createUserModalMobile
+          )}>
             <DialogHeader>
               <DialogTitle className={styles.modalTitle}>
                 <User className="h-5 w-5 text-ritter-gold" />
@@ -573,24 +603,47 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       )}
 
       {/* Filters */}
-      <Card className={styles.filtersCard}>
-        <CardContent className="pt-6">
-          <div className={styles.filtersGrid}>
-            <div className={styles.searchContainer}>
-              <div className={styles.searchInputWrapper}>
-                <Search className={styles.searchIcon} />
+      <Card className={cn(
+        styles.filtersCard,
+        isSmallScreen && styles.filtersCardMobile
+      )}>
+        <CardContent className={cn(
+          "pt-6",
+          isSmallScreen && "pt-4"
+        )}>
+          <div className={cn(
+            styles.filtersGrid,
+            isSmallScreen && styles.filtersGridMobile
+          )}>
+            <div className={cn(
+              styles.searchContainer,
+              isSmallScreen && styles.searchContainerMobile
+            )}>
+              <div className={cn(
+                styles.searchInputWrapper,
+                isSmallScreen && styles.searchInputWrapperMobile
+              )}>
+                <Search className={cn(
+                  styles.searchIcon,
+                  isSmallScreen && styles.searchIconMobile
+                )} />
                 <Input
-                  placeholder="Buscar usuarios por nombre..."
+                  placeholder={isSmallScreen ? "Buscar..." : "Buscar usuarios por nombre..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={styles.searchInput}
+                  className={cn(
+                    styles.searchInput,
+                    isSmallScreen && styles.searchInputMobile
+                  )}
                 />
               </div>
             </div>
             
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Rol" />
+              <SelectTrigger className={cn(
+                isSmallScreen && styles.selectTriggerMobile
+              )}>
+                <SelectValue placeholder={isSmallScreen ? "Rol" : "Filtrar por rol"} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los roles</SelectItem>
@@ -625,39 +678,78 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       )}
 
       {/* Users Table */}
-      <Card className={styles.usersTableCard}>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Usuarios ({filteredUsers.length})</span>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <UserCheck className="h-4 w-4" />
-                {users.length} usuarios registrados
+      <Card className={cn(
+        styles.usersTableCard,
+        isSmallScreen && styles.usersTableCardMobile
+      )}>
+        <CardHeader className={cn(
+          isSmallScreen && styles.tableHeaderMobile
+        )}>
+          <CardTitle className={cn(
+            "flex items-center justify-between",
+            isSmallScreen && "flex-col items-start gap-3"
+          )}>
+            <span className={cn(
+              isSmallScreen && styles.tableTitleMobile
+            )}>Usuarios ({filteredUsers.length})</span>
+            <div className={cn(
+              "flex items-center gap-4",
+              isSmallScreen && "w-full justify-between gap-2"
+            )}>
+              <div className={cn(
+                "flex items-center gap-2 text-sm text-muted-foreground",
+                isSmallScreen && "text-xs"
+              )}>
+                <UserCheck className={cn(
+                  "h-4 w-4",
+                  isSmallScreen && "h-3 w-3"
+                )} />
+                {isSmallScreen ? `${users.length}` : `${users.length} usuarios registrados`}
               </div>
               <Button 
                 variant="outline" 
-                size="sm"
+                size={isSmallScreen ? "sm" : "sm"}
                 onClick={fetchUsers}
                 disabled={isLoading}
-                className="flex items-center gap-2"
+                className={cn(
+                  "flex items-center gap-2",
+                  isSmallScreen && styles.refreshButtonMobile
+                )}
               >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                {isLoading ? 'Actualizando...' : 'Actualizar'}
+                <RefreshCw className={cn(
+                  `h-4 w-4 ${isLoading ? 'animate-spin' : ''}`,
+                  isSmallScreen && "h-3 w-3"
+                )} />
+                {isSmallScreen ? 'Actualizar' : (isLoading ? 'Actualizando...' : 'Actualizar')}
               </Button>
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={cn(
+          isSmallScreen && styles.tableContentMobile
+        )}>
           {isLoading && users.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <RefreshCw className="h-5 w-5 animate-spin" />
+            <div className={cn(
+              "flex items-center justify-center py-12",
+              isSmallScreen && "py-8"
+            )}>
+              <div className={cn(
+                "flex items-center gap-2 text-muted-foreground",
+                isSmallScreen && "text-sm"
+              )}>
+                <RefreshCw className={cn(
+                  "h-5 w-5 animate-spin",
+                  isSmallScreen && "h-4 w-4"
+                )} />
                 <span>Cargando usuarios...</span>
               </div>
             </div>
           ) : (
             <>
-              <div className={styles.tableContainer}>
+              <div className={cn(
+                styles.tableContainer,
+                isSmallScreen && styles.tableContainerMobile
+              )}>
                 <Table>
                   <TableHeader>
                     <TableRow>

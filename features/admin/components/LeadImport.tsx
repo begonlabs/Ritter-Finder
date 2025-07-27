@@ -48,6 +48,8 @@ import {
   Save,
   FileSpreadsheet
 } from "lucide-react"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
+import { cn } from "@/lib/utils"
 import { useLeadImport } from "../hooks/useLeadImport"
 import { ConfirmDialog } from "./ConfirmDialog"
 import { useConfirmDialog } from "../hooks/useConfirmDialog"
@@ -90,6 +92,7 @@ export function LeadImport({ className = "" }: LeadImportProps) {
     clearNotifications
   } = useLeadImport()
 
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
   const [activeTab, setActiveTab] = useState("manual")
   const [showPreview, setShowPreview] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -163,26 +166,53 @@ export function LeadImport({ className = "" }: LeadImportProps) {
   }
 
   return (
-    <div className={`${styles.leadImport} ${className} space-y-6`}>
+    <div className={cn(
+      styles.leadImport,
+      isSmallScreen && styles.leadImportMobile,
+      isMediumScreen && styles.leadImportTablet,
+      className,
+      "space-y-6"
+    )}>
       {/* Header */}
-      <div className={styles.importHeader}>
+      <div className={cn(
+        styles.importHeader,
+        isSmallScreen && styles.importHeaderMobile
+      )}>
         <div>
-          <h2 className={styles.importTitle}>
-            <Users className="h-6 w-6 text-ritter-gold" />
+          <h2 className={cn(
+            styles.importTitle,
+            isSmallScreen && styles.importTitleMobile
+          )}>
+            <Users className={cn(
+              "h-6 w-6 text-ritter-gold",
+              isSmallScreen && "h-5 w-5"
+            )} />
             Importar Leads
           </h2>
-          <p className={styles.importDescription}>
+          <p className={cn(
+            styles.importDescription,
+            isSmallScreen && styles.importDescriptionMobile
+          )}>
             Crea leads manualmente o importa desde un archivo CSV
           </p>
         </div>
-        <div className={styles.headerActions}>
+        <div className={cn(
+          styles.headerActions,
+          isSmallScreen && styles.headerActionsMobile
+        )}>
           <Button 
             variant="outline" 
             onClick={downloadTemplate}
-            className="flex items-center gap-2"
+            className={cn(
+              "flex items-center gap-2",
+              isSmallScreen && styles.downloadButtonMobile
+            )}
           >
-            <Download className="h-4 w-4" />
-            Descargar Plantilla
+            <Download className={cn(
+              "h-4 w-4",
+              isSmallScreen && "h-3 w-3"
+            )} />
+            {isSmallScreen ? "Plantilla" : "Descargar Plantilla"}
           </Button>
         </div>
       </div>
@@ -201,19 +231,43 @@ export function LeadImport({ className = "" }: LeadImportProps) {
       )}
 
       {/* Import Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={styles.importTabs}>
-        <TabsList className={styles.tabsList}>
-          <TabsTrigger value="manual" className={styles.tabsTrigger}>
-            <Plus className="h-4 w-4 mr-2" />
-            Crear Manual
+      <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
+        styles.importTabs,
+        isSmallScreen && styles.importTabsMobile
+      )}>
+        <TabsList className={cn(
+          styles.tabsList,
+          isSmallScreen && styles.tabsListMobile
+        )}>
+          <TabsTrigger value="manual" className={cn(
+            styles.tabsTrigger,
+            isSmallScreen && styles.tabsTriggerMobile
+          )}>
+            <Plus className={cn(
+              "h-4 w-4 mr-2",
+              isSmallScreen && "h-3 w-3 mr-1"
+            )} />
+            {isSmallScreen ? "Manual" : "Crear Manual"}
           </TabsTrigger>
-          <TabsTrigger value="csv" className={styles.tabsTrigger}>
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Importar CSV
+          <TabsTrigger value="csv" className={cn(
+            styles.tabsTrigger,
+            isSmallScreen && styles.tabsTriggerMobile
+          )}>
+            <FileSpreadsheet className={cn(
+              "h-4 w-4 mr-2",
+              isSmallScreen && "h-3 w-3 mr-1"
+            )} />
+            {isSmallScreen ? "CSV" : "Importar CSV"}
           </TabsTrigger>
-          <TabsTrigger value="preview" className={styles.tabsTrigger}>
-            <Eye className="h-4 w-4 mr-2" />
-            Vista Previa ({leads.length})
+          <TabsTrigger value="preview" className={cn(
+            styles.tabsTrigger,
+            isSmallScreen && styles.tabsTriggerMobile
+          )}>
+            <Eye className={cn(
+              "h-4 w-4 mr-2",
+              isSmallScreen && "h-3 w-3 mr-1"
+            )} />
+            {isSmallScreen ? `Vista (${leads.length})` : `Vista Previa (${leads.length})`}
           </TabsTrigger>
         </TabsList>
 

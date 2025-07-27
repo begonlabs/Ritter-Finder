@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import { LanguageSelector } from "@/components/language-selector"
 import { useLanguage } from "@/lib/language-context"
@@ -139,6 +139,9 @@ export function DashboardHeader({
               </button>
             </SheetTrigger>
             <SheetContent side="right" className={styles.mobileSidebar}>
+              <SheetTitle className="sr-only">
+                Menú de navegación móvil
+              </SheetTitle>
               <div className={styles.mobileActions}>
                 <div className={styles.mobileActionGroup}>
                   <LanguageSelector />

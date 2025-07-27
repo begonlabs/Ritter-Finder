@@ -34,6 +34,8 @@ import {
   Phone,
   Trash2
 } from "lucide-react"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
+import { cn } from "@/lib/utils"
 import type { RoleManagementProps, SystemRole, User, SystemRoleType } from "../types"
 import { useRoleManagement } from "../hooks/useRoleManagement"
 import styles from "../styles/RoleManagement.module.css"
@@ -59,6 +61,8 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
     bulkAssignRole,
     fetchUsers
   } = useRoleManagement()
+
+  const { isSmallScreen, isMediumScreen, isLargeScreen, utils } = useResponsive()
 
   // Handle role assignment
   const handleAssignRole = async (userId: string, newRoleId: SystemRoleType) => {
@@ -93,27 +97,51 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
   }
 
   return (
-    <div className={`${styles.roleManagement} ${className} space-y-6`}>
+    <div className={cn(
+      styles.roleManagement,
+      isSmallScreen && styles.roleManagementMobile,
+      isMediumScreen && styles.roleManagementTablet,
+      className,
+      "space-y-6"
+    )}>
       {/* Header */}
-      <div className={styles.roleHeader}>
+      <div className={cn(
+        styles.roleHeader,
+        isSmallScreen && styles.roleHeaderMobile
+      )}>
         <div>
-          <h2 className={styles.roleTitle}>
-            <Shield className="h-6 w-6 text-ritter-gold" />
+          <h2 className={cn(
+            styles.roleTitle,
+            isSmallScreen && styles.roleTitleMobile
+          )}>
+            <Shield className={cn(
+              "h-6 w-6 text-ritter-gold",
+              isSmallScreen && "h-5 w-5"
+            )} />
             Gestión de Roles
           </h2>
-          <p className={styles.roleDescription}>
+          <p className={cn(
+            styles.roleDescription,
+            isSmallScreen && styles.roleDescriptionMobile
+          )}>
             Asigna usuarios a los roles del sistema. Los roles son fijos y no pueden ser modificados.
           </p>
         </div>
         <Button 
           variant="outline" 
-          size="sm"
+          size={isSmallScreen ? "sm" : "sm"}
           onClick={fetchUsers}
           disabled={isLoading}
-          className="flex items-center gap-2"
+          className={cn(
+            "flex items-center gap-2",
+            isSmallScreen && styles.refreshButtonMobile
+          )}
         >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          {isLoading ? 'Actualizando...' : 'Actualizar'}
+          <RefreshCw className={cn(
+            `h-4 w-4 ${isLoading ? 'animate-spin' : ''}`,
+            isSmallScreen && "h-3 w-3"
+          )} />
+          {isSmallScreen ? 'Actualizar' : (isLoading ? 'Actualizando...' : 'Actualizar')}
         </Button>
       </div>
 
@@ -131,30 +159,67 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
       )}
 
       {/* System Roles Overview */}
-      <div className={styles.rolesGrid}>
+      <div className={cn(
+        styles.rolesGrid,
+        isSmallScreen && styles.rolesGridMobile,
+        isMediumScreen && styles.rolesGridTablet
+      )}>
         {systemRoles.map((role) => {
           const IconComponent = getRoleIcon(role.id)
           return (
-            <Card key={role.id} className={styles.roleCard}>
-              <CardContent className="pt-6">
-                <div className={styles.roleCardContent}>
-                  <div className={styles.roleIconContainer} style={{ backgroundColor: `${role.color}15` }}>
+            <Card key={role.id} className={cn(
+              styles.roleCard,
+              isSmallScreen && styles.roleCardMobile
+            )}>
+              <CardContent className={cn(
+                "pt-6",
+                isSmallScreen && "pt-4"
+              )}>
+                <div className={cn(
+                  styles.roleCardContent,
+                  isSmallScreen && styles.roleCardContentMobile
+                )}>
+                  <div className={cn(
+                    styles.roleIconContainer,
+                    isSmallScreen && styles.roleIconContainerMobile
+                  )} style={{ backgroundColor: `${role.color}15` }}>
                     <IconComponent 
-                      className={styles.roleIcon} 
+                      className={cn(
+                        styles.roleIcon,
+                        isSmallScreen && styles.roleIconMobile
+                      )} 
                       style={{ color: role.color }}
                     />
                   </div>
-                  <div className={styles.roleInfo}>
-                    <h3 className={styles.roleName}>{role.name}</h3>
-                    <p className={styles.roleDescText}>{role.description}</p>
-                    <div className={styles.roleStats}>
+                  <div className={cn(
+                    styles.roleInfo,
+                    isSmallScreen && styles.roleInfoMobile
+                  )}>
+                    <h3 className={cn(
+                      styles.roleName,
+                      isSmallScreen && styles.roleNameMobile
+                    )}>{role.name}</h3>
+                    <p className={cn(
+                      styles.roleDescText,
+                      isSmallScreen && styles.roleDescTextMobile
+                    )}>{role.description}</p>
+                    <div className={cn(
+                      styles.roleStats,
+                      isSmallScreen && styles.roleStatsMobile
+                    )}>
                       <Badge 
                         variant="outline" 
-                        className={styles.userCountBadge}
+                        className={cn(
+                          styles.userCountBadge,
+                          isSmallScreen && styles.userCountBadgeMobile
+                        )}
                         style={{ borderColor: role.color, color: role.color }}
                       >
-                        <Users className="h-3 w-3 mr-1" />
-                        {role.userCount} usuarios
+                        <Users className={cn(
+                          "h-3 w-3 mr-1",
+                          isSmallScreen && "h-2 w-2 mr-0.5"
+                        )} />
+                        {isSmallScreen ? role.userCount : `${role.userCount} usuarios`}
                       </Badge>
                     </div>
                   </div>
@@ -166,13 +231,29 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
       </div>
 
       {/* User Assignment Section */}
-      <Card className={styles.assignmentCard}>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Asignación de Usuarios</span>
+      <Card className={cn(
+        styles.assignmentCard,
+        isSmallScreen && styles.assignmentCardMobile
+      )}>
+        <CardHeader className={cn(
+          isSmallScreen && styles.assignmentHeaderMobile
+        )}>
+          <CardTitle className={cn(
+            "flex items-center justify-between",
+            isSmallScreen && "flex-col items-start gap-3"
+          )}>
+            <span className={cn(
+              isSmallScreen && styles.assignmentTitleMobile
+            )}>Asignación de Usuarios</span>
             {selectedUsers.length > 0 && (
-              <div className={styles.bulkActions}>
-                <span className="text-sm text-muted-foreground mr-3">
+              <div className={cn(
+                styles.bulkActions,
+                isSmallScreen && styles.bulkActionsMobile
+              )}>
+                <span className={cn(
+                  "text-sm text-muted-foreground mr-3",
+                  isSmallScreen && "text-xs mr-2"
+                )}>
                   {selectedUsers.length} usuarios seleccionados
                 </span>
                 <Select 
@@ -212,22 +293,39 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className={cn(
+          isSmallScreen && styles.assignmentContentMobile
+        )}>
           {/* Filters */}
-          <div className={styles.filtersSection}>
-            <div className={styles.searchInputWrapper}>
-              <Search className={styles.searchIcon} />
+          <div className={cn(
+            styles.filtersSection,
+            isSmallScreen && styles.filtersSectionMobile
+          )}>
+            <div className={cn(
+              styles.searchInputWrapper,
+              isSmallScreen && styles.searchInputWrapperMobile
+            )}>
+              <Search className={cn(
+                styles.searchIcon,
+                isSmallScreen && styles.searchIconMobile
+              )} />
               <Input
-                placeholder="Buscar usuarios..."
+                placeholder={isSmallScreen ? "Buscar..." : "Buscar usuarios..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={styles.searchInput}
+                className={cn(
+                  styles.searchInput,
+                  isSmallScreen && styles.searchInputMobile
+                )}
               />
             </div>
             
             <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value as SystemRoleType | 'all')}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filtrar por rol" />
+              <SelectTrigger className={cn(
+                "w-48",
+                isSmallScreen && "w-full"
+              )}>
+                <SelectValue placeholder={isSmallScreen ? "Rol" : "Filtrar por rol"} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los roles</SelectItem>
@@ -248,14 +346,26 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
 
           {/* Users Table */}
           {isLoading && users.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <RefreshCw className="h-5 w-5 animate-spin" />
+            <div className={cn(
+              "flex items-center justify-center py-12",
+              isSmallScreen && "py-8"
+            )}>
+              <div className={cn(
+                "flex items-center gap-2 text-muted-foreground",
+                isSmallScreen && "text-sm"
+              )}>
+                <RefreshCw className={cn(
+                  "h-5 w-5 animate-spin",
+                  isSmallScreen && "h-4 w-4"
+                )} />
                 <span>Cargando usuarios...</span>
               </div>
             </div>
           ) : (
-          <div className={styles.tableContainer}>
+          <div className={cn(
+            styles.tableContainer,
+            isSmallScreen && styles.tableContainerMobile
+          )}>
             <Table>
               <TableHeader>
                 <TableRow>

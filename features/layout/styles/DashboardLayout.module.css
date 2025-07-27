@@ -5,12 +5,54 @@
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* Responsive Layout Variants */
+.mobileLayout {
+  font-size: 14px;
+}
+
+.tabletLayout {
+  font-size: 15px;
+}
+
+.desktopLayout {
+  font-size: 16px;
 }
 
 /* Layout Container */
 .layoutContainer {
   display: flex;
   flex: 1;
+  position: relative;
+}
+
+.stackedLayout {
+  flex-direction: column;
+}
+
+/* Mobile Navigation Drawer */
+.mobileDrawer {
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  width: 80%;
+  max-width: 300px;
+  height: calc(100vh - 4rem);
+  background: white;
+  z-index: 40;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobileDrawerOpen {
+  transform: translateX(0);
+}
+
+.mobileDrawerClosed {
+  transform: translateX(-100%);
 }
 
 /* Main Content */
@@ -19,14 +61,57 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  min-width: 0; /* Prevent flex item overflow */
 }
 
+/* Responsive Main Content */
+.mobileMain {
+  padding: 0;
+}
+
+.tabletMain {
+  padding: 0 0.5rem;
+}
+
+.desktopMain {
+  padding: 0 1rem;
+}
+
+/* Content Container */
 .contentContainer {
   max-width: 1400px;
   margin: 0 auto;
   padding: 1.5rem 1rem;
   flex: 1;
   width: 100%;
+  min-width: 0;
+}
+
+/* Responsive Container */
+.mobileContainer {
+  padding: 1rem 0.75rem;
+  max-width: 100%;
+}
+
+.tabletContainer {
+  padding: 1.25rem 1rem;
+  max-width: 1200px;
+}
+
+.desktopContainer {
+  padding: 1.5rem 1.5rem;
+  max-width: 1400px;
+}
+
+/* Base responsive breakpoints */
+@media (max-width: 480px) {
+  .contentContainer {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .mobileContainer {
+    padding: 0.75rem 0.5rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -43,6 +128,10 @@
   animation: fadeIn 0.4s ease-out;
 }
 
+.stackedContent {
+  gap: 1rem;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -54,16 +143,49 @@
   }
 }
 
+/* Responsive content area adjustments */
+@media (max-width: 480px) {
+  .contentArea {
+    gap: 0.75rem;
+  }
+  
+  .stackedContent {
+    gap: 0.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .contentArea {
     gap: 1rem;
   }
 }
 
+@media (min-width: 1280px) {
+  .contentArea {
+    gap: 2rem;
+  }
+}
+
 /* Navigation Section */
 .navigationSection {
   margin-bottom: 1rem;
-  animation: slideInDown 0.3s ease-out;
+  transition: all 0.3s ease;
+}
+
+.collapsedNavigation {
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive navigation */
+@media (max-width: 768px) {
+  .navigationSection {
+    margin-bottom: 0.75rem;
+    overflow-x: auto;
+  }
+  
+  .collapsedNavigation {
+    margin-bottom: 0.25rem;
+  }
 }
 
 @keyframes slideInDown {

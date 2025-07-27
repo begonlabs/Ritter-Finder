@@ -20,6 +20,28 @@
   cursor: pointer;
 }
 
+/* Responsive compact versions */
+.compactMobile {
+  padding: 0.25rem 0.375rem;
+  gap: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.compactTablet {
+  padding: 0.3125rem 0.4375rem;
+  gap: 0.625rem;
+  border-radius: 7px;
+  font-size: 0.875rem;
+}
+
+.compactDesktop {
+  padding: 0.375rem 0.5rem;
+  gap: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
 .limitsIndicator.compact:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
@@ -57,6 +79,11 @@
 
 .limitItem.blocked {
   color: #ef4444;
+}
+
+.limitItemMobile {
+  gap: 0.0625rem;
+  font-size: 0.6875rem;
 }
 
 .limitCount {
@@ -214,6 +241,20 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
+.tooltipMobile {
+  padding: 0.75rem;
+  max-width: 240px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.tooltipTablet {
+  padding: 0.875rem;
+  max-width: 260px;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+}
+
 .tooltipContent {
   color: #1f2937;
   font-size: 0.875rem;
@@ -333,6 +374,10 @@
   display: flex;
   align-items: center;
   margin-left: 0.25rem;
+}
+
+.connectionIndicatorMobile {
+  margin-left: 0.125rem;
 }
 
 .connectionIcon {

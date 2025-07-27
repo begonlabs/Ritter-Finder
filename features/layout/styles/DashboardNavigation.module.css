@@ -29,6 +29,31 @@
   padding: 0.5rem;
 }
 
+/* Responsive Navigation Container */
+.navigationContainer.mobile {
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.navigationContainer.tablet {
+  margin-bottom: 1.25rem;
+  border-radius: 0.625rem;
+}
+
+.navigationContainer.desktop {
+  margin-bottom: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.navigationContainer.iconsOnly {
+  padding: 0.375rem 0.25rem;
+}
+
+.navigationContainer.collapsed {
+  margin-bottom: 0.5rem;
+}
+
 /* Navigation Items */
 .navigationWrapper {
   display: flex;
@@ -98,6 +123,36 @@
   padding: 0.75rem;
 }
 
+/* Responsive Navigation Items */
+.navigationItem.itemMobile {
+  min-width: 3rem;
+  height: 2.5rem;
+  padding: 0.375rem;
+  border-radius: 0.375rem;
+}
+
+.navigationItem.itemTablet {
+  min-width: 4rem;
+  height: 3.25rem;
+  padding: 0.5rem;
+  border-radius: 0.4375rem;
+}
+
+.navigationItem.itemDesktop {
+  min-width: 5rem;
+  height: 4rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.navigationItem.itemIconOnly {
+  flex-direction: row;
+  min-width: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.375rem;
+}
+
 /* States */
 .navigationItem.active {
   background: #f59e0b;
@@ -144,6 +199,25 @@
   height: 1.25rem;
 }
 
+/* Responsive Icons */
+.navigationIcon.iconMobile {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-bottom: 0.125rem;
+}
+
+.navigationIcon.iconTablet {
+  width: 1rem;
+  height: 1rem;
+  margin-bottom: 0.1875rem;
+}
+
+.navigationIcon.iconDesktop {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .navigationItem.active .navigationIcon {
   color: #92400e;
   transform: scale(1.1);
@@ -166,6 +240,22 @@
 
 .navigationLabel.normal {
   font-size: 0.75rem;
+}
+
+/* Responsive Labels */
+.navigationLabel.labelMobile {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+}
+
+.navigationLabel.labelTablet {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+
+.navigationLabel.labelDesktop {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 
 /* Badge */
@@ -192,6 +282,31 @@
 }
 
 .navigationBadge.normal {
+  top: -0.25rem;
+  right: -0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.75rem;
+}
+
+/* Responsive Badges */
+.navigationBadge.badgeMobile {
+  top: -0.0625rem;
+  right: -0.0625rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  font-size: 0.5625rem;
+}
+
+.navigationBadge.badgeTablet {
+  top: -0.125rem;
+  right: -0.125rem;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.625rem;
+}
+
+.navigationBadge.badgeDesktop {
   top: -0.25rem;
   right: -0.25rem;
   width: 1.25rem;
