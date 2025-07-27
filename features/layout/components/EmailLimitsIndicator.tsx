@@ -1,6 +1,6 @@
 "use client"
 
-import { Mail, Clock, Calendar, AlertTriangle } from "lucide-react"
+import { Mail, Clock, Calendar, AlertTriangle, Wifi, WifiOff } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { useEmailLimits } from "@/features/campaigns/hooks/useEmailLimits"
@@ -19,7 +19,8 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
     isNearHourlyLimit, 
     isNearDailyLimit, 
     isHourlyLimitReached, 
-    isDailyLimitReached 
+    isDailyLimitReached,
+    isConnected
   } = useEmailLimits()
 
   const getHourlyStatus = () => {
@@ -60,6 +61,13 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
                 <span className={styles.limitCount}>{limits.dailyCount}</span>
                 <span className={styles.limitSeparator}>/</span>
                 <span className={styles.limitMax}>{limits.dailyLimit}</span>
+              </div>
+              <div className={styles.connectionIndicator}>
+                {isConnected ? (
+                  <Wifi className={`${styles.connectionIcon} ${styles.connected}`} size={12} />
+                ) : (
+                  <WifiOff className={`${styles.connectionIcon} ${styles.disconnected}`} size={12} />
+                )}
               </div>
             </div>
           </TooltipTrigger>
@@ -106,6 +114,26 @@ export function EmailLimitsIndicator({ className = "", compact = false }: EmailL
                     addSuffix: true, 
                     locale: es 
                   })}
+                </div>
+              </div>
+              
+              <div className={styles.tooltipDivider} />
+              
+              <div className={styles.tooltipSection}>
+                <div className={styles.tooltipHeader}>
+                  {isConnected ? (
+                    <Wifi className="h-4 w-4" />
+                  ) : (
+                    <WifiOff className="h-4 w-4" />
+                  )}
+                  <span className={styles.tooltipTitle}>
+                    {isConnected ? 'Conectado en Tiempo Real' : 'Reconectando...'}
+                  </span>
+                </div>
+                <div className={styles.tooltipStats}>
+                  <span className={`${styles.tooltipCount} ${isConnected ? styles.connected : styles.disconnected}`}>
+                    {isConnected ? '🟢 Datos actualizados en vivo' : '🟡 Usando datos en caché'}
+                  </span>
                 </div>
               </div>
             </div>

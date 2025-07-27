@@ -20,6 +20,7 @@ interface UseEmailLimitsReturn {
   isNearDailyLimit: boolean
   isHourlyLimitReached: boolean
   isDailyLimitReached: boolean
+  isConnected: boolean
   refreshLimits: () => Promise<void>
 }
 
@@ -131,6 +132,8 @@ export const useEmailLimits = (): UseEmailLimitsReturn => {
     nextHourlyReset: new Date(),
     nextDailyReset: new Date()
   })
+  
+  const [isConnected, setIsConnected] = useState(false)
 
   // Load initial data from database
   useEffect(() => {
@@ -178,15 +181,93 @@ export const useEmailLimits = (): UseEmailLimitsReturn => {
     loadLimits()
   }, [])
 
-  // Auto-refresh every minute to check for resets
+  // Realtime subscription to email_limits changes
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const supabase = createClient()
+    
+    // Subscribe to changes in email_limits table
+    const emailLimitsSubscription = supabase
+      .channel('email-limits-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'email_limits'
+        },
+        async (payload) => {
+          console.log('📧 Email limits updated in realtime:', payload)
+          
+          try {
+            // Get fresh data after any change
+            const data = await getEmailLimitsFromDB()
+            
+            setLimits({
+              hourlyCount: data.hourlyCount,
+              dailyCount: data.dailyCount,
+              hourlyLimit: data.hourlyLimit,
+              dailyLimit: data.dailyLimit,
+              hourlyRemaining: Math.max(0, data.hourlyLimit - data.hourlyCount),
+              dailyRemaining: Math.max(0, data.dailyLimit - data.dailyCount),
+              nextHourlyReset: calculateNextReset(data.lastHourlyReset, 'hourly'),
+              nextDailyReset: calculateNextReset(data.lastDailyReset, 'daily')
+            })
+          } catch (error) {
+            console.error('Error updating limits from realtime:', error)
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Email limits subscription status:', status)
+        setIsConnected(status === 'SUBSCRIBED')
+      })
+
+    // Subscribe to system events for additional notifications
+    const systemEventsSubscription = supabase
+      .channel('system-events-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'system_events'
+        },
+        (payload) => {
+          console.log('🔔 System event received:', payload.new)
+          
+          // Handle different types of events
+          const eventType = payload.new?.event_type
+          const eventData = payload.new?.event_data
+          
+          switch (eventType) {
+            case 'email_limit_warning':
+              console.warn(`⚠️ Email limit warning: ${eventData?.limit_type} at ${eventData?.percentage}%`)
+              break
+            case 'email_limit_reached':
+              console.error(`🚫 Email limit reached: ${eventData?.limit_type}`)
+              break
+            case 'email_counter_reset':
+              console.info(`🔄 Email counter reset: ${eventData?.reset_type}`)
+              break
+            case 'bulk_email_sent':
+              console.info(`📧 Bulk email sent: ${eventData?.emails_sent} emails`)
+              break
+            default:
+              console.log(`📩 System event: ${eventType}`, eventData)
+          }
+        }
+      )
+      .subscribe()
+
+    // Fallback polling every 5 minutes (reduced frequency since we have realtime)
+    const fallbackInterval = setInterval(async () => {
       try {
         const data = await getEmailLimitsFromDB()
         const now = new Date()
         let { hourlyCount, dailyCount, lastHourlyReset, lastDailyReset, hourlyLimit, dailyLimit } = data
         let shouldUpdate = false
         
+        // Check for resets (in case realtime missed something)
         if (shouldResetCounts(lastHourlyReset, 'hourly')) {
           hourlyCount = 0
           lastHourlyReset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours())
@@ -200,25 +281,21 @@ export const useEmailLimits = (): UseEmailLimitsReturn => {
         }
         
         if (shouldUpdate) {
+          console.log('🔄 Performing scheduled reset check')
           await updateEmailLimitsInDB(hourlyCount, dailyCount, lastHourlyReset, lastDailyReset)
         }
-        
-        setLimits({
-          hourlyCount,
-          dailyCount,
-          hourlyLimit,
-          dailyLimit,
-          hourlyRemaining: Math.max(0, hourlyLimit - hourlyCount),
-          dailyRemaining: Math.max(0, dailyLimit - dailyCount),
-          nextHourlyReset: calculateNextReset(lastHourlyReset, 'hourly'),
-          nextDailyReset: calculateNextReset(lastDailyReset, 'daily')
-        })
       } catch (error) {
-        console.error('Error refreshing email limits:', error)
+        console.error('Error in fallback polling:', error)
       }
-    }, 60000) // Check every minute
+    }, 300000) // Every 5 minutes as fallback
     
-    return () => clearInterval(interval)
+    // Cleanup subscriptions
+    return () => {
+      console.log('🧹 Cleaning up email limits subscriptions')
+      emailLimitsSubscription.unsubscribe()
+      systemEventsSubscription.unsubscribe()
+      clearInterval(fallbackInterval)
+    }
   }, [])
 
   const refreshLimits = useCallback(async () => {
@@ -248,6 +325,7 @@ export const useEmailLimits = (): UseEmailLimitsReturn => {
     isNearDailyLimit,
     isHourlyLimitReached,
     isDailyLimitReached,
+    isConnected,
     refreshLimits
   }
 }
