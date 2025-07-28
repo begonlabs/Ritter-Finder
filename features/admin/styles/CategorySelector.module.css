@@ -1,5 +1,7 @@
 .categorySelector {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .selectorContainer {
@@ -409,19 +411,39 @@
     font-size: 0.875rem;
   }
   
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .popoverContent {
       width: calc(100vw - 2rem);
-      max-width: 20rem;
+      max-width: 22rem;
     }
   
     .dialogContent {
       margin: 1rem;
       max-width: calc(100vw - 2rem);
+      border-radius: 8px;
+    }
+    
+    .trigger {
+      font-size: 0.875rem;
+      min-height: 2.75rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .popoverContent {
+      width: calc(100vw - 1.5rem);
+      max-width: 20rem;
+    }
+  
+    .dialogContent {
+      margin: 0.75rem;
+      max-width: calc(100vw - 1.5rem);
+      border-radius: 6px;
     }
   
     .trigger {
       font-size: 0.8rem;
+      min-height: 3rem;
     }
   
     .categoryName {
@@ -430,6 +452,29 @@
   
     .leadCount {
       font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .popoverContent {
+      width: calc(100vw - 1rem);
+      max-width: 18rem;
+    }
+  
+    .dialogContent {
+      margin: 0.5rem;
+      max-width: calc(100vw - 1rem);
+      border-radius: 4px;
+    }
+    
+    .trigger {
+      font-size: 0.75rem;
+      min-height: 3.25rem;
+      padding: 0.5rem;
+    }
+    
+    .formInput {
+      font-size: 16px; /* Previene zoom en iOS */
     }
   }
   

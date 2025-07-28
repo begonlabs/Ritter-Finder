@@ -4,10 +4,18 @@ import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { 
   Users, 
   Shield, 
   Mail,
-  Database
+  Database,
+  ChevronDown
 } from "lucide-react"
 import { useResponsive } from "@/features/layout/hooks/useResponsive"
 import { cn } from "@/lib/utils"
@@ -65,8 +73,7 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
       isSmallScreen && styles.adminDashboardMobile,
       isMediumScreen && styles.adminDashboardTablet,
       isLargeScreen && styles.adminDashboardDesktop,
-      className,
-      "space-y-6"
+      className
     )}>
       {/* Header */}
       <div className={cn(
@@ -97,68 +104,106 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
         </div>
       </div>
 
-      {/* Admin Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
-        styles.adminTabs,
-        isSmallScreen && styles.adminTabsMobile
-      )}>
-        <TabsList className={cn(
-          styles.tabsList,
-          isSmallScreen && styles.tabsListMobile,
-          isMediumScreen && styles.tabsListTablet,
-          isLargeScreen && styles.tabsListDesktop,
-          "grid w-full",
-          isSmallScreen ? "grid-cols-3" : "grid-cols-4 lg:w-fit lg:grid-cols-none lg:flex"
-        )}>
-          {adminTabs.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                disabled={tab.disabled}
-                className={cn(
-                  styles.tabsTrigger,
-                  isSmallScreen && styles.tabsTriggerMobile,
-                  isMediumScreen && styles.tabsTriggerTablet,
-                  "flex items-center gap-2 relative"
-                )}
-              >
-                <Icon className={cn(
-                  "h-4 w-4",
-                  isSmallScreen && "h-3 w-3"
-                )} />
-                <span className={cn(
-                  isSmallScreen ? "hidden" : "hidden sm:inline"
-                )}>{tab.label}</span>
-                {tab.badge && tab.badge > 0 && (
-                  <Badge 
-                    variant="secondary" 
-                    className={cn(
-                      styles.tabBadge,
-                      isSmallScreen && styles.tabBadgeMobile,
-                      "ml-1 h-5 min-w-5 text-xs"
-                    )}
+      {/* Navigation - Conditional rendering */}
+      {isSmallScreen ? (
+        // Mobile: Dropdown Navigation
+        <div className={cn(styles.mobileNavigation)}>
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className={cn(styles.mobileSelector)}>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const currentTab = adminTabs.find(tab => tab.id === activeTab)
+                  const Icon = currentTab?.icon || Users
+                  return (
+                    <>
+                      <Icon className="h-4 w-4 text-ritter-gold" />
+                      <span className="font-medium">{currentTab?.label || 'Seleccionar sección'}</span>
+                    </>
+                  )
+                })()}
+              </div>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </SelectTrigger>
+            <SelectContent className={cn(styles.mobileSelectorContent)}>
+              {adminTabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <SelectItem 
+                    key={tab.id} 
+                    value={tab.id}
+                    disabled={tab.disabled}
+                    className={cn(styles.mobileSelectorItem)}
                   >
-                    {tab.badge}
-                  </Badge>
-                )}
-              </TabsTrigger>
-            )
-          })}
-        </TabsList>
-
-        {/* Tab Content */}
-        {adminTabs.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id} className={cn(
-            styles.tabsContent,
-            isSmallScreen && styles.tabsContentMobile,
-            isMediumScreen && styles.tabsContentTablet
+                    <div className="flex items-center gap-3 w-full">
+                      <Icon className="h-4 w-4 text-ritter-gold" />
+                      <span className="font-medium">{tab.label}</span>
+                      {tab.badge && tab.badge > 0 && (
+                        <Badge 
+                          variant="secondary" 
+                          className="ml-auto h-5 min-w-5 text-xs"
+                        >
+                          {tab.badge}
+                        </Badge>
+                      )}
+                    </div>
+                  </SelectItem>
+                )
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : (
+        // Tablet/Desktop: Tab Navigation
+        <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
+          styles.adminTabs
+        )}>
+          <TabsList className={cn(
+            styles.tabsList,
+            isMediumScreen && styles.tabsListTablet,
+            isLargeScreen && styles.tabsListDesktop,
+            "grid w-full grid-cols-3"
           )}>
-            <ActiveComponent />
-          </TabsContent>
-        ))}
-      </Tabs>
+            {adminTabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  disabled={tab.disabled}
+                  className={cn(
+                    styles.tabsTrigger,
+                    isMediumScreen && styles.tabsTriggerTablet,
+                    "flex items-center gap-2 relative"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                  {tab.badge && tab.badge > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className={cn(
+                        styles.tabBadge,
+                        "ml-1 h-5 min-w-5 text-xs"
+                      )}
+                    >
+                      {tab.badge}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+        </Tabs>
+      )}
+
+      {/* Content - Always rendered outside tabs for mobile compatibility */}
+      <div className={cn(
+        styles.tabsContent,
+        isSmallScreen && styles.tabsContentMobile,
+        isMediumScreen && styles.tabsContentTablet
+      )}>
+        <ActiveComponent />
+      </div>
     </div>
   )
 }

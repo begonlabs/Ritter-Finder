@@ -294,8 +294,7 @@ export function UserManagement({ className = "" }: UserManagementProps) {
       styles.userManagement,
       isSmallScreen && styles.userManagementMobile,
       isMediumScreen && styles.userManagementTablet,
-      className,
-      "space-y-6"
+      className
     )}>
       {/* Header */}
       <div className={cn(

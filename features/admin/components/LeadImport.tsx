@@ -46,7 +46,8 @@ import {
   EyeOff,
   RefreshCw,
   Save,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ChevronDown
 } from "lucide-react"
 import { useResponsive } from "@/features/layout/hooks/useResponsive"
 import { cn } from "@/lib/utils"
@@ -97,6 +98,28 @@ export function LeadImport({ className = "" }: LeadImportProps) {
   const [showPreview, setShowPreview] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const { confirmDialog, showConfirmDialog, closeConfirmDialog } = useConfirmDialog()
+
+  // Import tabs configuration
+  const importTabs = [
+    {
+      id: "manual",
+      label: "Crear Manual",
+      labelMobile: "Manual",
+      icon: Plus,
+    },
+    {
+      id: "csv", 
+      label: "Importar CSV",
+      labelMobile: "CSV",
+      icon: FileSpreadsheet,
+    },
+    {
+      id: "preview",
+      label: `Vista Previa (${leads.length})`,
+      labelMobile: `Vista (${leads.length})`,
+      icon: Eye,
+    },
+  ]
 
   // Handle file upload
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,8 +193,7 @@ export function LeadImport({ className = "" }: LeadImportProps) {
       styles.leadImport,
       isSmallScreen && styles.leadImportMobile,
       isMediumScreen && styles.leadImportTablet,
-      className,
-      "space-y-6"
+      className
     )}>
       {/* Header */}
       <div className={cn(
@@ -230,49 +252,81 @@ export function LeadImport({ className = "" }: LeadImportProps) {
         </Card>
       )}
 
-      {/* Import Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
-        styles.importTabs,
-        isSmallScreen && styles.importTabsMobile
-      )}>
-        <TabsList className={cn(
-          styles.tabsList,
-          isSmallScreen && styles.tabsListMobile
+      {/* Import Navigation - Conditional rendering */}
+      {isSmallScreen ? (
+        // Mobile: Dropdown Navigation
+        <div className={cn(styles.mobileNavigation)}>
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className={cn(styles.mobileSelector)}>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const currentTab = importTabs.find(tab => tab.id === activeTab)
+                  const Icon = currentTab?.icon || Plus
+                  return (
+                    <>
+                      <Icon className="h-4 w-4 text-ritter-gold" />
+                      <span className="font-medium">{currentTab?.labelMobile || 'Seleccionar opción'}</span>
+                    </>
+                  )
+                })()}
+              </div>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </SelectTrigger>
+            <SelectContent className={cn(styles.mobileSelectorContent)}>
+              {importTabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <SelectItem 
+                    key={tab.id} 
+                    value={tab.id}
+                    className={cn(styles.mobileSelectorItem)}
+                  >
+                    <div className="flex items-center gap-3 w-full">
+                      <Icon className="h-4 w-4 text-ritter-gold" />
+                      <span className="font-medium">{tab.labelMobile}</span>
+                    </div>
+                  </SelectItem>
+                )
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : (
+        // Tablet/Desktop: Tab Navigation
+        <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
+          styles.importTabs
         )}>
-          <TabsTrigger value="manual" className={cn(
-            styles.tabsTrigger,
-            isSmallScreen && styles.tabsTriggerMobile
+          <TabsList className={cn(
+            styles.tabsList,
+            "grid w-full grid-cols-3"
           )}>
-            <Plus className={cn(
-              "h-4 w-4 mr-2",
-              isSmallScreen && "h-3 w-3 mr-1"
-            )} />
-            {isSmallScreen ? "Manual" : "Crear Manual"}
-          </TabsTrigger>
-          <TabsTrigger value="csv" className={cn(
-            styles.tabsTrigger,
-            isSmallScreen && styles.tabsTriggerMobile
-          )}>
-            <FileSpreadsheet className={cn(
-              "h-4 w-4 mr-2",
-              isSmallScreen && "h-3 w-3 mr-1"
-            )} />
-            {isSmallScreen ? "CSV" : "Importar CSV"}
-          </TabsTrigger>
-          <TabsTrigger value="preview" className={cn(
-            styles.tabsTrigger,
-            isSmallScreen && styles.tabsTriggerMobile
-          )}>
-            <Eye className={cn(
-              "h-4 w-4 mr-2",
-              isSmallScreen && "h-3 w-3 mr-1"
-            )} />
-            {isSmallScreen ? `Vista (${leads.length})` : `Vista Previa (${leads.length})`}
-          </TabsTrigger>
-        </TabsList>
+            {importTabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className={cn(
+                    styles.tabsTrigger,
+                    "flex items-center gap-2 relative"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+                 </Tabs>
+       )}
 
-        {/* Manual Creation Tab */}
-        <TabsContent value="manual" className={styles.tabsContent}>
+      {/* Content - Always rendered outside tabs for mobile compatibility */}
+      <div className={cn(
+        styles.tabsContent,
+        isSmallScreen && styles.tabsContentMobile,
+        isMediumScreen && styles.tabsContentTablet
+      )}>
+        {activeTab === "manual" && (
           <Card className={styles.manualCard}>
             <CardHeader>
               <CardTitle>Crear Lead Manualmente</CardTitle>
@@ -493,10 +547,9 @@ export function LeadImport({ className = "" }: LeadImportProps) {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        {/* CSV Import Tab */}
-        <TabsContent value="csv" className={styles.tabsContent}>
+        {activeTab === "csv" && (
           <Card className={styles.csvCard}>
             <CardHeader>
               <CardTitle>Importar desde CSV</CardTitle>
@@ -566,10 +619,9 @@ export function LeadImport({ className = "" }: LeadImportProps) {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        {/* Preview Tab */}
-        <TabsContent value="preview" className={styles.tabsContent}>
+        {activeTab === "preview" && (
           <Card className={styles.previewCard}>
             <CardHeader>
               <CardTitle>Vista Previa de Leads</CardTitle>
@@ -657,8 +709,8 @@ export function LeadImport({ className = "" }: LeadImportProps) {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
 
       {/* Confirm Dialog */}
       {confirmDialog && (

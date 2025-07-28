@@ -2,16 +2,18 @@
 
 .userManagement {
   width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
   animation: fadeInUp 0.5s ease-out;
-  transition: all 0.3s ease;
 }
 
 .userManagementMobile {
-  padding: 0 0.75rem;
+  padding: 0 0.5rem;
 }
 
 .userManagementTablet {
-  padding: 0 1rem;
+  padding: 0 0.75rem;
 }
 
 @keyframes fadeInUp {
@@ -31,15 +33,19 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
   animation: slideInDown 0.4s ease-out;
-  transition: all 0.3s ease;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .userHeaderMobile {
   flex-direction: column;
-  gap: 1rem;
   align-items: stretch;
   margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  gap: 1rem;
 }
 
 @keyframes slideInDown {
@@ -54,104 +60,109 @@
 }
 
 .userTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-gray-900, #1f2937);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1f2937;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
   transition: font-size 0.3s ease;
+  flex-wrap: wrap;
 }
 
 .userTitleMobile {
-  font-size: 1.25rem;
-  gap: 0.375rem;
-  margin-bottom: 0.375rem;
+  font-size: 1.5rem;
+  gap: 0.5rem;
+  margin: 0 0 0.375rem 0;
 }
 
 .userDescription {
-  color: var(--color-gray-600, #6b7280);
-  font-size: 0.875rem;
-  line-height: 1.4;
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
   transition: font-size 0.3s ease;
 }
 
 .userDescriptionMobile {
-  font-size: 0.8125rem;
-  line-height: 1.3;
-}
-
-.addUserButton {
-  background: var(--color-ritter-gold, #f59e0b);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.addUserButtonMobile {
-  padding: 0.375rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  gap: 0.375rem;
-}
-
-.addUserButton:hover {
-  background: var(--color-ritter-gold-dark, #d97706);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-/* Create User Modal - Responsive */
-.createUserModal {
-  max-width: 600px;
-  width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  border-radius: 16px;
-  border: 1px solid var(--color-border, #e2e8f0);
-  background: white;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-}
-
-.createUserModalMobile {
-  max-width: 95vw;
-  width: 95vw;
-  max-height: 95vh;
-  border-radius: 12px;
-  margin: 0.5rem;
-}
-
-.modalTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-gray-900, #1f2937);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.modalDescription {
-  color: var(--color-gray-600, #6b7280);
   font-size: 0.875rem;
   line-height: 1.4;
 }
 
-/* Modal Form */
+.addUserButton {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+  min-height: 2.5rem;
+  white-space: nowrap;
+}
+
+.addUserButtonMobile {
+  width: 100%;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+}
+
+.addUserButton:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Modal Styles */
+.createUserModal {
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+.createUserModalMobile {
+  width: 95vw;
+  max-width: 95vw;
+  margin: 1rem;
+  max-height: 85vh;
+  border-radius: 8px;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.modalDescription {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
 .modalForm {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 1rem 0;
+  padding: 0;
 }
 
 .formGroup {
@@ -168,173 +179,170 @@
 
 .formLabel {
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-gray-700, #374151);
+  font-weight: 600;
+  color: #374151;
   margin-bottom: 0.25rem;
 }
 
 .formLabel::after {
-  content: "";
+  content: attr(data-required);
 }
 
 .inputError {
   border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
 }
 
 .errorMessage {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
   color: #ef4444;
   font-size: 0.75rem;
+  font-weight: 500;
   margin-top: 0.25rem;
 }
 
 .errorMessage svg {
-  width: 0.875rem;
-  height: 0.875rem;
   flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
 }
 
-/* Checkbox Group */
+/* Checkbox Styles */
 .checkboxGroup {
-  padding: 1rem;
-  background: var(--color-gray-50, #f9fafb);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  border: 1px solid var(--color-border, #e2e8f0);
+  padding: 1rem;
+  margin: 0.5rem 0;
 }
 
 .checkboxLabel {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
   cursor: pointer;
   font-size: 0.875rem;
-  line-height: 1.4;
+  font-weight: 500;
+  color: #374151;
 }
 
 .checkbox {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--color-ritter-gold, #f59e0b);
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 0.125rem;
-  flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .checkboxText {
-  color: var(--color-gray-700, #374151);
-  font-weight: 500;
+  line-height: 1.4;
+  user-select: none;
 }
 
 /* Password Section */
 .passwordSection {
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .passwordFields {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin-top: 1rem;
 }
 
-@media (max-width: 768px) {
-  .passwordFields {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-}
-
-/* Generated Password Section */
 .generatedPasswordSection {
-  padding: 1rem;
-  background: var(--color-green-50, #f0fdf4);
-  border: 1px solid var(--color-green-200, #bbf7d0);
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
   border-radius: 8px;
+  padding: 1rem;
   margin-top: 1rem;
 }
 
 .generatedPasswordContainer {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
+  align-items: center;
   margin-top: 0.5rem;
 }
 
 .generatedPasswordInput {
   flex: 1;
-  background: white;
-  border: 1px solid var(--color-green-300, #86efac);
-  font-family: 'Courier New', monospace;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
   font-size: 0.875rem;
-  letter-spacing: 0.05em;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
 }
 
 .generatedPasswordInput:focus {
-  border-color: var(--color-green-500, #22c55e);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  outline: none;
+  border-color: #f59e0b;
 }
 
 .copyButton {
-  background: var(--color-green-600, #16a34a);
+  background: #f59e0b;
   color: white;
   border: none;
   padding: 0.5rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .copyButton:hover {
-  background: var(--color-green-700, #15803d);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+  background: #d97706;
 }
 
 .helperText {
   font-size: 0.75rem;
-  color: var(--color-green-700, #15803d);
+  color: #6b7280;
+  line-height: 1.4;
   margin-top: 0.5rem;
-  line-height: 1.3;
 }
 
-/* Password Input Container */
 .passwordInputContainer {
   position: relative;
   display: flex;
   align-items: center;
-  width: 100%;
 }
 
 .passwordInput {
-  padding-right: 3rem !important;
   flex: 1;
+  padding-right: 2.5rem;
 }
 
 .passwordToggle {
   position: absolute;
   right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
+  background: none;
   border: none;
-  color: var(--color-gray-500, #6b7280);
+  color: #6b7280;
+  cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
-  cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
 }
 
 .passwordToggle:hover {
-  background: var(--color-gray-100, #f3f4f6);
-  color: var(--color-gray-700, #374151);
+  color: #374151;
+  background: #f3f4f6;
 }
 
 .passwordToggle:focus {
-  outline: 2px solid var(--color-ritter-gold, #f59e0b);
+  outline: 2px solid #f59e0b;
   outline-offset: 2px;
 }
 
@@ -343,25 +351,34 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border, #e2e8f0);
+  margin-top: 1.5rem;
+  padding: 0;
 }
 
 .cancelButton {
-  color: var(--color-gray-700, #374151);
-  border-color: var(--color-gray-300, #d1d5db);
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .cancelButton:hover {
-  background: var(--color-gray-50, #f9fafb);
-  border-color: var(--color-gray-400, #9ca3af);
+  background: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .createButton {
-  background: var(--color-ritter-gold, #f59e0b);
+  background: #f59e0b;
   color: white;
   border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -369,19 +386,17 @@
 }
 
 .createButton:hover:not(:disabled) {
-  background: var(--color-ritter-gold-dark, #d97706);
+  background: #d97706;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .createButton:disabled {
-  opacity: 0.7;
+  background: #d1d5db;
+  color: #9ca3af;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
-/* Spinner */
 .spinner {
   width: 1rem;
   height: 1rem;
@@ -397,18 +412,19 @@
   }
 }
 
-/* Filters Card - Responsive */
+/* Filters Card */
 .filtersCard {
   background: white;
-  border: 1px solid var(--color-border, #e2e8f0);
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  animation: slideInUp 0.5s ease-out 0.1s both;
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  animation: slideInUp 0.4s ease-out 0.1s both;
 }
 
 .filtersCardMobile {
   border-radius: 8px;
-  margin: 0 -0.75rem;
+  margin-bottom: 1rem;
 }
 
 @keyframes slideInUp {
@@ -424,24 +440,21 @@
 
 .searchContainer {
   position: relative;
-  width: 100%;
-  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 0;
 }
 
 .searchContainerMobile {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .searchInputWrapper {
   position: relative;
-  display: flex;
-  align-items: center;
   width: 100%;
-  transition: all 0.3s ease;
 }
 
 .searchInputWrapperMobile {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0;
 }
 
 .searchIcon {
@@ -449,10 +462,9 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
-  color: var(--color-gray-400, #9ca3af);
   width: 16px;
   height: 16px;
+  color: #9ca3af;
   pointer-events: none;
   transition: color 0.2s ease;
 }
@@ -465,55 +477,46 @@
 
 .searchInput {
   width: 100%;
-  padding-left: 40px !important;
-  padding-right: 12px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  border: 1px solid var(--color-gray-300, #d1d5db);
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  background: white;
-  font-size: 14px;
+  font-size: 0.875rem;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: white;
+  box-sizing: border-box;
 }
 
 .searchInputMobile {
-  padding-left: 36px !important;
-  padding-right: 10px;
-  padding-top: 7px;
-  padding-bottom: 7px;
+  padding: 0.625rem 0.625rem 0.625rem 2.25rem;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 16px; /* Previene zoom en iOS */
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: var(--color-ritter-gold, #f59e0b);
+  border-color: #f59e0b;
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
 .searchInput:focus + .searchIcon,
-.searchInputWrapper:focus-within .searchIcon {
-  color: var(--color-ritter-gold, #f59e0b);
+.searchInput:focus ~ .searchIcon {
+  color: #f59e0b;
 }
 
 .searchInput::placeholder {
-  color: var(--color-gray-400, #9ca3af);
-  font-size: 14px;
+  color: #9ca3af;
 }
 
 .selectTriggerMobile {
-  font-size: 13px;
-  padding: 7px 12px;
-  border-radius: 6px;
+  width: 100%;
+  font-size: 16px; /* Previene zoom en iOS */
 }
 
 .filtersGrid {
   display: grid;
+  grid-template-columns: 2fr 1fr;
   gap: 1rem;
-    grid-template-columns: 2fr 1fr 1fr;
-  align-items: center;
-  transition: all 0.3s ease;
+  align-items: end;
 }
 
 .filtersGridMobile {
@@ -521,18 +524,17 @@
   gap: 0.75rem;
 }
 
-/* Users Table Card - Responsive */
+/* Users Table */
 .usersTableCard {
   background: white;
-  border: 1px solid var(--color-border, #e2e8f0);
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   animation: slideInUp 0.6s ease-out 0.2s both;
-  transition: all 0.3s ease;
 }
 
 .usersTableCardMobile {
   border-radius: 8px;
-  margin: 0 -0.75rem;
 }
 
 .tableHeaderMobile {
@@ -544,21 +546,19 @@
 }
 
 .refreshButtonMobile {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
-  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
 }
 
 .tableContentMobile {
-  padding: 0.75rem;
+  padding: 1rem;
 }
 
 .tableContainer {
-  border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #e5e7eb;
   background: white;
-  transition: all 0.3s ease;
 }
 
 .tableContainerMobile {
@@ -566,106 +566,101 @@
   overflow-x: auto;
 }
 
-/* User Table Rows */
 .userRow {
+  border-bottom: 1px solid #f3f4f6;
   transition: all 0.2s ease;
-  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
 }
 
 .userRow:hover {
-  background: var(--color-gray-50, #f9fafb);
+  background: #f9fafb;
+  transform: translateY(-1px);
 }
 
 .userRow:last-child {
   border-bottom: none;
 }
 
-/* User Cell */
 .userCell {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 0;
+  padding: 1rem;
 }
 
 .userAvatar {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.1);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-ritter-gold, #f59e0b);
+  color: white;
   flex-shrink: 0;
-  border: 2px solid rgba(245, 158, 11, 0.2);
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
 }
 
 .userRow:hover .userAvatar {
-  background: rgba(245, 158, 11, 0.2);
-  transform: scale(1.1);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
 }
 
 .userName {
-  font-weight: 500;
-  color: var(--color-gray-900, #1f2937);
-  margin-bottom: 0.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 .userEmail {
-  font-size: 0.875rem;
-  color: var(--color-gray-600, #6b7280);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.125rem;
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin: 0.25rem 0 0 0;
+  word-break: break-word;
 }
 
 .userPhone {
-  font-size: 0.75rem;
-  color: var(--color-gray-400, #9ca3af);
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
 }
 
-/* Role Badge */
 .roleBadge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.5rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 6px;
   font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid;
+  font-weight: 600;
+  border: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
 .roleBadge:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Last Login Cell */
 .lastLoginCell {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--color-gray-700, #374151);
+  color: #6b7280;
+  font-size: 0.75rem;
+  padding: 1rem;
+  text-align: right;
+  white-space: nowrap;
 }
 
-
-
-/* User Actions */
 .userActions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
   opacity: 0.7;
   transition: opacity 0.2s ease;
 }
@@ -675,36 +670,36 @@
 }
 
 .userActions button {
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
+  background: none;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  padding: 0.5rem;
   border-radius: 6px;
-  border: none;
-  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--color-gray-600, #6b7280);
+  width: 2rem;
+  height: 2rem;
 }
 
 .userActions button:hover {
-  background: var(--color-gray-100, #f3f4f6);
-  color: var(--color-gray-700, #374151);
-  transform: scale(1.1);
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
 }
 
 .userActions button:hover.text-red-600 {
-  background: #fee2e2;
+  background: #fef2f2;
+  border-color: #fecaca;
   color: #dc2626;
 }
 
-/* Empty State */
 .emptyState {
-  padding: 3rem 1rem;
   text-align: center;
-  color: var(--color-gray-400, #9ca3af);
+  padding: 3rem 1rem;
+  color: #9ca3af;
 }
 
 .emptyState svg {
@@ -713,39 +708,38 @@
 }
 
 .emptyState p {
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
   font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
 .emptyState .text-sm {
   font-size: 0.875rem;
-  color: var(--color-gray-600, #6b7280);
+  color: #6b7280;
 }
 
-/* Status Badges */
 .statusBadge {
   display: inline-flex;
   align-items: center;
+  gap: 0.25rem;
   padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 500;
-  border: 1px solid;
+  border: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
 .statusBadge:hover {
-  transform: scale(1.05);
+  transform: translateY(-1px);
 }
 
-/* Loading States */
 .loading {
   opacity: 0.6;
-  pointer-events: none;
 }
 
 .loadingRow {
-  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -761,6 +755,10 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+  .userManagement {
+    padding: 0 0.75rem;
+  }
+  
   .filtersGrid {
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
@@ -772,14 +770,20 @@
 }
 
 @media (max-width: 768px) {
+  .userManagement {
+    padding: 0 0.5rem;
+  }
+  
   .userHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
   }
 
   .userTitle {
-    font-size: 1.25rem;
+    font-size: 1.75rem;
   }
 
   .addUserButton {
@@ -789,8 +793,9 @@
 
   .createUserModal {
     width: 95vw;
-    max-height: 95vh;
-    margin: 0;
+    max-height: 85vh;
+    margin: 1rem;
+    border-radius: 8px;
   }
 
   .formRow {
@@ -825,23 +830,20 @@
   }
 
   .searchInput {
-    padding-left: 36px !important;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-left: 2.25rem;
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
     font-size: 16px; /* Previene zoom en iOS */
-  }
-
-  .tableContainer {
-    overflow-x: auto;
   }
 
   .userCell {
     gap: 0.5rem;
+    padding: 0.75rem;
   }
 
   .userAvatar {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2rem;
+    height: 2rem;
     font-size: 0.75rem;
   }
 
@@ -858,7 +860,8 @@
   }
 
   .userActions {
-    gap: 0.125rem;
+    gap: 0.25rem;
+    padding: 0.5rem;
   }
 
   .userActions button {
@@ -868,36 +871,54 @@
 }
 
 @media (max-width: 640px) {
+  .userManagement {
+    padding: 0 0.25rem;
+  }
+  
+  .userTitle {
+    font-size: 1.5rem;
+  }
+  
+  .userDescription {
+    font-size: 0.875rem;
+  }
+  
   .tableContainer {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
+    border-radius: 6px;
+    border-left: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
   }
 
   .userRow {
-    display: block;
-    padding: 1rem;
+    padding: 1rem 0.75rem;
     border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   .userRow:hover {
     transform: none;
+    background: #f9fafb;
   }
 
   .userCell {
-    margin-bottom: 0.75rem;
+    padding: 0;
+    margin-bottom: 0;
   }
-
-
 
   .lastLoginCell {
     font-size: 0.75rem;
+    text-align: left;
+    padding: 0;
     margin-bottom: 0.5rem;
   }
 
   .userActions {
-    justify-content: center;
-    margin-top: 0.5rem;
+    justify-content: flex-start;
+    margin-top: 0;
+    padding: 0;
+    opacity: 1;
   }
 
   .createUserModal {
@@ -905,6 +926,7 @@
     width: 100vw;
     height: 100vh;
     max-height: 100vh;
+    margin: 0;
   }
 
   .modalForm {
@@ -914,6 +936,30 @@
   .checkboxGroup {
     padding: 0.75rem;
   }
+
+  .passwordFields {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .userManagement {
+    padding: 0;
+  }
+  
+  .userHeader {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  .filtersCard {
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .usersTableCard {
+    border-radius: 6px;
+  }
 }
 
 /* High Contrast Mode */
@@ -921,15 +967,15 @@
   .usersTableCard,
   .filtersCard,
   .createUserModal {
-    border: 2px solid var(--color-gray-300, #d1d5db);
+    border: 2px solid #374151;
   }
 
   .userRow {
-    border-bottom-color: var(--color-gray-400, #9ca3af);
+    border-bottom-color: #9ca3af;
   }
 
   .userAvatar {
-    border: 2px solid var(--color-gray-700, #374151);
+    border: 2px solid #374151;
   }
 
   .roleBadge,
@@ -938,7 +984,7 @@
   }
 
   .userActions button {
-    border: 1px solid var(--color-gray-300, #d1d5db);
+    border: 1px solid #374151;
   }
 
   .inputError {
@@ -946,7 +992,7 @@
   }
 
   .checkbox {
-    outline: 2px solid var(--color-gray-600, #4b5563);
+    outline: 2px solid #4b5563;
   }
 }
 
@@ -983,20 +1029,25 @@
 .addUserButton:focus,
 .createButton:focus,
 .cancelButton:focus {
-  outline: 2px solid var(--color-ritter-gold, #f59e0b);
+  outline: 2px solid #f59e0b;
   outline-offset: 2px;
 }
 
 .checkbox:focus {
-  outline: 2px solid var(--color-ritter-gold, #f59e0b);
+  outline: 2px solid #f59e0b;
   outline-offset: 2px;
 }
 
 /* Print Styles */
 @media print {
+  .userManagement {
+    padding: 0;
+  }
+  
   .userHeader {
     flex-direction: column;
     margin-bottom: 1rem;
+    border-bottom: 2px solid #000;
   }
 
   .addUserButton {
@@ -1022,5 +1073,11 @@
 
   .userRow {
     page-break-inside: avoid;
+    display: table-row;
+  }
+  
+  .userCell {
+    display: table-cell;
+    padding: 0.5rem;
   }
 } 

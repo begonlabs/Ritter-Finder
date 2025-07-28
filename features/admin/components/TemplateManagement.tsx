@@ -205,7 +205,7 @@ export function TemplateManagement({ className = "" }: TemplateManagementProps) 
   }
 
   return (
-    <div className={`${styles.templateManagement} ${className} space-y-6`}>
+    <div className={`${styles.templateManagement} ${className}`}>
       {/* Header */}
       <div className={`${styles.templateHeader} flex items-center justify-between`}>
         <div>

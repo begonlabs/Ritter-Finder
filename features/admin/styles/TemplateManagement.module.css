@@ -2,6 +2,9 @@
 
 .templateManagement {
   width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
   animation: fadeInUp 0.5s ease-out;
 }
 
@@ -25,6 +28,8 @@
   padding-bottom: 1.5rem;
   border-bottom: 1px solid #e2e8f0;
   animation: slideInDown 0.4s ease-out;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 @keyframes slideInDown {
@@ -202,6 +207,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   animation: slideInUp 0.6s ease-out 0.2s both;
+  margin-top: 1.5rem;
 }
 
 .tableContainer {
@@ -698,15 +704,50 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .templateManagement {
+    padding: 0 0.75rem;
+  }
+  
+  .filtersGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .searchContainer {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 768px) {
+  .templateManagement {
+    padding: 0 0.5rem;
+  }
+  
+  .templateHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+  
   .templateTitle {
     font-size: 1.75rem;
   }
   
-  .templateActions {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
+  .addTemplateButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .filtersGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .searchContainer {
+    grid-column: 1;
   }
   
   .templateCell {
@@ -732,25 +773,70 @@
     width: 100%;
     justify-content: center;
   }
+
+  .templateActions {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
 }
 
 @media (max-width: 640px) {
-  .templateHeader {
-    padding: 1rem;
+  .templateManagement {
+    padding: 0 0.25rem;
   }
   
-  .addTemplateButton {
-    width: 100%;
-    justify-content: center;
+  .templateTitle {
+    font-size: 1.5rem;
+  }
+  
+  .templateDescription {
+    font-size: 0.875rem;
   }
   
   .filtersGrid {
-    padding: 1rem;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
   .templateDialog {
     width: 95vw;
-    max-height: 90vh;
+    max-height: 85vh;
+    margin: 1rem;
+    border-radius: 8px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .templateManagement {
+    padding: 0;
+  }
+  
+  .templateHeader {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  .filtersCard {
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .templatesTableCard {
+    border-radius: 6px;
+  }
+
+  .templateDialog {
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    margin: 0;
   }
 }
 

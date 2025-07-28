@@ -101,8 +101,7 @@ export function RoleManagement({ className = "" }: RoleManagementProps) {
       styles.roleManagement,
       isSmallScreen && styles.roleManagementMobile,
       isMediumScreen && styles.roleManagementTablet,
-      className,
-      "space-y-6"
+      className
     )}>
       {/* Header */}
       <div className={cn(
