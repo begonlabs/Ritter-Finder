@@ -25,26 +25,34 @@ export const useResponsive = (
   const breakpoints = { ...defaultBreakpoints, ...customBreakpoints }
   
   const [windowSize, setWindowSize] = useState({
-    width: 0,
-    height: 0
+    width: typeof window !== 'undefined' ? window.innerWidth : 1024, // Default to tablet size for SSR
+    height: typeof window !== 'undefined' ? window.innerHeight : 768
   })
+  const [isClient, setIsClient] = useState(false)
 
   const updateSize = useCallback(() => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight
-    })
+    if (typeof window !== 'undefined') {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
   }, [])
 
   useEffect(() => {
+    // Mark as client-side
+    setIsClient(true)
+    
     // Initialize size on client
     updateSize()
     
-    // Add event listener
-    window.addEventListener('resize', updateSize)
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', updateSize)
+    if (typeof window !== 'undefined') {
+      // Add event listener
+      window.addEventListener('resize', updateSize)
+      
+      // Cleanup
+      return () => window.removeEventListener('resize', updateSize)
+    }
   }, [updateSize])
 
   const getBreakpoint = (width: number): keyof ResponsiveBreakpoints => {
@@ -81,20 +89,21 @@ export const useResponsive = (
       isLargeScreen: width >= extendedBreakpoints.xl,
       
       // Touch device detection (heuristic)
-      isTouchDevice: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+      isTouchDevice: isClient && typeof window !== 'undefined' && 
+        ('ontouchstart' in window || (navigator && navigator.maxTouchPoints > 0)),
       
       // Orientation
       isLandscape: width > windowSize.height,
       isPortrait: windowSize.height > width,
       
-      // Aspect ratio categories
-      isUltraWide: width / windowSize.height > 2.1,
-      isWideScreen: width / windowSize.height > 1.6 && width / windowSize.height <= 2.1,
-      isStandardRatio: width / windowSize.height > 1.2 && width / windowSize.height <= 1.6,
-      isSquareish: width / windowSize.height > 0.8 && width / windowSize.height <= 1.2,
-      isTallScreen: width / windowSize.height <= 0.8
+      // Aspect ratio categories (safe division)
+      isUltraWide: windowSize.height > 0 ? width / windowSize.height > 2.1 : false,
+      isWideScreen: windowSize.height > 0 ? width / windowSize.height > 1.6 && width / windowSize.height <= 2.1 : false,
+      isStandardRatio: windowSize.height > 0 ? width / windowSize.height > 1.2 && width / windowSize.height <= 1.6 : true,
+      isSquareish: windowSize.height > 0 ? width / windowSize.height > 0.8 && width / windowSize.height <= 1.2 : false,
+      isTallScreen: windowSize.height > 0 ? width / windowSize.height <= 0.8 : false
     }
-  }, [windowSize.width, windowSize.height])
+  }, [windowSize.width, windowSize.height, isClient])
 
   // Responsive utilities
   const utils = useMemo(() => ({
@@ -154,7 +163,7 @@ export const useResponsive = (
     
     // Performance helpers
     shouldReduceMotion: () => {
-      if (typeof window !== 'undefined') {
+      if (isClient && typeof window !== 'undefined' && window.matchMedia) {
         return window.matchMedia('(prefers-reduced-motion: reduce)').matches
       }
       return false
@@ -169,7 +178,7 @@ export const useResponsive = (
       }
       return spacing[scale]
     }
-  }), [windowSize.width, windowSize.height, deviceInfo])
+  }), [windowSize.width, windowSize.height, deviceInfo, isClient])
 
   return {
     // Legacy API (for backwards compatibility)
@@ -188,7 +197,7 @@ export const useResponsive = (
     // Current breakpoint with extended info
     currentBreakpoint,
     
-    // Aspect ratio
-    aspectRatio: windowSize.width / windowSize.height
+    // Aspect ratio (safe division)
+    aspectRatio: windowSize.height > 0 ? windowSize.width / windowSize.height : 1
   }
 } 
