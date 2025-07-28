@@ -143,6 +143,11 @@ export function DashboardHeader({
                 Menú de navegación móvil
               </SheetTitle>
               <div className={styles.mobileActions}>
+                {/* Email Limits for Mobile */}
+                <div className={styles.mobileEmailLimits}>
+                  <EmailLimitsIndicator compact />
+                </div>
+                
                 <div className={styles.mobileActionGroup}>
                   <LanguageSelector />
                   <button className={styles.actionButton} onClick={onProfileClick}>

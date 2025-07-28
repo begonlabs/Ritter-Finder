@@ -15,7 +15,8 @@ import {
   Shield, 
   Mail,
   Database,
-  ChevronDown
+  ChevronDown,
+  Check
 } from "lucide-react"
 import { useResponsive } from "@/features/layout/hooks/useResponsive"
 import { cn } from "@/lib/utils"
@@ -122,7 +123,7 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
                   )
                 })()}
               </div>
-              <ChevronDown className="h-4 w-4 opacity-50" />
+              <ChevronDown className="h-4 w-4 opacity-50 custom-chevron" />
             </SelectTrigger>
             <SelectContent className={cn(styles.mobileSelectorContent)}>
               {adminTabs.map((tab) => {
@@ -136,15 +137,20 @@ export function AdminDashboard({ className = "" }: AdminDashboardProps) {
                   >
                     <div className="flex items-center gap-3 w-full">
                       <Icon className="h-4 w-4 text-ritter-gold" />
-                      <span className="font-medium">{tab.label}</span>
-                      {tab.badge && tab.badge > 0 && (
-                        <Badge 
-                          variant="secondary" 
-                          className="ml-auto h-5 min-w-5 text-xs"
-                        >
-                          {tab.badge}
-                        </Badge>
-                      )}
+                      <span className="font-medium flex-1">{tab.label}</span>
+                      <div className="flex items-center gap-2 ml-auto">
+                        {tab.badge && tab.badge > 0 && (
+                          <Badge 
+                            variant="secondary" 
+                            className="h-5 min-w-5 text-xs"
+                          >
+                            {tab.badge}
+                          </Badge>
+                        )}
+                        {activeTab === tab.id && (
+                          <Check className="h-4 w-4 text-ritter-gold custom-check" />
+                        )}
+                      </div>
                     </div>
                   </SelectItem>
                 )

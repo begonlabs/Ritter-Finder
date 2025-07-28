@@ -131,6 +131,27 @@
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
+/* Hide default Select component chevron icon */
+.mobileSelector [role="combobox"] svg:last-child:not(.custom-chevron) {
+  display: none !important;
+}
+
+/* Hide all SelectTrigger default icons except our custom ones */
+.mobileSelector button[role="combobox"] > svg:not(.custom-chevron) {
+  display: none !important;
+}
+
+/* Hide default Select chevron when using SelectTrigger, but keep our custom one */
+.mobileSelector svg[data-testid="chevron-down"]:not(.custom-chevron),
+.mobileSelector svg[aria-hidden="true"]:last-child:not(.custom-chevron) {
+  display: none !important;
+}
+
+/* Ensure our custom chevron is visible */
+.mobileSelector .custom-chevron {
+  display: block !important;
+}
+
 .mobileSelectorContent {
   background: white;
   border: 1px solid #e2e8f0;
@@ -162,7 +183,53 @@
   background: #fef3c7;
   color: #92400e;
   font-weight: 600;
-  border: 1px solid #f59e0b;
+}
+
+/* Selected item with check icon highlighting */
+.mobileSelectorItem[data-state="checked"] .custom-check {
+  color: #f59e0b !important;
+  filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.3));
+}
+
+/* Hide default check icon in SelectItem */
+.mobileSelectorItem svg[data-testid="check"],
+.mobileSelectorItem svg[aria-hidden="true"]:first-child {
+  display: none !important;
+}
+
+/* Hide any check icons that might appear from Select component */
+.mobileSelectorItem .lucide-check,
+.mobileSelectorItem [data-radix-select-item-indicator] {
+  display: none !important;
+}
+
+/* Hide any auto-generated SVG icons in SelectItem */
+.mobileSelectorItem > svg:first-child {
+  display: none !important;
+}
+
+/* Ensure our custom icons in items are visible */
+.mobileSelectorItem .flex .text-ritter-gold {
+  display: block !important;
+}
+
+/* Ensure our custom check icon is visible */
+.mobileSelectorItem .custom-check {
+  display: block !important;
+  opacity: 1 !important;
+  animation: checkFadeIn 0.2s ease-out;
+}
+
+/* Check icon animation */
+@keyframes checkFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .mobileSelectorItem:last-child {
@@ -469,6 +536,10 @@
   }
 
   .tabBadge {
+    animation: none;
+  }
+
+  .custom-check {
     animation: none;
   }
 }

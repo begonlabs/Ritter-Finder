@@ -1,8 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users } from "lucide-react"
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Users, Mail, Eye, ChevronDown, Check } from "lucide-react"
+import { useResponsive } from "@/features/layout/hooks/useResponsive"
+import { cn } from "@/lib/utils"
 import { useEmailComposer } from "../hooks/useEmailComposer"
 import { ComposeTab } from "./ComposeTab"
 import { RecipientsTab } from "./RecipientsTab"
@@ -29,6 +39,30 @@ interface EmailComposerProps {
 
 export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false, campaignResult }: EmailComposerProps) {
   const composer = useEmailComposer()
+  const [activeTab, setActiveTab] = useState("compose")
+  const { isSmallScreen, isMediumScreen, isLargeScreen } = useResponsive()
+
+  // Campaign tabs configuration
+  const campaignTabs = [
+    {
+      id: "compose",
+      label: "Componer",
+      labelMobile: "Componer",
+      icon: Mail,
+    },
+    {
+      id: "recipients", 
+      label: "Destinatarios",
+      labelMobile: `Destinatarios (${selectedLeads.length})`,
+      icon: Users,
+    },
+    {
+      id: "preview",
+      label: "Vista Previa",
+      labelMobile: "Vista Previa",
+      icon: Eye,
+    },
+  ]
 
   if (selectedLeads.length === 0) {
     return (
@@ -52,33 +86,107 @@ export function EmailComposer({ selectedLeads, onSendCampaign, emailSent = false
   }
 
   return (
-    <div className={`${styles.emailComposer} space-y-6`}>
-      <Tabs defaultValue="compose" className={`${styles.tabsContainer} space-y-6`}>
-        <TabsList className={`${styles.tabsList} grid w-full grid-cols-3`}>
-          <TabsTrigger value="compose" className={styles.tabsTrigger}>Componer</TabsTrigger>
-          <TabsTrigger value="recipients" className={styles.tabsTrigger}>Destinatarios</TabsTrigger>
-          <TabsTrigger value="preview" className={styles.tabsTrigger}>Vista Previa</TabsTrigger>
-        </TabsList>
+    <div className={cn(
+      styles.emailComposer,
+      isSmallScreen && styles.emailComposerMobile,
+      isMediumScreen && styles.emailComposerTablet
+    )}>
+      {/* Campaign Navigation - Conditional rendering */}
+      {isSmallScreen ? (
+        // Mobile: Dropdown Navigation
+        <div className={cn(styles.mobileNavigation)}>
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className={cn(styles.mobileSelector)}>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const currentTab = campaignTabs.find(tab => tab.id === activeTab)
+                  const Icon = currentTab?.icon || Mail
+                  return (
+                    <>
+                      <Icon className="h-4 w-4 text-ritter-gold" />
+                      <span className="font-medium">{currentTab?.labelMobile || 'Seleccionar sección'}</span>
+                    </>
+                  )
+                })()}
+              </div>
+              <ChevronDown className="h-4 w-4 opacity-50 custom-chevron" />
+            </SelectTrigger>
+            <SelectContent className={cn(styles.mobileSelectorContent)}>
+              {campaignTabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <SelectItem 
+                    key={tab.id} 
+                    value={tab.id}
+                    className={cn(styles.mobileSelectorItem)}
+                  >
+                    <div className="flex items-center gap-3 w-full">
+                      <Icon className="h-4 w-4 text-ritter-gold" />
+                      <span className="font-medium flex-1">{tab.labelMobile}</span>
+                      {activeTab === tab.id && (
+                        <Check className="h-4 w-4 text-ritter-gold custom-check ml-auto" />
+                      )}
+                    </div>
+                  </SelectItem>
+                )
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : (
+        // Tablet/Desktop: Tab Navigation
+        <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
+          styles.tabsContainer
+        )}>
+          <TabsList className={cn(
+            styles.tabsList,
+            "grid w-full grid-cols-3"
+          )}>
+            {campaignTabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className={cn(
+                    styles.tabsTrigger,
+                    "flex items-center gap-2 relative"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+        </Tabs>
+      )}
 
-        <TabsContent value="compose" className={styles.tabsContent}>
+      {/* Content - Always rendered outside tabs for mobile compatibility */}
+      <div className={cn(
+        styles.tabsContent,
+        isSmallScreen && styles.tabsContentMobile,
+        isMediumScreen && styles.tabsContentTablet
+      )}>
+        {activeTab === "compose" && (
           <ComposeTab 
             composer={composer}
             selectedLeads={selectedLeads}
             recipientCount={selectedLeads.length}
           />
-        </TabsContent>
+        )}
 
-        <TabsContent value="recipients" className={styles.tabsContent}>
+        {activeTab === "recipients" && (
           <RecipientsTab selectedLeads={selectedLeads} />
-        </TabsContent>
+        )}
 
-        <TabsContent value="preview" className={styles.tabsContent}>
+        {activeTab === "preview" && (
           <PreviewTab 
             composer={composer}
             selectedLeads={selectedLeads}
           />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   )
 }

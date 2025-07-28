@@ -47,7 +47,8 @@ import {
   RefreshCw,
   Save,
   FileSpreadsheet,
-  ChevronDown
+  ChevronDown,
+  Check
 } from "lucide-react"
 import { useResponsive } from "@/features/layout/hooks/useResponsive"
 import { cn } from "@/lib/utils"
@@ -270,7 +271,7 @@ export function LeadImport({ className = "" }: LeadImportProps) {
                   )
                 })()}
               </div>
-              <ChevronDown className="h-4 w-4 opacity-50" />
+              <ChevronDown className="h-4 w-4 opacity-50 custom-chevron" />
             </SelectTrigger>
             <SelectContent className={cn(styles.mobileSelectorContent)}>
               {importTabs.map((tab) => {
@@ -283,7 +284,10 @@ export function LeadImport({ className = "" }: LeadImportProps) {
                   >
                     <div className="flex items-center gap-3 w-full">
                       <Icon className="h-4 w-4 text-ritter-gold" />
-                      <span className="font-medium">{tab.labelMobile}</span>
+                      <span className="font-medium flex-1">{tab.labelMobile}</span>
+                      {activeTab === tab.id && (
+                        <Check className="h-4 w-4 text-ritter-gold custom-check ml-auto" />
+                      )}
                     </div>
                   </SelectItem>
                 )
